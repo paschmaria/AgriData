@@ -72,7 +72,8 @@
 			$_SESSION['user'] = getUserById($logged_in_user_id); // put logged in user in session
 			$_SESSION['success']  = "You are now logged in";
 			header('location: ./register-farmer.php');
-			exit;
+			
+			mysql_close($db);
 		}
 	}
 
@@ -164,6 +165,8 @@
 			}else {
 				array_push($errors, "Wrong username/password combination");
 			}
+
+			mysql_close($db);
 		}
 	}
 
@@ -178,7 +181,7 @@
 
 	// Register farmer
 	function register_farmer(){
-		global $db, $errors;
+		global $db, $errors, $month, $day, $year, $land_size, $land_unit, $produce_size, $produce_volume;
 
 		// receive all input values from the form. 
 		// call the e() function to escape form values
@@ -323,8 +326,29 @@
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
 			}
-			
 			mysqli_close($db);
 		}
 	}
 	
+	// Extract farmers' data as JSON
+	function farmerJSON() {
+		global $db, $errors;
+
+		$query = "SELECT * FROM farmers";
+		$result = mysqli_query($db, $query);
+		$data_array = array();
+		while ($farmers = mysqli_fetch_assoc($result)) {
+			$data_array[] = $farmers;
+		}
+
+		$fp = fopen('farmers-data.json', 'w'); 
+		fwrite($fp, json_encode($data_array)); 
+		if(!fwrite($fp, json_encode($data_array))){
+			die('Error : File Not Opened. ' . mysql_error());
+		} else {
+			echo "Data Retrieved Successully!";
+		}
+		fclose($fp); 
+		
+		mysql_close($db);
+	}

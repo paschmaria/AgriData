@@ -632,7 +632,7 @@
                  farmerPic = document.querySelector("#farmer-pic-input"),
                  farmerBtn = document.querySelector("#farmeBtn");
                  
-                  form.onsubmit = function (e) {
+                  farmerBtn.onclick = function (e) {
                     const cloudName = 'plurimus-technologies';
                     const unsignedUploadPreset = 'nj8yvpqc';
                     console.log(e);
@@ -676,7 +676,6 @@
                           if (this.status === 200) {
                             var response = JSON.parse(this.responseText);
                             console.log(response);
-                            form.submit();
                           } else {
                             console.log("Unable to retrieve response");
                           }
@@ -689,6 +688,7 @@
                       xhr.send(fd);
                     }
                     makeCorsRequest();
+                    form.submit();
                   }
                 </script>
               </div>
