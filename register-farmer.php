@@ -179,6 +179,7 @@
                     <h3 class="card-title">Register New Farmer</h3>
                   </div>
                   <div class="card-body">
+                    <?php echo display_error(); ?>
                     <div class="row">
                       <div class="col-lg-6 col-md-6">
                         <h3>Farmer Information</h3>
@@ -186,15 +187,15 @@
                           <div class="col-lg-7 col-md-6 order-last order-sm-first">
                             <div class="form-group">
                               <label class="form-label">First name<span class="form-required">*</span></label>
-                              <input type="text" class="form-control" name="farmer_firstname" required>
+                              <input type="text" class="form-control" name="farmer_firstname" autocomplete="off" required>
                             </div>
                             <div class="form-group">
                               <label class="form-label">Last name<span class="form-required">*</span></label>
-                              <input type="text" class="form-control" name="farmer_lastname" required>
+                              <input type="text" class="form-control" name="farmer_lastname" autocomplete="off" required>
                             </div>
                             <div class="form-group">
                               <label class="form-label">Primary Phone Number<span class="form-required">*</span></label>
-                              <input type="tel" class="form-control" name="farmer_phone1" required>
+                              <input type="tel" class="form-control" name="farmer_phone1" max="14" required>
                             </div>
                           </div>
                           <div class="col-lg-5 col-md-6 order-first order-sm-last m-h mb-4">
@@ -206,7 +207,7 @@
                                 <img src="./assets/images/image.png" alt="" class="img-fluid camera">
                                 <div id="picPreview" class="p-1" style="height: inherit;"></div>
                               </label>
-                              <input type="file" name="farmer-pic" id="farmer-pic-input" onchange="getPicture(this.files);" accept="image/*" required>
+                              <input type="file" name="farmer_pic" id="farmer-pic-input" onchange="getPicture(this.files);" accept="image/*" required>
                             </div>
                           </div>
                         </div>
@@ -249,7 +250,7 @@
                         </script>
                         <div class="form-group">
                           <label class="form-label">Secondary Phone Number</label>
-                          <input type="tel" class="form-control" name="farmer_phone2">
+                          <input type="tel" class="form-control"  max="14" name="farmer_phone2">
                         </div>
                         <div class="form-group">
                           <label class="form-label">Email Address</label>
@@ -453,7 +454,7 @@
                           <div class="col-lg-4 col-md-12">
                             <div class="form-group">
                               <label class="form-label">Town/Village<span class="form-required">*</span></label>
-                              <input type="text" name="farmer_town" class="form-control" required>
+                              <input type="text" name="farmer_town" class="form-control" autocomplete="off" required>
                             </div>
                           </div>
                         </div>
@@ -523,9 +524,9 @@
                           </div>
                         </div>
                         <div class="form-group">
-                          <div class="form-label">Farm Pictures<span class="form-required">*</span></div>
+                          <div class="form-label">Farm Pictures</div>
                           <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="farmer-farm-input" name="farmer_farm_pictures" onchange="handleFiles(this.files);" accept="image/*" multiple required>
+                            <input type="file" class="custom-file-input" id="farmer-farm-input" name="farm_pictures[]" onchange="handleFiles(this.files);" accept="image/*" multiple>
                             <label class="custom-file-label">Choose files</label>
                           </div>
                           <ul id="imagesPreview" class="d-flex flex-row flex-wrap justify-content-around image-wrapper"></ul>
@@ -570,7 +571,7 @@
                         </script>
                         <div class="form-group">
                           <label class="form-label">Planted Crop(s) (Comma separated list)<span class="form-required">*</span></label>
-                          <input type="text" class="form-control" name="farmer_crops" id="input-tags" required>
+                          <input type="text" class="form-control" name="farmer_crops" id="input-tags" autocomplete="off" required>
                         </div>
                         <script>
                           require(['jquery', 'selectize'], function ($, selectize) {
@@ -605,13 +606,13 @@
                           <div class="col-lg-6 col-md-12">
                             <div class="form-group">
                               <div class="form-label">Major source of Farm labour<span class="form-required">*</span></div>
-                              <div class="custom-controls-stacked">
-                                <label class="custom-control custom-radio custom-control-inline">
-                                  <input type="radio" class="custom-control-input" name="farmer_farm_labour" value="family" checked required>
+                              <div>
+                                <label class="custom-control custom-checkbox custom-control-inline">
+                                  <input type="checkbox" class="custom-control-input" name="farmer_farm_labour" value="family" checked required>
                                   <span class="custom-control-label">Family</span>
                                 </label>
-                                <label class="custom-control custom-radio custom-control-inline">
-                                  <input type="radio" class="custom-control-input" name="farmer_farm_labour" value="hired_hands" required>
+                                <label class="custom-control custom-checkbox custom-control-inline">
+                                  <input type="checkbox" class="custom-control-input" name="farmer_farm_labour" value="hired_hands" required>
                                   <span class="custom-control-label">Hired Hands</span>
                                 </label>
                               </div>
@@ -620,21 +621,20 @@
                         </div>
                       </div>
                     </div>
-                    <?php echo display_error(); ?>
                   </div>
                   <div class="card-footer text-right">
                     <button type="submit" class="btn btn-primary" id="farmerBtn" name="register_farmer">Register</button>
                   </div>
                 </form>
-                <script>
+                <!-- <script>
                   var form = document.querySelector("form.card"),
                    farmPic = document.querySelector("#farmer-farm-input"),
                  farmerPic = document.querySelector("#farmer-pic-input"),
                  farmerBtn = document.querySelector("#farmeBtn");
                  
                   farmerBtn.onclick = function (e) {
-                    const cloudName = 'plurimus-technologies';
-                    const unsignedUploadPreset = 'nj8yvpqc';
+                    const cloudName = '';
+                    const unsignedUploadPreset = '';
                     console.log(e);
                     e.preventDefault();
                     var file = farmerPic.files[0];
@@ -690,7 +690,7 @@
                     makeCorsRequest();
                     form.submit();
                   }
-                </script>
+                </script> -->
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 <?php 
 	session_start();
     
-    header("Access-Control-Allow-Origin: *");
+  header("Access-Control-Allow-Origin: *");
 	// connect to database
 	$db = mysqli_connect('localhost', 'root', 'SperaenDeo1', 'agridata');
 	if (mysqli_connect_errno()) {
@@ -72,8 +72,7 @@
 			$_SESSION['user'] = getUserById($logged_in_user_id); // put logged in user in session
 			$_SESSION['success']  = "You are now logged in";
 			header('location: ./register-farmer.php');
-			
-			mysql_close($db);
+			exit;
 		}
 	}
 
@@ -165,8 +164,6 @@
 			}else {
 				array_push($errors, "Wrong username/password combination");
 			}
-
-			mysql_close($db);
 		}
 	}
 
@@ -179,11 +176,53 @@
 	$produce_size = "";
 	$produce_unit = "";
 
+	function check_and_save_file($fs,$fn,$ft) {
+		global $errors;
+		// Check size
+		if($fs > 2097152){
+			array_push($errors, "File size must be less than 2 MB");
+		}
+
+		$dir_name				= "./assets/images/farmers_pictures";
+		$picFileType 		= strtolower(pathinfo("$dir_name/".$fn, PATHINFO_EXTENSION));
+		$extensions_arr = array("jpg","jpeg","png","svg");
+		// Check extension
+		if( !in_array($picFileType,$extensions_arr) ){
+			array_push($errors, "Picture file format not supported, only jpeg, jpg, png, and svg allowed!");
+		}
+		
+		$temp  = explode(".", $fn);
+		$newFN = uniqid() . '.' . end($temp);
+
+		if (count($errors) === 0) {
+			if(is_dir($dir_name) === false){
+				mkdir("$dir_name", 0700);		// Create directory if it does not exist
+			}
+			move_uploaded_file($ft, $dir_name."/".$newFN);
+		}
+		return $newFN;
+	}
+
+	function getFileProp($files) {
+		$fileNameArr = array();
+		if (isset($files)) {
+			foreach ($files["tmp_name"] as $key => $tmp_name) {
+				$file_name = $key.$files["name"][$key];
+				$file_size = $files["size"][$key];
+				$file_tmp  = $files['tmp_name'][$key];
+				$file_type = $files['type'][$key];
+
+				array_push($fileNameArr, check_and_save_file($file_size, $file_name, $file_tmp));
+			}
+		}
+		return $fileNameArr;
+	}
+
 	// Register farmer
 	function register_farmer(){
 		global $db, $errors, $month, $day, $year, $land_size, $land_unit, $produce_size, $produce_volume;
 
-		// receive all input values from the form. 
+		// receive all input values from the form.
 		// call the e() function to escape form values
 		$firstname    =  e($_POST['farmer_firstname']);
 		$lastname    	=  e($_POST['farmer_lastname']);
@@ -208,13 +247,22 @@
 		$produce_size	=  e($_POST['farmer_produce_size']);
 		$produce_unit =  e($_POST['farmer_produce_unit']);
 		$farm_labour  =  e($_POST['farmer_farm_labour']);
+
+		$farmer_pic 	=  $_FILES['farmer_pic'];
+		$farm_pic 		=  $_FILES['farm_pictures'];
+
+		$farmer_pic_name = $farmer_pic['name'];
+		$farmer_pic_size = $farmer_pic['size'];
+		$farmer_pic_tmp  = $farmer_pic['tmp_name'];
 		
 		$user					=  $_SESSION['user']['username'];
 		$land_area		=  $land_size." ".$land_unit;
 		$produce_volume= $produce_size." ".$produce_unit;
+		$new_farmer_pic= check_and_save_file($farmer_pic_size,$farmer_pic_name,$farmer_pic_tmp);
+		$new_farm_pic	= (implode(",", getFileProp($farm_pic)));
 
-		// var_dump($month);
-
+		// var_dump($new_farm_pic);
+		
 		// form validation: ensure that the form is correctly filled
 		$n = $firstname;
 		switch (empty($n)) {
@@ -224,6 +272,10 @@
 			
 			case $lastname:
 			array_push($errors, "Lastname is required");
+				break;
+			
+			case $farmer_pic:
+			array_push($errors, "Farmer's picture is required");
 				break;
 			
 			case $phone1:
@@ -282,6 +334,10 @@
 			array_push($errors, "Land Unit is required");
 				break;
 
+			// case $farm_pic:
+			// array_push($errors, "Farmer's farm picture is required");
+			// 	break;
+
 			case $crops:
 			array_push($errors, "Farmer's crop is required");
 				break;
@@ -321,7 +377,7 @@
 		// var_dump($errors);
 		// register farmer if there are no errors in the form
 		if (count($errors) === 0) {
-			$query = "INSERT INTO farmers (firstname, lastname, phone_primary, phone_secondary, email, date_of_birth, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, crops, produce_volume, farm_labour, user) VALUES ('$firstname', '$lastname', '$phone1', '$phone2', '$email', '$dob', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$crops', '$produce_volume', '$farm_labour', '$user')";
+			$query = "INSERT INTO farmers (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, user) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user')";
 			// mysqli_query($db, $query);
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
