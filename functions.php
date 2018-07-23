@@ -61,7 +61,7 @@
 
 		// register user if there are no errors in the form
 		if (count($errors) == 0) {
-			$password = md5($password_1);//encrypt the password before saving in the database
+			$password = md5($password_1); //encrypt the password before saving in the database
 
 			$query = "INSERT INTO users (username, email, user_type, password) 
 							VALUES ('$username', '$email', 'agent', '$password')";
@@ -84,14 +84,12 @@
 
 		$user = mysqli_fetch_assoc($result);
 		return $user;
-		echo $user;
 	}
 
 	// escape string
 	function e($val){
 		global $db;
 		if (isset($val)) {
-			// echo $val;
 			return mysqli_real_escape_string($db, trim($val));
 		}
 	}
@@ -120,7 +118,7 @@
 		login();
 	}
 
-	// call the register_farmer function if the register farmer btn is clicked
+	// call the register_farmer() function if the register farmer btn is clicked
 	if (isset($_POST['register_farmer'])) {
 		register_farmer();
 	}
@@ -136,8 +134,7 @@
 		// make sure form is filled properly
 		if (empty($username)) {
 			array_push($errors, "Username is required");
-		}
-		if (empty($password)) {
+		} elseif (empty($password)) {
 			array_push($errors, "Password is required");
 		}
 
@@ -260,8 +257,6 @@
 		$produce_volume= $produce_size." ".$produce_unit;
 		$new_farmer_pic= check_and_save_file($farmer_pic_size,$farmer_pic_name,$farmer_pic_tmp);
 		$new_farm_pic	= (implode(",", getFileProp($farm_pic)));
-
-		// var_dump($new_farm_pic);
 		
 		// form validation: ensure that the form is correctly filled
 		$n = $firstname;
@@ -386,25 +381,3 @@
 		}
 	}
 	
-	// Extract farmers' data as JSON
-	function farmerJSON() {
-		global $db, $errors;
-
-		$query = "SELECT * FROM farmers";
-		$result = mysqli_query($db, $query);
-		$data_array = array();
-		while ($farmers = mysqli_fetch_assoc($result)) {
-			$data_array[] = $farmers;
-		}
-
-		$fp = fopen('farmers-data.json', 'w'); 
-		fwrite($fp, json_encode($data_array)); 
-		if(!fwrite($fp, json_encode($data_array))){
-			die('Error : File Not Opened. ' . mysql_error());
-		} else {
-			echo "Data Retrieved Successully!";
-		}
-		fclose($fp); 
-		
-		mysql_close($db);
-	}

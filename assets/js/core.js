@@ -16,6 +16,13 @@ let hexToRgba = function(hex, opacity) {
  *
  */
 $(document).ready(function() {
+
+  navigator.serviceWorker && navigator.serviceWorker
+    .register('./service-worker.js')
+    .then(function(registration) {
+      console.log('Excellent, registered with scope: ', registration.scope);
+    });
+    
   /** Constant div card */
   const DIV_CARD = 'div.card';
 

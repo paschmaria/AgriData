@@ -9,22 +9,28 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="Content-Language" content="en" />
-    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta http-equiv="Content-Language" content="en"/>
     <meta name="theme-color" content="#817729">
+    <meta name="msapplication-TileColor" content="#817729">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Agridata">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
-    <link rel="icon" href="assets/images/favico.ico" type="image/x-icon"/>
+    <meta name="application-name" content="Agridata">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-precomposed.png">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="manifest" href="./site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <title>Verde - Agricultural Extension and Analytics</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script src="./assets/js/require.min.js"></script>
+    <script src="./require.min.js"></script>
     <script>
       setTimeout(hideURLbar, 0);
       function hideURLbar(){
@@ -35,13 +41,8 @@
       });
     </script>
     <!-- Dashboard Core -->
-    <link href="./assets/css/dashboard.css" rel="stylesheet" />
-    <script src="./assets/js/dashboard.js"></script>
-    <!-- c3.js Charts Plugin -->
-    <link href="./assets/plugins/charts-c3/plugin.css" rel="stylesheet" />
-    <script src="./assets/plugins/charts-c3/plugin.js"></script>
-    <!-- Skycons -->
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/skycons/1396634940/skycons.min.js'></script>
+    <link href=".//dashboard.css" rel="stylesheet" />
+    <script src="./dashboard.js"></script>
   </head>
   <body class="">
     <div class="page">
@@ -49,8 +50,8 @@
         <div class="header py-4">
           <div class="container">
             <div class="d-flex">
-              <a class="header-brand" href="./dashboard">
-                <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
+              <a class="header-brand"  href="./register-farmer.php">
+                <img src="./logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
                 <div class="dropdown d-none d-md-flex">
@@ -60,7 +61,6 @@
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                     <a href="#" class="dropdown-item d-flex">
-                      <!-- <span class="avatar mr-3 align-self-center" style="background-image: url(demo/faces/male/41.jpg)"></span> -->
                       <div>
                         <p>New farmer signed on - <strong>Musa Abdullahi</strong></p>
                         <div class="small text-muted">10 minutes ago</div>
@@ -111,13 +111,7 @@
                       <span class="float-right"><span class="badge badge-primary">6</span></span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
-                    <!-- <a class="dropdown-item" href="#">
-                      <i class="dropdown-icon fe fe-send"></i> Message
-                    </a> -->
-                    <div class="dropdown-divider"></div>
-                    <!-- <a class="dropdown-item" href="#">
-                      <i class="dropdown-icon fe fe-help-circle"></i> Need help?
-                    </a> -->
+                    <div class="dropdown-divider"></div
                     <a class="dropdown-item" href="register-farmer.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
@@ -204,7 +198,7 @@
                             </div>
                             <div class="form-group m-0" style="height: calc(100% - 26px);">
                               <label for="farmer-pic-input" id="farmer-pic-wrapper" class="m-0">
-                                <img src="./assets/images/image.png" alt="" class="img-fluid camera">
+                                <img src="./image.png" alt="" class="img-fluid camera">
                                 <div id="picPreview" class="p-1" style="height: inherit;"></div>
                               </label>
                               <input type="file" name="farmer_pic" id="farmer-pic-input" onchange="getPicture(this.files);" accept="image/*" required>
@@ -626,71 +620,6 @@
                     <button type="submit" class="btn btn-primary" id="farmerBtn" name="register_farmer">Register</button>
                   </div>
                 </form>
-                <!-- <script>
-                  var form = document.querySelector("form.card"),
-                   farmPic = document.querySelector("#farmer-farm-input"),
-                 farmerPic = document.querySelector("#farmer-pic-input"),
-                 farmerBtn = document.querySelector("#farmeBtn");
-                 
-                  farmerBtn.onclick = function (e) {
-                    const cloudName = '';
-                    const unsignedUploadPreset = '';
-                    console.log(e);
-                    e.preventDefault();
-                    var file = farmerPic.files[0];
-
-                    // Upload file(s) to Cloudinary
-                    // Create the XHR object.
-                    function createCORSRequest(method, url) {
-                      var xhr = new XMLHttpRequest();
-                      if ("withCredentials" in xhr) {
-                        // XHR for Chrome/Firefox/Opera/Safari.
-                        xhr.open(method, url, true);
-                        // xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                      } else if (typeof XDomainRequest != "undefined") {
-                        // XDomainRequest for IE.
-                        xhr = new XDomainRequest();
-                        xhr.open(method, url);
-                        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                      } else {
-                        // CORS not supported.
-                        xhr = null;
-                      }
-                      return xhr;
-                    }
-                    
-                    var url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
-
-                    // Make CORS Request
-                    function makeCorsRequest() {
-                      var xhr = createCORSRequest('POST', url);
-                      var fd = new FormData();
-                      if (!xhr) {
-                        alert('CORS not supported');
-                        return;
-                      }
-
-                      // Response handlers.
-                      xhr.onreadystatechange = function () {
-                        if (this.readyState === 4) {
-                          if (this.status === 200) {
-                            var response = JSON.parse(this.responseText);
-                            console.log(response);
-                          } else {
-                            console.log("Unable to retrieve response");
-                          }
-                        }
-                      };
-                      fd.append('upload_preset', unsignedUploadPreset);
-                      fd.append('tags', 'farmer');
-                      fd.append('file', file);
-                      // console.log(fd);
-                      xhr.send(fd);
-                    }
-                    makeCorsRequest();
-                    form.submit();
-                  }
-                </script> -->
               </div>
             </div>
           </div>

@@ -12,20 +12,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="Content-Language" content="en" />
-    <meta name="msapplication-TileColor" content="#2d89ef">
+    <meta http-equiv="Content-Language" content="en"/>
     <meta name="theme-color" content="#817729">
+    <meta name="msapplication-TileColor" content="#817729">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Agridata">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
-    <link rel="icon" href="assets/images/favico.ico" type="image/x-icon"/>
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/favico.ico" />
+    <meta name="application-name" content="Agridata">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-precomposed.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="manifest" href="./site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
     <title>Verde - Agricultural Extension and Analytics</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script src="./assets/js/require.min.js"></script>
+    <script src="./require.min.js"></script>
     <script>
       setTimeout(hideURLbar, 0);
       function hideURLbar(){
@@ -37,16 +42,8 @@
       
     </script>
     <!-- Dashboard Core -->
-    <link href="./assets/css/dashboard.css" rel="stylesheet" />
-    <script src="./assets/js/dashboard.js"></script>
-    <!-- c3.js Charts Plugin -->
-    <link href="./assets/plugins/charts-c3/plugin.css" rel="stylesheet" />
-    <script src="./assets/plugins/charts-c3/plugin.js"></script>
-    <!-- Google Maps Plugin -->
-    <link href="./assets/plugins/maps-google/plugin.css" rel="stylesheet" />
-    <script src="./assets/plugins/maps-google/plugin.js"></script>
-    <!-- Input Mask Plugin -->
-    <script src="./assets/plugins/input-mask/plugin.js"></script>
+    <link href=".//dashboard.css" rel="stylesheet" />
+    <script charset="utf-8" async src="./dashboard.js"></script>
   </head>
   <body class="" style="overflow-x: hidden;">
     <div class="page">
@@ -54,8 +51,8 @@
         <div class="header py-4">
           <div class="container">
             <div class="d-flex">
-              <a class="header-brand" href="./dashboard">
-                <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
+              <a class="header-brand" href="./register-farmer.php">
+                <img src="./logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
                 <div class="dropdown d-none d-md-flex">
@@ -359,8 +356,8 @@
                     function displayData(age, edu, land, house, gender) {
                         var ctx = $('#genderChart')
                           genderChart,
-                          male = gender.filter(x => x === "Male").length,
-                          female = gender.filter(x => x === "Female").length;
+                          male = gender.filter(x => x === "male").length,
+                          female = gender.filter(x => x === "female").length;
                         
                         genderChart = new Chart(ctx, {
                           type: 'pie',
@@ -435,7 +432,7 @@
                             landObjData.push({
                               x: parseFloat(k),
                               y: landObj[k].length,
-                              r: (landObj[k].length/land.length)*50
+                              r: Math.round((landObj[k].length/land.length)*100)
                             })
                           }
                         }
@@ -445,7 +442,7 @@
                           type: 'bubble',
                           data: {
                             datasets: [{
-                              label: "% of Farm Land Area",
+                              label: "% of Farmers per Land Area",
                               // x represents av. farm size, y represents no of farmers, and r is the radius of the circle whose diameter represents the percentage of farm land within this category
                               data: landObjData,
                               backgroundColor: [
@@ -486,7 +483,7 @@
                               xAxes: [{
                                 scaleLabel: {
                                   display: true,
-                                  labelString: "Av. Land Holdings"
+                                  labelString: "Size of Land Holdings (hectares)"
                                 }
                               }]
                             },
@@ -637,10 +634,8 @@
                       }
                       return xhr;
                     }
-                     // ID of the Google Spreadsheet
-                    var spreadsheetID = "1aZ8aYMpnsVpB6E0iOS5v_eX6sCloxLYlIvyJJoscurA";
-                    
-                    var url = "https://spreadsheets.google.com/feeds/list/" + spreadsheetID + "/1/public/values?alt=json";
+
+                    var url = "./farmer-data.php";
                     
                     // Get date of birth
                     function DOB(dob) {
@@ -654,7 +649,8 @@
                     
                     // Farm size - acres to hectares converter
                     function ath(a_size) {
-                      var h_size = parseFloat(Math.round(0.4 * a_size));
+                      var land = a_size.match(/\d+/)[0];
+                      var h_size = parseFloat(Math.round(0.4 * land));
                       return h_size;
                     }
                     
@@ -670,21 +666,20 @@
                       xhr.onreadystatechange = function() {
                         if (this.readyState === 4) {
                           if (this.status === 200) {
-                            var data = JSON.parse(this.responseText),
-                                entry = data.feed.entry,
+                            var farmerData = JSON.parse(this.responseText),
                               ageArr = [],
                               eduArr = [],
                               landArr = [],
                             houseArr = [],
                             genderArr = [];
                             
-                            console.log(entry);
-                            $(entry).each(function(){
-                              var age = DOB(this.gsx$dateofbirth.$t);
-                              var edu = this.gsx$highestlevelofeducation.$t;
-                              var land = ath(this.gsx$totallandareaacres.$t);
-                              var house = this.gsx$familysize.$t;
-                              var gender = this.gsx$gender.$t;
+                            console.log(farmerData);
+                            farmerData.forEach(data => {
+                              var age = DOB(data.date_of_birth);
+                              var edu = data.education;
+                              var land = ath(data.land_area);
+                              var house = data.family_size;
+                              var gender = data.gender;
                               ageArr.push(age);
                               eduArr.push(edu);
                               landArr.push(land)
