@@ -1,7 +1,7 @@
 <?php 
   include('functions.php');
   if(!$_SESSION['user']){ 
-      header("Location: ./login"); 
+      header("Location: ./login.php"); 
       exit; 
   }
 ?>
@@ -9,13 +9,13 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta http-equiv="Content-Language" content="en"/>
     <meta name="theme-color" content="#817729">
     <meta name="msapplication-TileColor" content="#817729">
-    <meta name="msapplication-TileImage" content="./mstile-144x144.png">
+    <meta name="msapplication-TileImage" content="/mstile-144x144.png">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Agridata">
@@ -25,12 +25,12 @@
     <meta name="application-name" content="Agridata">
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-precomposed.png">
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
-    <link rel="manifest" href="../site.webmanifest">
+    <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
     <title>Verde - Agricultural Extension and Analytics</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script src="./require.min.js"></script>
+    <script src="./assets/js/require.min.js"></script>
     <script>
       setTimeout(hideURLbar, 0);
       function hideURLbar(){
@@ -42,8 +42,8 @@
       
     </script>
     <!-- Dashboard Core -->
-    <link href=".//dashboard.css" rel="stylesheet" />
-    <script src="./dashboard.js"></script>
+    <link href="./assets/css/dashboard.css" rel="stylesheet" />
+    <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
   </head>
   <body class="">
     <div class="page">
@@ -52,7 +52,7 @@
           <div class="container">
             <div class="d-flex">
               <a class="header-brand"  href="./register-farmer.php">
-                <img src="./logo.png" class="header-brand-img" alt="[VERDE]">
+                <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
                 <div class="dropdown d-none d-md-flex">
@@ -114,12 +114,12 @@
                         ?>
                       </span>
                       <small class="text-muted d-block mt-1">
-                        <?php echo ucfirst($_SESSION['user']['user_type']); ?> -->
+                        <?php echo ucfirst($_SESSION['user']['user_type']); ?>
                       </small>
                     </span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a class="dropdown-item" href="./profile">
+                    <a class="dropdown-item" href="./profile.php">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#">
@@ -136,7 +136,7 @@
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="../login.html">
+                    <a class="dropdown-item" href="./reports.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -160,7 +160,7 @@
                 </form>
               </div>
               <div class="col-lg order-lg-first">
-              <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
+                <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item">
                     <a href="./register-farmer.php" class="nav-link"><i class="fe fe-user-plus"></i> Register Farmer</a>
                   </li>
@@ -184,33 +184,34 @@
                     <a href="./reports.php" class="nav-link active"><i class="fe fe-file-text"></i> Get Reports</a>
                   </li>
                 </ul>
+              </div>
             </div>
           </div>
         </div>
         <div class="my-3 my-md-5">
-            <div class="container">
-                <div class="row">
-                  <div class="col-md-3">
-                    <h3 class="page-title mb-5">PDF Reports</h3>
-                    <div>
-                      <!-- <div class="list-group list-group-transparent mb-0">
-                        <a href="./market-report.html" class="list-group-item list-group-item-action d-flex align-items-center">
-                          <span class="icon mr-3"><i class="fe fe-book"></i></span>Market Report
-                        </a>
-                      </div> -->
-                      <div class="mt-6 mb-6">
-                        <a href="./reports" class="btn btn-secondary btn-block">Generate PDF Reports</a>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-9">
-                      <div class="card">
-                          <div class="card-head"></div>
-                          <div class="card-body"></div>
-                      </div>
+          <div class="container">
+            <div class="row">
+              <div class="col-md-3">
+                <h3 class="page-title mb-5">PDF Reports</h3>
+                <div>
+                  <!-- <div class="list-group list-group-transparent mb-0">
+                    <a href="./market-report.html" class="list-group-item list-group-item-action d-flex align-items-center">
+                      <span class="icon mr-3"><i class="fe fe-book"></i></span>Market Report
+                    </a>
+                  </div> -->
+                  <div class="mt-6 mb-6">
+                    <a href="./reports" class="btn btn-secondary btn-block">Generate PDF Reports</a>
                   </div>
                 </div>
+              </div>
+              <div class="col-md-9">
+                <div class="card">
+                  <div class="card-head"></div>
+                  <div class="card-body"></div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
       </div>
       <footer class="footer">

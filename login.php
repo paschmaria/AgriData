@@ -17,14 +17,14 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="application-name" content="Agridata">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-precomposed.png">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-precomposed.png">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
     <title>Verde - Agricultural Extension and Analytics</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script src="./require.min.js"></script>
+    <script src="./assets/js/require.min.js"></script>
     <script>
       setTimeout(hideURLbar, 0);
       function hideURLbar(){
@@ -36,8 +36,8 @@
       
     </script>
     <!-- Dashboard Core -->
-    <link href=".//dashboard.css" rel="stylesheet" />
-    <script charset="utf-8" async src="./dashboard.js"></script>
+    <link href="./assets/css/dashboard.css" rel="stylesheet" />
+    <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
   </head>
   <body class="">
     <div class="page">
@@ -47,10 +47,10 @@
             <div class="col col-login mx-auto">
               <div class="text-center mb-6">
                 <a href="./">
-                  <img src="./logo.png" class="h-6" alt="[VERDE]">
+                  <img src="./assets/images/logo.png" class="h-6" alt="[VERDE]">
                 </a>
               </div>
-              <form class="card" action="./login.php" method="post">
+              <form class="card" action="./login.php.php" method="post">
                 <div class="card-body p-6">
                   <h3 class="card-title text-center">Welcome</h3>
                   <div class="form-group">

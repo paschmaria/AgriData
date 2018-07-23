@@ -1,7 +1,7 @@
 <?php 
   include('functions.php');
   if(!$_SESSION['user']){ 
-      header("Location: ./login"); 
+      header("Location: ./login.php"); 
       exit; 
   }
 ?>
@@ -23,14 +23,14 @@
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="application-name" content="Agridata">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-precomposed.png">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-precomposed.png">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
     <title>Verde - Agricultural Extension and Analytics</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script src="./require.min.js"></script>
+    <script src="./assets/js/require.min.js"></script>
     <script>
       setTimeout(hideURLbar, 0);
       function hideURLbar(){
@@ -42,8 +42,8 @@
       
     </script>
     <!-- Dashboard Core -->
-    <link href=".//dashboard.css" rel="stylesheet" />
-    <script src="./dashboard.js"></script>
+    <link href="./assets/css/dashboard.css" rel="stylesheet" />
+    <script src="./assets/js/dashboard.js"></script>
   </head>
   <body class="">
     <div class="page">
@@ -52,7 +52,7 @@
           <div class="container">
             <div class="d-flex">
               <a class="header-brand"  href="./register-farmer.php">
-                <img src="./logo.png" class="header-brand-img" alt="[VERDE]">
+                <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
                 <div class="dropdown d-none d-md-flex">
@@ -105,7 +105,7 @@
                     </span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a class="dropdown-item active" href="./profile">
+                    <a class="dropdown-item active" href="./profile.php">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#">
@@ -122,7 +122,7 @@
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="../login.html">
+                    <a class="dropdown-item" href="profile.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
