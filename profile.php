@@ -51,7 +51,7 @@
         <div class="header py-4">
           <div class="container">
             <div class="d-flex">
-              <a class="header-brand"  href="./register-farmer.php">
+              <a class="header-brand" href="./forms.php">
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
@@ -147,9 +147,6 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item">
-                    <a href="./register-farmer.php" class="nav-link"><i class="fe fe-user-plus"></i> Register Farmer</a>
-                  </li>
                   <li class="nav-item dropdown">
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
@@ -167,7 +164,10 @@
                     </div>
                   </li> -->
                   <li class="nav-item dropdown">
-                    <a href="./reports.php" class="nav-link"><i class="fe fe-file-text"></i> Get Reports</a>
+                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>

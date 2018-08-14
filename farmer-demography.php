@@ -51,7 +51,7 @@
         <div class="header py-4">
           <div class="container">
             <div class="d-flex">
-              <a class="header-brand" href="./register-farmer.php">
+              <a class="header-brand" href="./forms.php">
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
@@ -160,11 +160,8 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item">
-                    <a href="./register-farmer.php" class="nav-link"><i class="fe fe-user-plus"></i> Register Farmer</a>
-                  </li>
                   <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
                       <a href="./farmer-overview.php" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                       <a href="./farmer-biodata.php" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
@@ -180,7 +177,10 @@
                     </div>
                   </li> -->
                   <li class="nav-item dropdown">
-                    <a href="./reports.php" class="nav-link"><i class="fe fe-file-text"></i> Get Reports</a>
+                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -203,6 +203,9 @@
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Distribution by Location</h3>
+                    <div class="card-options">
+                    <a href="#" class="card-options-fullscreen" data-toggle="card-fullscreen" title="Toggle Fullscreen"><i class="fe fe-maximize"></i></a>
+                    </div>
                   </div>
                   <div class="card-body">
                     <div class="dimmer active">
@@ -443,7 +446,7 @@
                           data: {
                             datasets: [{
                               label: "% of Farmers per Land Area",
-                              // x represents av. farm size, y represents no of farmers, and r is the radius of the circle whose diameter represents the percentage of farm land within this category
+                              // x represents av. farm size, y represents no of farmers, and r is the radius of the circle whose diameter represents the percentage of farmers with land within this category
                               data: landObjData,
                               backgroundColor: [
                                 tabler.colors["orange-lighter"],
@@ -675,6 +678,7 @@
                             
                             console.log(farmerData);
                             farmerData.forEach(data => {
+                              console.log(data);
                               var age = DOB(data.date_of_birth);
                               var edu = data.education;
                               var land = ath(data.land_area);

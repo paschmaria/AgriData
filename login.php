@@ -50,7 +50,7 @@
                   <img src="./assets/images/logo.png" class="h-6" alt="[VERDE]">
                 </a>
               </div>
-              <form class="card" action="./login.php.php" method="post">
+              <form class="card" action="./login.php" method="post">
                 <div class="card-body p-6">
                   <h3 class="card-title text-center">Welcome</h3>
                   <div class="form-group">
@@ -75,7 +75,7 @@
                 </div>
               </form>
               <div class="text-center text-muted">
-                Don't have account yet? <a href="./register">Register</a>
+                Don't have account yet? <a href="./register.php">Register</a>
               </div>
             </div>
           </div>

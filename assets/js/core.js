@@ -22,6 +22,12 @@ $(document).ready(function() {
     .then(function(registration) {
       console.log('Excellent, registered with scope: ', registration.scope);
     });
+
+  if (!('indexedDB' in window)) {
+    console.log('This browser doesn\'t support IndexedDB');
+    return;
+  }
+  
     
   /** Constant div card */
   const DIV_CARD = 'div.card';

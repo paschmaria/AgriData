@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta http-equiv="Content-Language" content="en"/>
@@ -101,7 +101,7 @@
                         } else if ($_SESSION['user']['user_type'] === 'agent') {
                           echo "A";
                         }
-                      ?>
+                      ?> 
                     </span>
                     <span class="ml-2 d-none d-lg-block">
                       <span class="text-primary">
@@ -111,10 +111,10 @@
                           } else {
                             echo ucfirst($_SESSION['user']['username']);
                           }
-                        ?>  
+                        ?>
                       </span>
                       <small class="text-muted d-block mt-1">
-                        <?php echo ucfirst($_SESSION['user']['user_type']); ?> 
+                        <?php echo ucfirst($_SESSION['user']['user_type']); ?>
                       </small>
                     </span>
                   </a>
@@ -136,7 +136,7 @@
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="./farmer-cropinfo.php?logout='1'">
+                    <a class="dropdown-item" href="./data.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -162,12 +162,12 @@
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
                       <a href="./farmer-overview.php" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                       <a href="./farmer-biodata.php" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
                       <a href="./farmer-demography.php" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
-                      <a href="./farmer-cropinfo.php" class="dropdown-item active"><i class="fe fe-activity"></i> Crop Information</a>
+                      <a href="./farmer-cropinfo.php" class="dropdown-item"><i class="fe fe-activity"></i> Crop Information</a>
                     </div>
                   </li>
                   <!-- <li class="nav-item dropdown">
@@ -178,7 +178,7 @@
                     </div>
                   </li> -->
                   <li class="nav-item dropdown">
-                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                    <a href="./data.php" class="nav-link active"><i class="fe fe-file-text"></i> Data</a>
                   </li>
                   <li class="nav-item">
                     <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
@@ -189,6 +189,34 @@
           </div>
         </div>
         <div class="my-3 my-md-5">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-3">
+                <h3 class="page-title mb-5">Data</h3>
+                <div>
+                  <div class="list-group list-group-transparent mb-0">
+                    <a href="./reports.php" class="list-group-item list-group-item-action d-flex align-items-center">
+                      <span class="icon mr-3"><i class="fe fe-download-cloud"></i></span>Generate Report
+                    </a>
+                  </div>
+                  <div class="list-group list-group-transparent mb-0">
+                    <a href="./export.php" class="list-group-item list-group-item-action d-flex align-items-center active">
+                      <span class="icon mr-3"><i class="fe fe-share"></i></span>Export
+                    </a>
+                  </div>
+                  <div class="mt-6 mb-6">
+                    <a href="./data.php" class="btn btn-secondary btn-block">Show Individual Responses</a>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-9">
+                <div class="card">
+                  <div class="card-head"></div>
+                  <div class="card-body"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <footer class="footer">

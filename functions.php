@@ -71,7 +71,7 @@
 
 			$_SESSION['user'] = getUserById($logged_in_user_id); // put logged in user in session
 			$_SESSION['success']  = "You are now logged in";
-			header('location: ./register-farmer.php');
+			header('location: ./forms.php');
 			exit;
 		}
 	}
@@ -118,7 +118,7 @@
 		login();
 	}
 
-	// call the register_farmer() function if the register farmer btn is clicked
+	// call the register_farmer() function if the Forms btn is clicked
 	if (isset($_POST['register_farmer'])) {
 		register_farmer();
 	}
@@ -152,11 +152,11 @@
 
 					$_SESSION['user'] = $logged_in_user;
 					$_SESSION['success']  = "You are now logged in as Admin";
-					header('location: ./register-farmer.php');		  
+					header('location: ./forms.php');		  
 				}else{
 					$_SESSION['user'] = $logged_in_user;
 					$_SESSION['success']  = "You are now logged in";
-					header('location: ./register-farmer.php');
+					header('location: ./forms.php');
 				}
 			}else {
 				array_push($errors, "Wrong username/password combination");
@@ -215,7 +215,7 @@
 		return $fileNameArr;
 	}
 
-	// Register farmer
+	// Forms
 	function register_farmer(){
 		global $db, $errors, $month, $day, $year, $land_size, $land_unit, $produce_size, $produce_volume;
 
@@ -370,7 +370,7 @@
 		}
 
 		// var_dump($errors);
-		// register farmer if there are no errors in the form
+		// Forms if there are no errors in the form
 		if (count($errors) === 0) {
 			$query = "INSERT INTO farmers (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, user) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user')";
 			// mysqli_query($db, $query);

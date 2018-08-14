@@ -51,7 +51,7 @@
         <div class="header py-4">
           <div class="container">
             <div class="d-flex">
-              <a class="header-brand"  href="./register-farmer.php">
+              <a class="header-brand" href="./forms.php">
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
@@ -136,7 +136,7 @@
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="./reports.php?logout='1'">
+                    <a class="dropdown-item" href="./data.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -161,9 +161,6 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item">
-                    <a href="./register-farmer.php" class="nav-link"><i class="fe fe-user-plus"></i> Register Farmer</a>
-                  </li>
                   <li class="nav-item dropdown">
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
@@ -181,7 +178,10 @@
                     </div>
                   </li> -->
                   <li class="nav-item dropdown">
-                    <a href="./reports.php" class="nav-link active"><i class="fe fe-file-text"></i> Get Reports</a>
+                    <a href="./data.php" class="nav-link active"><i class="fe fe-file-text"></i> Data</a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -192,15 +192,20 @@
           <div class="container">
             <div class="row">
               <div class="col-md-3">
-                <h3 class="page-title mb-5">PDF Reports</h3>
+                <h3 class="page-title mb-5">Data</h3>
                 <div>
-                  <!-- <div class="list-group list-group-transparent mb-0">
-                    <a href="./market-report.html" class="list-group-item list-group-item-action d-flex align-items-center">
-                      <span class="icon mr-3"><i class="fe fe-book"></i></span>Market Report
+                  <div class="list-group list-group-transparent mb-0">
+                    <a href="./reports.php" class="list-group-item list-group-item-action d-flex align-items-center active">
+                      <span class="icon mr-3"><i class="fe fe-download-cloud"></i></span>Generate Report
                     </a>
-                  </div> -->
+                  </div>
+                  <div class="list-group list-group-transparent mb-0">
+                    <a href="./export.php" class="list-group-item list-group-item-action d-flex align-items-center">
+                      <span class="icon mr-3"><i class="fe fe-share"></i></span>Export
+                    </a>
+                  </div>
                   <div class="mt-6 mb-6">
-                    <a href="./reports" class="btn btn-secondary btn-block">Generate PDF Reports</a>
+                    <a href="./data.php" class="btn btn-secondary btn-block">Show Individual Responses</a>
                   </div>
                 </div>
               </div>

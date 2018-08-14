@@ -50,7 +50,7 @@
         <div class="header py-4">
           <div class="container">
             <div class="d-flex">
-              <a class="header-brand"  href="./register-farmer.php">
+              <a class="header-brand" href="./forms.php">
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
@@ -189,7 +189,7 @@
                     </div>
                   </li>
                   <li class="nav-item dropdown">
-                    <a href="./reports" class="nav-link"><i class="fe fe-file-text"></i> Get Reports</a>
+                    <a href="./reports" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
                 </ul>
               </div>

@@ -24,7 +24,7 @@
     <meta name="MobileOptimized" content="320">
     <meta name="application-name" content="Agridata">
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-precomposed.png">
-    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
     <title>Verde - Agricultural Extension and Analytics</title>
@@ -39,11 +39,10 @@
       requirejs.config({
           baseUrl: '.'
       });
-      
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
-    <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
+    <script src="./assets/js/dashboard.js"></script>
   </head>
   <body class="">
     <div class="page">
@@ -55,6 +54,9 @@
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
+                <div class="nav-item d-none d-md-flex">
+                  <a href="#" class="btn btn-sm btn-outline-primary create-form"><i class="fe fe-plus"></i> Create new Form</a>
+                </div>
                 <div class="dropdown d-none d-md-flex">
                   <a class="nav-link icon" data-toggle="dropdown">
                     <i class="fe fe-bell"></i>
@@ -62,7 +64,6 @@
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                     <a href="#" class="dropdown-item d-flex">
-                      <!-- <span class="avatar mr-3 align-self-center" style="background-image: url(demo/faces/male/41.jpg)"></span> -->
                       <div>
                         <p>New farmer signed on - <strong>Musa Abdullahi</strong></p>
                         <div class="small text-muted">10 minutes ago</div>
@@ -101,7 +102,7 @@
                         } else if ($_SESSION['user']['user_type'] === 'agent') {
                           echo "A";
                         }
-                      ?>
+                      ?> 
                     </span>
                     <span class="ml-2 d-none d-lg-block">
                       <span class="text-primary">
@@ -114,7 +115,7 @@
                         ?>  
                       </span>
                       <small class="text-muted d-block mt-1">
-                        <?php echo ucfirst($_SESSION['user']['user_type']); ?> 
+                        <?php echo ucfirst($_SESSION['user']['user_type']); ?>
                       </small>
                     </span>
                   </a>
@@ -129,15 +130,9 @@
                       <span class="float-right"><span class="badge badge-primary">6</span></span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
-                    <!-- <a class="dropdown-item" href="#">
-                      <i class="dropdown-icon fe fe-send"></i> Message
-                    </a> -->
-                    <div class="dropdown-divider"></div>
-                    <!-- <a class="dropdown-item" href="#">
-                      <i class="dropdown-icon fe fe-help-circle"></i> Need help?
-                    </a> -->
-                    <a class="dropdown-item" href="./farmer-cropinfo.php?logout='1'">
-                      <i class="dropdown-icon fe fe-log-out"></i> Sign out
+                    <div class="dropdown-divider"></div
+                    <a class="dropdown-item" href="register-farmer.php?logout='1'">
+                      <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
                   </div>
                 </div>
@@ -153,7 +148,7 @@
             <div class="row align-items-center">
               <div class="col-lg-3 ml-auto">
                 <form class="input-icon my-3 my-lg-0">
-                  <input type="search" class="form-control header-search" placeholder="Search&hellip;" tabindex="1">
+                  <input type="search" class="form-control header-search" placeholder="Search Forms&hellip;" tabindex="1">
                   <div class="input-icon-addon">
                     <i class="fe fe-search"></i>
                   </div>
@@ -161,27 +156,8 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./farmer-overview.php" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./farmer-biodata.php" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./farmer-demography.php" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
-                      <a href="./farmer-cropinfo.php" class="dropdown-item active"><i class="fe fe-activity"></i> Crop Information</a>
-                    </div>
-                  </li>
-                  <!-- <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-send"></i> Push</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./sms" class="dropdown-item"><i class="fe fe-message-square"></i> SMS</a>
-                      <a href="./voice" class="dropdown-item"><i class="fe fe-phone-outgoing"></i> Voice Calls</a>
-                    </div>
-                  </li> -->
-                  <li class="nav-item dropdown">
-                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
-                  </li>
                   <li class="nav-item">
-                    <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
+                    <a href="./forms.php" class="nav-link active"><i class="fe fe-edit-3"></i> Forms</a>
                   </li>
                 </ul>
               </div>
@@ -189,6 +165,46 @@
           </div>
         </div>
         <div class="my-3 my-md-5">
+          <div class="container">
+            <div class="row row-cards row-deck">
+              <div class="col-md-6 col-xl-4">
+                <div class="card" data-form="register-farmer">
+                  <div class="card-status card-status-left bg-primary"></div>
+                  <div class="card-header">
+                    <h3 class="card-title">Farmer's Registration</h3>
+                    <div class="card-options">
+                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-6 col-md-6">
+                        <span class="tag text-uppercase font-weight-bold">published</span>
+                      </div>
+                      <div class="col-6 col-md-6">
+                        <span>0 responses</span>
+                      </div>
+                      <div class="col-6 col-md-6"></div>
+                      <div class="col-6 col-md-6"></div>
+                    </div>
+                  </div>
+                  <div class="card-footer">
+                  <ul class="list-inline m-0 text-right">
+                    <li class="list-inline-item">
+                      <a href="#" class="" title="Add Collaborator"><i class="fe fe-user-plus"></i></a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="./farmer-overview.php" class="" title="Analytics"><i class="fe fe-trending-up"></i></a>
+                    </li>
+                    <li class="list-inline-item">
+                      <a href="./data.php" class="" title="View Data"><i class="fe fe-file-text"></i></a>
+                    </li>
+                  </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <footer class="footer">
@@ -201,5 +217,27 @@
         </div>
       </footer>
     </div>
+    <script>
+      require(['jquery'], function ($) {
+        $('.create-form').on('click', function (e) {
+          e.preventDefault();
+          alert("Sorry, this feature is unavailable at the moment! 😞");
+        });
+        var card = $('.card');
+        card.hover(
+          function () {
+            $(this).addClass('shadow-lg')
+              .css("cursor", "pointer");
+            var form = $(this).data('form');
+            var formURL = `./${form}.php`;
+            $(this).on('click', function () {
+              window.location.href = formURL;
+            })
+          }, function () {
+            $(this).removeClass('shadow-lg');
+          }
+        );
+      })
+    </script>
   </body>
 </html>

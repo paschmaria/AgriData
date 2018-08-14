@@ -53,7 +53,7 @@
         <div class="header py-4">
           <div class="container">
             <div class="d-flex">
-              <a class="header-brand"  href="./register-farmer.php">
+              <a class="header-brand" href="./forms.php">
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
@@ -169,11 +169,8 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item">
-                    <a href="./register-farmer.php" class="nav-link"><i class="fe fe-user-plus"></i> Register Farmer</a>
-                  </li>
                   <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
                       <a href="./farmer-overview.php" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                       <a href="./farmer-biodata.php" class="dropdown-item active"><i class="fe fe-file-text"></i> Bio-data</a>
@@ -189,7 +186,10 @@
                     </div>
                   </li> -->
                   <li class="nav-item dropdown">
-                    <a href="./reports.php" class="nav-link"><i class="fe fe-file-text"></i> Get Reports</a>
+                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -210,7 +210,7 @@
                   <span class="input-icon-addon">
                     <i class="fe fe-search"></i>
                   </span>
-                  <input type="text" class="form-control w-10" placeholder="Search farmers">
+                  <input type="text" id="nameSearch" class="form-control w-10" placeholder="Search farmers by name...">
                 </div>
               </div>
             </div>
@@ -219,7 +219,7 @@
                 <div class="dimmer active">
                   <div class="loader"></div>
                   <div class="dimmer-content">
-                    <table class="table table-hover table-outline table-vcenter text-nowrap card-table">
+                    <table id="bioTable" class="table table-hover table-outline table-vcenter text-nowrap card-table">
                       <thead>
                         <tr>
                           <th class="text-center w-1">
@@ -244,8 +244,8 @@
               </div>
               <script>
                 require(['jquery'], function ($) {
-                  $(document).ready(function () {
-                    // Create the XHR object.
+                  $(function() {
+                     // Create the XHR object.
                     function createCORSRequest(method, url) {
                       var xhr = new XMLHttpRequest();
                       if ("withCredentials" in xhr) {
@@ -253,7 +253,7 @@
                         xhr.open(method, url, true);
                       } else if (typeof XDomainRequest != "undefined") {
                         // XDomainRequest for IE.
-                        xhr = new XDomainRequest();
+                        xhr = new XDomainRequest();     
                         xhr.open(method, url);
                       } else {
                         // CORS not supported.
@@ -261,18 +261,8 @@
                       }
                       return xhr;
                     }
-                    // ID of the Google Spreadsheet
-                    var spreadsheetID = "1aZ8aYMpnsVpB6E0iOS5v_eX6sCloxLYlIvyJJoscurA";
 
-                    var url =
-                      `https://spreadsheets.google.com/feeds/list/${spreadsheetID}/1/public/values?alt=json`;
-
-                    // Get picture
-                    function getPic(url) {
-                      var picId = (url.match(/[-\w]{25,}/))[0];
-                      var picURL = `https://drive.google.com/thumbnail?authuser=0&sz=w320&id=${picId}`;
-                      return picURL;
-                    }
+                    var url = "./farmer-data.php";
 
                     // Get date of birth
                     function DOB(dob) {
@@ -288,7 +278,7 @@
                     function DOR(d) {
                       var fullDate = new Date(d);
                       var regMonth = fullDate.toString().split(' ')[1];
-                      var regDay = fullDate.getDay();
+                      var regDay = fullDate.getDay()+1;
                       var regYear = fullDate.getFullYear();
                       return `${regMonth} ${regDay}, ${regYear}`;
                       // console.log(regDay);
@@ -296,14 +286,17 @@
 
                     // Farm size - acres to hectares converter
                     function ath(a_size) {
-                      var h_size = parseFloat(Math.round(0.4 * a_size));
+                      var land = a_size.match(/\d+/)[0];
+                      var h_size = parseFloat(Math.round(0.4 * land));
                       return h_size;
                     }
 
                     // Display secondary phone number
                     function sph(num) {
-                      if (num) {
-                        return `, 0${num}`;
+                      if (num !== "") {
+                        return `, ${num}`;
+                      } else {
+                        return "";
                       }
                     }
 
@@ -323,52 +316,44 @@
 
                       // Response handlers.
                       xhr.onreadystatechange = function () {
+                        var tbody = $('.results');
                         if (this.readyState === 4) {
                           if (this.status === 200) {
-                            var data = JSON.parse(this.responseText);
-                            var entry = data.feed.entry;
-                            console.log(entry);
-                            $(entry).each(function () {
-                              $('.results').prepend(`
+                            var farmerData = JSON.parse(this.responseText),
+                                   userUrl;
+
+                            farmerData.map(data => {
+                              tbody.prepend(`
                                 <tr>
                                   <td class="text-center">
-                                    <div class="avatar d-block" style="background-image: url(${getPic(this.gsx$pictureoffarmer.$t)})">
+                                    <div class="avatar d-block" style="background-image: url(${data.farmer_pic})">
                                     </div>
                                   </td>
                                   <td>
-                                    <p class="m-0">${this.gsx$firstname.$t} ${this.gsx$lastname.$t}</p>
+                                    <p class="m-0">${data.firstname} ${data.lastname}</p>
                                     <div class="small text-muted">
-                                      Registered: ${DOR(this.title.$t)}
+                                      Registered: ${DOR(data.date_of_registration)}
                                     </div>
                                   </td>
                                   <td>
-                                    <div>${this.gsx$state.$t}</div>
+                                    <div>${data.state}</div>
                                   </td>
                                   <td>
-                                    <div>${this.gsx$localgovernmentarealga.$t}</div>
+                                    <div>${data.lga}</div>
                                   </td>
                                   <td>
-                                    <div>${this.gsx$townorvillage.$t}</div>
+                                    <div>${data.town}</div>
                                   </td>
                                   <td>
-                                    <div class="clearfix">
-                                      <div class="float-left">
-                                        <strong>${ath(this.gsx$totallandareaacres.$t)}</strong>
-                                      </div>
-                                      <div class="float-right">
-                                        <small class="text-muted">10%</small>
-                                      </div>
-                                    </div>
-                                    <div class="progress progress-xs">
-                                      <div class="progress-bar bg-yellow" role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>  
+                                    <div class="text-center">
+                                      <strong>${ath(data.land_area)}</strong>
                                   </td>
                                   <td>
-                                      0${this.gsx$primaryphonenumber.$t}${sph(this.gsx$secondaryphonenumberifavailable.$t)}
+                                      ${data.phone_primary}${sph(data.phone_secondary)}
                                   </td>
                                   <td class="text-center">
-                                    <div class="mx-auto chart-circle chart-circle-xs" data-value="${DOB(this.gsx$dateofbirth.$t)/100}" data-thickness="3" data-color="blue"><canvas width="40" height="40"></canvas>
-                                      <div class="chart-circle-value">${DOB(this.gsx$dateofbirth.$t)}</div>
+                                    <div class="mx-auto chart-circle chart-circle-xs" data-value="${DOB(data.date_of_birth)/100}" data-thickness="3" data-color="blue"><canvas width="40" height="40"></canvas>
+                                      <div class="chart-circle-value">${DOB(data.date_of_birth)}</div>
                                     </div>
                                   </td>
                                   <td class="text-center">
@@ -380,22 +365,44 @@
                                     </div>
                                   </td>
                                 </tr>
-                              `);
+                              `);  
                               
-                              $(".dimmer").removeClass("active");
-                              
-                              var userUrl = this.id.$t;
+                              userUrl = data.id;
                               var a = document.getElementById('navigator');
-                              a.href = `./farmer-profile.php?${navigateTo(userUrl)}`;
+                              a.href = `./farmer-profile.php?${userUrl}`;
                             });
+                            $(".dimmer").removeClass("active");
+                              
                           } else {
                             console.log("Unable to retrieve data");
+                            tbody.prepend()
                           }
                         }
                       };
                       xhr.send();
                     }
                     makeCorsRequest();
+
+                    // Search for names 
+                    var input, filter, table, tr, td, i;
+                    input = document.getElementById("nameSearch");
+                    input.onkeyup = function() {
+                      filter = this.value.toUpperCase();
+                      table = document.getElementById("bioTable");
+                      tr = table.getElementsByTagName("tr");
+
+                      // Loop through all table rows, and hide those who don't match the search query
+                      for (i = 0; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td")[1];
+                        if (td) {
+                          if (td.firstElementChild.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                          } else {
+                            tr[i].style.display = "none";
+                          }
+                        } 
+                      }
+                    }
                   })
                 })
               </script>

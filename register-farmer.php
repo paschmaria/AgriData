@@ -50,7 +50,7 @@
         <div class="header py-4">
           <div class="container">
             <div class="d-flex">
-              <a class="header-brand"  href="./register-farmer.php">
+              <a class="header-brand" href="./forms.php">
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
@@ -84,7 +84,23 @@
                 </div>
                 <div class="dropdown">
                   <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
-                    <span class="avatar avatar-blue">PT</span>
+                    <span class="avatar avatar-blue">
+                      <?php
+                        $firstname = $_SESSION['user']['firstname'];
+                        $lastname = $_SESSION['user']['lastname'];
+
+                        if ($firstname) {
+                          $words = explode(" ", '$firstname $lastname');
+                          $initials = null;
+                          foreach ($words as  $w) {
+                            $initials .= $w[0];
+                          }
+                          echo $initials;
+                        } else if ($_SESSION['user']['user_type'] === 'agent') {
+                          echo "A";
+                        }
+                      ?> 
+                    </span>
                     <span class="ml-2 d-none d-lg-block">
                       <span class="text-primary">
                         <?php 
@@ -137,9 +153,6 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item">
-                    <a href="./register-farmer.php" class="nav-link active"><i class="fe fe-user-plus"></i> Register Farmer</a>
-                  </li>
                   <li class="nav-item dropdown">
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
@@ -157,7 +170,10 @@
                     </div>
                   </li> -->
                   <li class="nav-item dropdown">
-                    <a href="./reports.php" class="nav-link"><i class="fe fe-file-text"></i> Get Reports</a>
+                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -168,7 +184,8 @@
           <div class="container">
             <div class="row">
               <div class="col-12">
-                <form action="./register-farmer.php" method="POST" class="card" enctype="multipart/form-data">
+                <!-- <div class="alert alert-danger" role="alert"></div> -->
+                <form action="./register-farmer.php" method="POST" class="card" id="farmerForm" enctype="multipart/form-data">
                   <div class="card-header">
                     <h3 class="card-title">Register New Farmer</h3>
                   </div>
@@ -457,8 +474,8 @@
                         <h3>Field Information</h3>
                         <div class="form-group">
                           <label class="form-label">Location<span class="form-required">*</span></label>
-                          <input type="number" id="longitude" class="form-control" placeholder="Longitude" name="farmer_longitude" step="0.0000001" required>
-                          <input type="number" id="latitude" class="form-control mt-3" placeholder="Latitude" name="farmer_latitude" step="0.0000001" required>
+                          <input type="number" id="longitude" class="form-control" placeholder="Longitude" name="farmer_longitude" step="0.0000001" >
+                          <input type="number" id="latitude" class="form-control mt-3" placeholder="Latitude" name="farmer_latitude" step="0.0000001" >
                         </div>
                         <div class="mb-3">
                           <button type="button" id="farmLocation" class="btn btn-primary" onclick="getLocation();">Get Location</button>
@@ -530,8 +547,10 @@
                             var preview = document.querySelector("#imagesPreview");
                             for (var i = 0; i < files.length; i++) {
                               var file = files[i];
-                              
-                              // if (!file.type.startsWith('image/')){ continue }
+                              if (i > 3) {
+                                alert("You can only upload a maximum of 4 files!");
+                                return false;
+                              }
                               
                               var img = document.createElement("img"),
                                 close = document.createElement("span"),
@@ -543,6 +562,11 @@
                               li.appendChild(img);
                               li.appendChild(close);
                               preview.appendChild(li);
+
+                              // var picCount = preview.childElementCount;
+                              // if (picCount <= 3) {
+                              //   preview.appendChild(li);
+                              // }
                               
                               var reader = new FileReader();
                               reader.onload = (function(myImg) {
@@ -639,5 +663,72 @@
     <script src="./assets/js/lga_data.js"></script>
     <!-- LGA js -->
     <script src="./assets/js/lga.js"></script>
+    <script>
+      require(['jquery'], function ($) {
+        var sID = "1ONcoQNAxfJzf8Wia2WsBqrPZWslEQ8k9WM5Ud3-ZXFc";
+        var url =`https://spreadsheets.google.com/feeds/list/${sID}/1/public/values?alt=json`;
+        // var form = $("#farmerForm");
+        // var fBtn = $("#farmerBtn");
+
+        form.on('submit', function(e) {
+          e.preventDefault();
+          var formArr = form.serializeArray();
+
+          fetch(url, {
+            method: "GET",
+            mode: "cors",
+            cache: "no-cache"
+          }).then(function(response) {
+            if (!response.ok) {
+                throw Error(response.statusText);
+            }
+            return response;
+          }).then(function(response) {
+            // form.submit();
+          }).catch(function(error) {
+            window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+            var request = window.indexedDB.open("FarmersDB", 1);
+            var db,tx,store,index;
+
+            request.onupgradeneeded = function (e) {
+              let db  = request.result,
+                store = db.createObjectStore("farmerstore",
+                  {keyPath: "name"}
+                ),
+                index = store.createIndex("value", "value", {unique: false});
+            }
+
+            request.onsuccess = function(e) {
+                console.log('[onsuccess]', request.result);
+                db = request.result;
+                tx = db.transaction(["farmerstore"], "readwrite");
+                store = tx.objectStore("farmerstore");
+                index = store.index("value");
+                db.onerror = function(e) {
+                  e.stopPropagation();
+                  console.log("[ERROR]", request.errorCode);
+                }
+
+                $(formArr).each(function() {
+                  var request = store.put(this);
+                  request.onsuccess = function (e) {
+                    console.log(e.target.result);
+                  }
+                })
+
+                tx.oncomplete = function() {
+                  db.close();
+                  console.log("Done");
+                }
+            };
+
+            request.onerror = function(e) {
+                console.log('[onerror]', request.error);
+            };
+          });
+        })
+      })
+    </script>
   </body>
 </html>
