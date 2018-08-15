@@ -12,6 +12,7 @@
 	$username = "";
 	$email    = "";
 	$errors   = array(); 
+	$alerts    = array();
 
 	// call the register() function if register button is clicked
 	if (isset($_POST['register'])) {
@@ -25,7 +26,7 @@
 		// receive all input values from the form. 
 		// call the e() function to escape form values
 		$username    =  e($_POST['username']);
-		$email       =  e($_POST['email']);
+		$email       =  e(e_valid($_POST['email']));
 		$password_1  =  e($_POST['password_1']);
 		$password_2  =  e($_POST['password_2']);
 
@@ -44,41 +45,116 @@
 		}
 
 		// first check the database to make sure 
-			// a user does not already exist with the same username and/or email
-			$user_check_query = "SELECT * FROM users WHERE username='$username' OR email='$email' LIMIT 1";
-			$result = mysqli_query($db, $user_check_query);
-			$user = mysqli_fetch_assoc($result);
-			
-			if ($user) { // if user exists
-				if ($user['username'] === $username && $user['email'] === $email) {
-					array_push($errors, "You are already registered!");
-				} else if ($user['email'] === $email && $user['username'] !== $username) {
-					array_push($errors, 'A user with this email exists!');
-				} else if ($user['email'] !== $email && $user['username'] === $username) {
-					array_push($errors, 'Username exists, please use a different username!');
-				}
+		// a user does not already exist with the same username and/or email
+		$user_check_query = "SELECT * FROM users WHERE username='$username' OR email='$email' LIMIT 1";
+		$result = mysqli_query($db, $user_check_query);
+		$user = mysqli_fetch_assoc($result);
+		
+		if ($user) { // if user exists
+			if ($user['username'] === $username && $user['email'] === $email) {
+				array_push($errors, "You are already registered!");
+			} else if ($user['email'] === $email && $user['username'] !== $username) {
+				array_push($errors, 'A user with this email exists!');
+			} else if ($user['email'] !== $email && $user['username'] === $username) {
+				array_push($errors, 'Username exists, please use a different username!');
 			}
+		}
+
+		// create temporary verification code column
+		// function add_hash() {
+		// 	global $db;
+
+		// 	$conn = "SELECT * FROM users WHERE verify_code='$verify_code' LIMIT 1";
+		// 	if (!mysqli_query($db, $conn)) {
+		// 		$query = "ALTER TABLE users
+		// 					ADD COLUMN verify_code VARCHAR(100) NOT NULL AFTER password";
+		// 		mysqli_query($db, $query);
+		// 	}
+		// }
 
 		// register user if there are no errors in the form
 		if (count($errors) == 0) {
 			$password = md5($password_1); //encrypt the password before saving in the database
+			$verify_code = md5(rand(0,1000)); // Generate random 32 character hash and assign it to a local variable.
 
-			$query = "INSERT INTO users (username, email, user_type, password) 
-							VALUES ('$username', '$email', 'agent', '$password')";
-			mysqli_query($db, $query);
-			// get id of the created user
-			$logged_in_user_id = mysqli_insert_id($db);
+			// add_hash();
 
-			$_SESSION['user'] = getUserById($logged_in_user_id); // put logged in user in session
-			$_SESSION['success']  = "You are now logged in";
-			header('location: ./forms.php');
+			$query = "INSERT INTO users (username, email, firstname, lastname, phone, gender, user_type, password, verify_code, address, date_of_birth, bio, education, degree, state, lga) 
+							VALUES ('$username', '$email', '', '', '', '', 'agent', '$password', '$verify_code', '', '1000-01-01', '', '', '', '', '')";
+			if (!mysqli_query($db, $query)) {
+				var_dump(mysqli_error($db));
+			} else {
+				// get id of the created user
+				$logged_in_user_id = mysqli_insert_id($db);
+				$_SESSION['user'] = getUserById($logged_in_user_id); // put logged in user in session
+				$_SESSION['success']  = "You are now logged in";
+				send_email($email, $verify_code);
+
+				// header('location: ./verify-email.php');
+			}
+
 			exit;
 		}
+	}
+	// Send email to our user
+	function send_email($email, $verify_code) {
+		// try {
+		// 	$to = $email;
+		// 	$subject = 'Signup | Verification'; // Give the email a subject 
+		// 	$message = '
+			
+		// 		Thanks for signing up!
+		// 		Your account has been created, please click the link below to activate your account:
+				
+		// 		------------------------
+		// 		https://agridata.plurimustech.ng/login.php?email='.$email.'&hash='.$verify_code.'
+		// 		------------------------
+			
+		// 	'; 
+			
+		// 	$headers = 'From:noreply@plurimustech.ng' . "\r\n"; // Set from headers
+		// 	mail($to, $subject, $message, $headers); // Send mail
+		// } catch (Exception $e) {
+		// 	var_dump('Message: ' .$e->getMessage());
+		// }
+
+		// require("./sendgrid/sendgrid-php.php");
+		// $from = new SendGrid\Email("Example User", "test@example.com");
+		// $subject = "Sending with SendGrid is Fun";
+		// $to = new SendGrid\Email("Example User", "test@example.com");
+		// $content = new SendGrid\Content("text/plain", "and easy to do anywhere, even with PHP");
+		// $mail = new SendGrid\Mail($from, $subject, $to, $content);
+		// $apiKey = getenv('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');
+		// $sg = new \SendGrid($apiKey);
+		// $response = $sg->client->mail()->send()->post($mail);
+		// var_dump($response->statusCode());
+		// var_dump($response->body());
+
+		include("./sendgrid/sendgrid-php.php");
+		$email = new \SendGrid\Mail\Mail(); 
+		$email->setFrom("test@example.com", "Example User");
+		$email->setSubject("Signup | Verification");
+		$email->addTo("test@example.com", "Example User");
+		$email->addContent("text/plain", "and easy to do anywhere, even with PHP");
+		$email->addContent(
+				"text/html", "<strong>and easy to do anywhere, even with PHP</strong>"
+		);
+		$sendgrid = new \SendGrid(getenv('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'));
+		try {
+				$response = $sendgrid->send($email);
+				print $response->statusCode() . "\n";
+				print_r($response->headers());
+				print $response->body() . "\n";
+		} catch (Exception $e) {
+				var_dump('Caught exception: '. $e->getMessage() ."\n");
+		}
+
 	}
 
 	// return user array from their id
 	function getUserById($id){
 		global $db;
+
 		$query = "SELECT * FROM users WHERE id=$id";
 		$result = mysqli_query($db, $query);
 
@@ -86,14 +162,27 @@
 		return $user;
 	}
 
+	// check if email address is valid, i.e. if it matches the format xx@xxx.xxxx
+	function e_valid($email) {
+		global $errors;
+
+		if(!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/", $email)){
+			array_push($errors, "Email is invalid");
+		}else{
+			return $email;
+		}
+	}
+
 	// escape string
 	function e($val){
 		global $db;
+
 		if (isset($val)) {
 			return mysqli_real_escape_string($db, trim($val));
 		}
 	}
 
+	// display error messages
 	function display_error() {
 		global $errors;
 
@@ -103,6 +192,26 @@
 					echo $error .'<br>';
 				}
 			echo '</p>';
+		}
+	}
+
+	// display alert messages
+	function alert_message($message, $type) {
+		global $alerts;
+
+		array_push($alerts,
+		'<div class="alert alert-'. $type .'" role="alert">'
+			. $message .
+		'</div>');
+	}
+
+	function alert() {
+		global $alerts;
+
+		if (count($alerts > 0)) {
+			foreach ($alerts as $alert) {
+				echo $alert;
+			}
 		}
 	}
 
@@ -127,7 +236,7 @@
 	function login(){
 		global $db, $username, $errors;
 
-		// grap form values
+		// grab form values
 		$username = e($_POST['username']);
 		$password = e($_POST['password']);
 

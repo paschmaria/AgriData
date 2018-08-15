@@ -1,11 +1,9 @@
-<?php 
-  include('functions.php');
-?>
+<?php include('verification-config.php') ?>
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta http-equiv="Content-Language" content="en"/>
@@ -39,7 +37,7 @@
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
-    <script src="./assets/js/dashboard.js"></script>
+    <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
   </head>
   <body class="">
     <div class="page">
@@ -52,44 +50,55 @@
                   <img src="./assets/images/logo.png" class="h-6" alt="[VERDE]">
                 </a>
               </div>
-              <form class="card" action="register.php" method="post">
-                <div class="card-body p-6">
-                  <div class="card-title text-center">Create new account</div>
-                  <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-control" name="username" placeholder="What do we call you?" required>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Email address</label>
-                    <input type="email" class="form-control" name="email" placeholder="How do we reach you?" required>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-control" name="password_1" placeholder="Password" required>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" name="password_2" placeholder="Confirm password" required>
-                  </div>
-                  <div class="form-group">
-                    <label class="custom-control custom-checkbox">
-                      <input type="checkbox" class="custom-control-input" required/>
-                      <span class="custom-control-label">I agree to the <a href="./terms.html">terms and conditions</a></span>
-                    </label>
-                  </div>
-                  <div class="form-footer">
-                    <button type="submit" class="btn btn-primary btn-block" name="register">Register</button>
-                  </div>
+              <div class="card">
+                <div class="card-body">
+                  <h4>Hey there, <?php $_SESSION['user']['username'] ?>!</h4>
+                  <p>We just sent a verification email to <span><?php $_SESSION['user']['username'] ?></span>. Simply click the link in the email to finish setting up your AgriData account.</p>
+                  <button type="button" class="btn btn-primary btn-block mt-6" name="resend" onclick="makeCorsRequest()">Resend verification email</button>
                 </div>
-                <?php echo display_error(); ?>
-              </form>
-              <div class="text-center text-muted">
-                Already have account? <a href="./login.php">Log in</a>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <script>
+      function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+          // XHR for Chrome/Firefox/Opera/Safari.
+          xhr.open(method, url, true);
+        } else if (typeof XDomainRequest != "undefined") {
+          // XDomainRequest for IE.
+          xhr = new XDomainRequest();     
+          xhr.open(method, url);
+        } else {
+          // CORS not supported.
+          xhr = null;
+        }
+        return xhr;
+      }
+
+      var url = "./verify-email.php";
+
+      function makeCorsRequest() {
+        var xhr = createCORSRequest('POST', url);
+        if (!xhr) {
+          alert('CORS not supported');
+          return;
+        }
+
+        // Response handlers.
+        xhr.onreadystatechange = function () {
+          var tbody = $('.results');
+          if (this.readyState === 4) {
+            if (this.status === 200) {
+              console.log("Clicked");
+            }
+          }
+        }
+        xhr.send();
+      }
+    </script>
   </body>
 </html>

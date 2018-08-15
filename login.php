@@ -1,4 +1,4 @@
-<?php include('functions.php') ?>
+<?php include('verification-config.php') ?>
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -50,6 +50,7 @@
                   <img src="./assets/images/logo.png" class="h-6" alt="[VERDE]">
                 </a>
               </div>
+              <?php echo alert(); ?>
               <form class="card" action="./login.php" method="post">
                 <div class="card-body p-6">
                   <h3 class="card-title text-center">Welcome</h3>
