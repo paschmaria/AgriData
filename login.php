@@ -1,4 +1,6 @@
-<?php include('verification-config.php') ?>
+<?php 
+  include('verification-config.php');
+?>
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">

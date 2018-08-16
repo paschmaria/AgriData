@@ -60,27 +60,13 @@
 			}
 		}
 
-		// create temporary verification code column
-		// function add_hash() {
-		// 	global $db;
-
-		// 	$conn = "SELECT * FROM users WHERE verify_code='$verify_code' LIMIT 1";
-		// 	if (!mysqli_query($db, $conn)) {
-		// 		$query = "ALTER TABLE users
-		// 					ADD COLUMN verify_code VARCHAR(100) NOT NULL AFTER password";
-		// 		mysqli_query($db, $query);
-		// 	}
-		// }
-
 		// register user if there are no errors in the form
 		if (count($errors) == 0) {
 			$password = md5($password_1); //encrypt the password before saving in the database
 			$verify_code = md5(rand(0,1000)); // Generate random 32 character hash and assign it to a local variable.
 
-			// add_hash();
-
-			$query = "INSERT INTO users (username, email, firstname, lastname, phone, gender, user_type, password, verify_code, address, date_of_birth, bio, education, degree, state, lga) 
-							VALUES ('$username', '$email', '', '', '', '', 'agent', '$password', '$verify_code', '', '1000-01-01', '', '', '', '', '')";
+			$query = "INSERT INTO users (username, email, firstname, lastname, phone, gender, user_type, password, verify_code, verified, address, date_of_birth, bio, education, degree, state, lga) 
+							VALUES ('$username', '$email', '', '', '', '', 'agent', '$password', '$verify_code', 0, '', '1000-01-01', '', '', '', '', '')";
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
 			} else {
@@ -90,7 +76,7 @@
 				$_SESSION['success']  = "You are now logged in";
 				send_email($email, $verify_code);
 
-				// header('location: ./verify-email.php');
+				header('location: ./verify-email.php');
 			}
 
 			exit;
@@ -98,56 +84,36 @@
 	}
 	// Send email to our user
 	function send_email($email, $verify_code) {
-		// try {
-		// 	$to = $email;
-		// 	$subject = 'Signup | Verification'; // Give the email a subject 
-		// 	$message = '
-			
-		// 		Thanks for signing up!
-		// 		Your account has been created, please click the link below to activate your account:
+		require("./sendgrid/sendgrid-php.php");
+		$from = new SendGrid\Email("AgriData Team", "noreply@plurimustech.ng");
+		$subject = "Welcome to AgriData! Activate Your Account";
+		$to = new SendGrid\Email("", $email);
+		$content = new SendGrid\Content("text/html", "
+			<div style='background-color: #f5f7fb; color: #495057;'>
+				<h1>You're almost there!</h1>
+				<br />
+				<p>Your account has been created, please click the button below to activate your account:</p>
+				<br />
+				------------------------------------------------
+				<br />
+				<a href='https://agridata.plurimustech.ng/login.php?hvc=\"'.$verify_code.'\"'>
+					<button type='button' style='padding: 0.75rem; background-color: #817729; -webkit-appearance: button; font-size: 0.8215rem; text-align: center; border-radius: 3px; border: 1px solid #786e21; color: #fff;'>Activate Account</button>
+				</a>
 				
-		// 		------------------------
-		// 		https://agridata.plurimustech.ng/login.php?email='.$email.'&hash='.$verify_code.'
-		// 		------------------------
-			
-		// 	'; 
-			
-		// 	$headers = 'From:noreply@plurimustech.ng' . "\r\n"; // Set from headers
-		// 	mail($to, $subject, $message, $headers); // Send mail
-		// } catch (Exception $e) {
-		// 	var_dump('Message: ' .$e->getMessage());
-		// }
-
-		// require("./sendgrid/sendgrid-php.php");
-		// $from = new SendGrid\Email("Example User", "test@example.com");
-		// $subject = "Sending with SendGrid is Fun";
-		// $to = new SendGrid\Email("Example User", "test@example.com");
-		// $content = new SendGrid\Content("text/plain", "and easy to do anywhere, even with PHP");
-		// $mail = new SendGrid\Mail($from, $subject, $to, $content);
-		// $apiKey = getenv('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');
-		// $sg = new \SendGrid($apiKey);
-		// $response = $sg->client->mail()->send()->post($mail);
-		// var_dump($response->statusCode());
-		// var_dump($response->body());
-
-		include("./sendgrid/sendgrid-php.php");
-		$email = new \SendGrid\Mail\Mail(); 
-		$email->setFrom("test@example.com", "Example User");
-		$email->setSubject("Signup | Verification");
-		$email->addTo("test@example.com", "Example User");
-		$email->addContent("text/plain", "and easy to do anywhere, even with PHP");
-		$email->addContent(
-				"text/html", "<strong>and easy to do anywhere, even with PHP</strong>"
-		);
-		$sendgrid = new \SendGrid(getenv('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'));
-		try {
-				$response = $sendgrid->send($email);
-				print $response->statusCode() . "\n";
-				print_r($response->headers());
-				print $response->body() . "\n";
-		} catch (Exception $e) {
-				var_dump('Caught exception: '. $e->getMessage() ."\n");
-		}
+				<br />
+				<p> or copy the link to your browser:</p>
+				<br />
+				https://agridata.plurimustech.ng/login.php?hvc=".$verify_code."
+				<br />
+				------------------------------------------------
+			</div>
+		");
+		$mail = new SendGrid\Mail($from, $subject, $to, $content);
+		$apiKey = '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';
+		$sg = new \SendGrid($apiKey);
+		$response = $sg->client->mail()->send()->post($mail);
+		var_dump($response->statusCode());
+		var_dump($response->body());
 
 	}
 
