@@ -1,5 +1,5 @@
 <?php 
-  include('verification-config.php');
+  include('functions.php');
   if(!$_SESSION['user']){ 
     header("Location: ./login.php"); 
     exit; 
@@ -61,7 +61,7 @@
                 <div class="card-body">
                   <h4>Hey there, <?php echo ucfirst($_SESSION['user']['username']); ?>!</h4>
                   <p>We just sent an activation link to <span><?php echo $_SESSION['user']['email']; ?></span>. Kindly click the link in the email to finish setting up your AgriData account.</p>
-                  <button type="button" class="btn btn-primary btn-block mt-6" name="resend" onclick="makeCorsRequest()">Didn't get it? Resend</button>
+                  <button type="submit" class="btn btn-primary btn-block mt-6" name="resend">Didn't get it? Resend</button>
                 </div>
               </div>
             </div>

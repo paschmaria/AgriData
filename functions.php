@@ -9,10 +9,15 @@
 	}
 
 	// variable declaration
-	$username = "";
-	$email    = "";
-	$errors   = array(); 
-	$alerts    = array();
+	$username 		= "";
+	$email    		= "";
+	$errors   		= array(); 
+	$alerts    		= array();
+	$project_name = array();
+
+	array_push($project_name, "Register Farmer");
+	array_push($project_name, "Market Prices");
+	array_push($project_name, "Farmer's Survey");
 
 	// call the register() function if register button is clicked
 	if (isset($_POST['register'])) {
@@ -187,6 +192,21 @@
 		unset($_SESSION['user']);
 		header("location: login.php");
 	}
+
+	// call the send_email() function if resend btn is clicked
+	if (isset($_POST['resend'])) {
+		global $db;
+
+		$verify_code = md5(rand(0,1000));
+		$email = $_SESSION['user']['email'];
+		$query = "UPDATE users SET verify_code='$verify_code' WHERE email='$email'";
+		if (!mysqli_query($db, $query)) {
+			var_dump(mysqli_error($db));
+		} else {
+			send_email($email, $verify_code);
+		}
+    
+  }
 
 	// call the login() function if login btn is clicked
 	if (isset($_POST['login'])) {

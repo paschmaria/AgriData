@@ -13,8 +13,3 @@
       alert_message("Account activation link expired! ⚠️", "danger");
     }
   }
-
-  if (isset($_POST['resend'])) {
-    send_email($_SESSION['user']['email']);
-    var_dump($_SESSION['user']['email']);
-  }

@@ -130,7 +130,7 @@
                       <span class="float-right"><span class="badge badge-primary">6</span></span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
-                    <div class="dropdown-divider"></div
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="register-farmer.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
