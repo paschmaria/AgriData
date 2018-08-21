@@ -1,8 +1,20 @@
 <?php 
   include('functions.php');
-  if(!$_SESSION['user']){ 
-      header("Location: ./login.php"); 
-      exit; 
+  $user = $_SESSION['user'];
+  $project_ids = explode(', ', $user['project_id']);
+  if(!$user){ 
+    header("Location: ./login.php"); 
+    exit; 
+  }
+
+  if (isset($_GET['id'])) {
+    if ($user['user_type']!=='administrator' || !in_array(e($_GET['id']), $project_ids, true)) {
+      header('HTTP/1.0 403 Forbidden');
+      header('Location: ./403.html');
+    }
+  } else {
+    header("Location: ./forms.php"); 
+    exit;
   }
 ?>
 
@@ -155,25 +167,24 @@
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown">
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./farmer-overview.php" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./farmer-biodata.php" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./farmer-demography.php" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
-                      <a href="./farmer-cropinfo.php" class="dropdown-item"><i class="fe fe-activity"></i> Crop Information</a>
-                    </div>
-                  </li>
-                  <!-- <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-send"></i> Push</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./sms" class="dropdown-item"><i class="fe fe-message-square"></i> SMS</a>
-                      <a href="./voice" class="dropdown-item"><i class="fe fe-phone-outgoing"></i> Voice Calls</a>
-                    </div>
-                  </li> -->
-                  <li class="nav-item dropdown">
-                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                    <?php if ($_GET['name'] === 'register-farmer') { ?>
+                      <div class="dropdown-menu dropdown-menu-arrow">
+                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
+                        <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
+                      </div>
+                    <?php } elseif ($_GET['name'] === 'market-prices') { ?>
+                      <div class="dropdown-menu dropdown-menu-arrow">
+                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Price Tables</a>
+                      </div>
+                    <?php } ?>
                   </li>
                   <li class="nav-item">
-                    <a href="./collaborate.php" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>
+                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -216,174 +227,6 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td><span class="text-muted">001401</span></td>
-                      <td><a href="invoice.html" class="text-inherit">Design Works</a></td>
-                      <td>
-                        Carlson Limited
-                      </td>
-                      <td>
-                        87956621
-                      </td>
-                      <td>
-                        15 Dec 2017
-                      </td>
-                      <td>
-                        <span class="status-icon bg-success"></span> Paid
-                      </td>
-                      <td>$887</td>
-                      <td class="text-right">
-                        <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                        <div class="dropdown">
-                          <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                        </div>
-                      </td>
-                      <td>
-                        <a class="icon" href="javascript:void(0)">
-                          <i class="fe fe-edit"></i>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">001402</span></td>
-                      <td><a href="invoice.html" class="text-inherit">UX Wireframes</a></td>
-                      <td>
-                        Adobe
-                      </td>
-                      <td>
-                        87956421
-                      </td>
-                      <td>
-                        12 Apr 2017
-                      </td>
-                      <td>
-                        <span class="status-icon bg-warning"></span> Pending
-                      </td>
-                      <td>$1200</td>
-                      <td class="text-right">
-                        <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                        <div class="dropdown">
-                          <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                        </div>
-                      </td>
-                      <td>
-                        <a class="icon" href="javascript:void(0)">
-                          <i class="fe fe-edit"></i>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">001403</span></td>
-                      <td><a href="invoice.html" class="text-inherit">New Dashboard</a></td>
-                      <td>
-                        Bluewolf
-                      </td>
-                      <td>
-                        87952621
-                      </td>
-                      <td>
-                        23 Oct 2017
-                      </td>
-                      <td>
-                        <span class="status-icon bg-warning"></span> Pending
-                      </td>
-                      <td>$534</td>
-                      <td class="text-right">
-                        <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                        <div class="dropdown">
-                          <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                        </div>
-                      </td>
-                      <td>
-                        <a class="icon" href="javascript:void(0)">
-                          <i class="fe fe-edit"></i>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">001404</span></td>
-                      <td><a href="invoice.html" class="text-inherit">Landing Page</a></td>
-                      <td>
-                        Salesforce
-                      </td>
-                      <td>
-                        87953421
-                      </td>
-                      <td>
-                        2 Sep 2017
-                      </td>
-                      <td>
-                        <span class="status-icon bg-secondary"></span> Due in 2 Weeks
-                      </td>
-                      <td>$1500</td>
-                      <td class="text-right">
-                        <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                        <div class="dropdown">
-                          <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                        </div>
-                      </td>
-                      <td>
-                        <a class="icon" href="javascript:void(0)">
-                          <i class="fe fe-edit"></i>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">001405</span></td>
-                      <td><a href="invoice.html" class="text-inherit">Marketing Templates</a></td>
-                      <td>
-                        Printic
-                      </td>
-                      <td>
-                        87956621
-                      </td>
-                      <td>
-                        29 Jan 2018
-                      </td>
-                      <td>
-                        <span class="status-icon bg-danger"></span> Paid Today
-                      </td>
-                      <td>$648</td>
-                      <td class="text-right">
-                        <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                        <div class="dropdown">
-                          <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                        </div>
-                      </td>
-                      <td>
-                        <a class="icon" href="javascript:void(0)">
-                          <i class="fe fe-edit"></i>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td><span class="text-muted">001406</span></td>
-                      <td><a href="invoice.html" class="text-inherit">Sales Presentation</a></td>
-                      <td>
-                        Tabdaq
-                      </td>
-                      <td>
-                        87956621
-                      </td>
-                      <td>
-                        4 Feb 2018
-                      </td>
-                      <td>
-                        <span class="status-icon bg-secondary"></span> Due in 3 Weeks
-                      </td>
-                      <td>$300</td>
-                      <td class="text-right">
-                        <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                        <div class="dropdown">
-                          <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                        </div>
-                      </td>
-                      <td>
-                        <a class="icon" href="javascript:void(0)">
-                          <i class="fe fe-edit"></i>
-                        </a>
-                      </td>
-                    </tr>
                   </tbody>
                 </table>
               </div>

@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta http-equiv="Content-Language" content="en"/>
@@ -24,7 +24,7 @@
     <meta name="MobileOptimized" content="320">
     <meta name="application-name" content="Agridata">
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon-precomposed.png">
-    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
     <title>Verde - Agricultural Extension and Analytics</title>
@@ -39,11 +39,10 @@
       requirejs.config({
           baseUrl: '.'
       });
-      
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
-    <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
+    <script src="./assets/js/dashboard.js"></script>
   </head>
   <body class="">
     <div class="page">
@@ -62,7 +61,6 @@
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                     <a href="#" class="dropdown-item d-flex">
-                      <!-- <span class="avatar mr-3 align-self-center" style="background-image: url(demo/faces/male/41.jpg)"></span> -->
                       <div>
                         <p>New farmer signed on - <strong>Musa Abdullahi</strong></p>
                         <div class="small text-muted">10 minutes ago</div>
@@ -111,7 +109,7 @@
                           } else {
                             echo ucfirst($_SESSION['user']['username']);
                           }
-                        ?>
+                        ?>  
                       </span>
                       <small class="text-muted d-block mt-1">
                         <?php echo ucfirst($_SESSION['user']['user_type']); ?>
@@ -129,15 +127,9 @@
                       <span class="float-right"><span class="badge badge-primary">6</span></span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
-                    <!-- <a class="dropdown-item" href="#">
-                      <i class="dropdown-icon fe fe-send"></i> Message
-                    </a> -->
                     <div class="dropdown-divider"></div>
-                    <!-- <a class="dropdown-item" href="#">
-                      <i class="dropdown-icon fe fe-help-circle"></i> Need help?
-                    </a> -->
-                    <a class="dropdown-item" href="./farmer-overview.php?logout='1'">
-                      <i class="dropdown-icon fe fe-log-out"></i> Sign out
+                    <a class="dropdown-item" href="register-farmer.php?logout='1'">
+                      <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
                   </div>
                 </div>
@@ -159,29 +151,20 @@
                   </div>
                 </form>
               </div>
-              <div class="col-lg order-lg-first">
+              <div class="col-lg order-lg-first <?php if ($_SESSION['user']['user_type']!=='administrator') { ?>d-none d-lg-block<?php } ?>">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                  <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./farmer-overview.php" class="dropdown-item active"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./farmer-biodata.php" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./farmer-demography.php" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
-                      <a href="./farmer-cropinfo.php" class="dropdown-item"><i class="fe fe-activity"></i> Crop Information</a>
+                      <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                      <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Price Tables</a>
                     </div>
                   </li>
-                  <!-- <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-send"></i> Push</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./sms" class="dropdown-item"><i class="fe fe-message-square"></i> SMS</a>
-                      <a href="./voice" class="dropdown-item"><i class="fe fe-phone-outgoing"></i> Voice Calls</a>
-                    </div>
-                  </li> -->
-                  <li class="nav-item dropdown">
-                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
-                  <li class="nav-item">
-                    <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -189,107 +172,30 @@
           </div>
         </div>
         <div class="my-3 my-md-5">
-        <div class="container">
-            <div class="row row-cards row-deck">
-              <div class="col-md-4 col-xl-4">
-                <div class="card">
+          <div class="container">
+            <div class="row">
+              <div class="col-12">
+                <!-- <div class="alert alert-danger" role="alert"></div> -->
+                <form action="./market-price.php" method="POST" class="card" id="priceForm" enctype="multipart/form-data">
                   <div class="card-header">
-                    <h3 class="card-title">Responses</h3>
-                    <div class="card-options">
-                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
-                    </div>
-                  </div>
-                  <div class="card-body text-center">
-                    <span class="display-3"><strong>0</strong></span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4 col-xl-4">
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Collectors</h3>
-                    <div class="card-options">
-                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
-                    </div>
-                  </div>
-                  <div class="card-body text-center">
-                    <span class="display-3"><strong>0</strong></span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-4 col-xl-4">
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Mobile Devices</h3>
-                    <div class="card-options">
-                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
-                    </div>
-                  </div>
-                  <div class="card-body text-center">
-                    <span class="display-3"><strong>0</strong></span>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-12">
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Responses Over Time</h3>
-                    <div class="card-options">
-                      <div class="btn-group btn-group-sm" role="group" aria-label="First group">
-                        <button type="button" class="btn btn-secondary">Day</button>
-                        <button type="button" class="btn btn-secondary">Week</button>
-                        <button type="button" class="btn btn-secondary">Month</button>
-                        <button type="button" class="btn btn-secondary">Quarter</button>
-                      </div>
-                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
-                    </div>
+                    <h3 class="card-title">Register Market Price</h3>
                   </div>
                   <div class="card-body">
-                    <div class="dimmer">
-                      <div class="loader"></div>
-                      <div class="dimmer-content">
-                        <canvas id="responseChart" style="height: 30rem;"></canvas>
+                    <?php echo display_error(); ?>
+                    <div class="row">
+                      <div class="col-lg-6 col-md-6">
+                        
+                      </div>
+                      <div class="col-lg-6 col-md-6">
+                        
                       </div>
                     </div>
                   </div>
-                </div>
+                  <div class="card-footer text-right">
+                    <button type="submit" class="btn btn-primary" id="priceBtn" name="market_price">Submit</button>
+                  </div>
+                </form>
               </div>
-              <script>
-                require(['chart', 'jquery'], function(Chart, $){
-                  $(function() {
-                    function displayData(responses) {
-                      var ctx = $('#responseChart'),
-                        responseChart;
-                      responseChart = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                          datasets: [{
-                            data: [65,59,80,81,56,55,40],
-                            borderColor: tabler.colors["teal-dark"],
-                            fill: false,
-                            lineTension: 0.1
-                          }],
-                          labels: [
-                            "January",
-                            "February",
-                            "March",
-                            "April",
-                            "May",
-                            "June",
-                            "July"
-                          ]
-                        },
-                        options: {
-                          maintainAspectRatio: false,
-                          responsive: true
-                        }
-                      });
-                    }
-
-                    displayData();
-                  })
-                })
-              </script>
             </div>
           </div>
         </div>
@@ -304,5 +210,9 @@
         </div>
       </footer>
     </div>
+    <!-- LGA Data -->
+    <script src="./assets/js/lga_data.js"></script>
+    <!-- LGA js -->
+    <script src="./assets/js/lga.js"></script>
   </body>
 </html>

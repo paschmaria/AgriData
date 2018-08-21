@@ -1,8 +1,20 @@
 <?php 
   include('functions.php');
-  if(!$_SESSION['user']){ 
-      header("Location: ./login.php"); 
-      exit; 
+  $user = $_SESSION['user'];
+  $project_ids = explode(', ', $user['project_id']);
+  if(!$user){ 
+    header("Location: ./login.php"); 
+    exit; 
+  }
+
+  if (isset($_GET['id'])) {
+    if ($user['user_type']!=='administrator' || !in_array(e($_GET['id']), $project_ids, true)) {
+      header('HTTP/1.0 403 Forbidden');
+      header('Location: ./403.html');
+    }
+  } else {
+    header("Location: ./forms.php"); 
+    exit;
   }
 ?>
 
@@ -162,34 +174,26 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item">
-                    <a  href="./register-farmer.php" class="nav-link"><i class="fe fe-home"></i> Dashboard</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./register-farmer" class="nav-link"><i class="fe fe-user-plus"></i> Register A Farmer</a>
-                  </li>
                   <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-users"></i> Farmers</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./farmer-overview" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./farmer-biodata" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./farmer-demography" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
-                      <a href="./farmer-cropinfo" class="dropdown-item"><i class="fe fe-activity"></i> Crop Information</a>
-                    </div>
+                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                    <?php if ($_GET['name'] === 'register-farmer') { ?>
+                      <div class="dropdown-menu dropdown-menu-arrow">
+                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
+                        <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
+                      </div>
+                    <?php } elseif ($_GET['name'] === 'market-prices') { ?>
+                      <div class="dropdown-menu dropdown-menu-arrow">
+                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Price Tables</a>
+                      </div>
+                    <?php } ?>
                   </li>
                   <li class="nav-item">
-                    <a href="./soil-test" class="nav-link"><i class="fe fe-layers"></i> Soil Analysis/Recommendations</a>
+                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
-                  <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-send"></i> Push</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./sms" class="dropdown-item"><i class="fe fe-message-square"></i> SMS</a>
-                      <!-- <a href="./charts" class="dropdown-item">Charts</a> -->
-                      <a href="./voice" class="dropdown-item"><i class="fe fe-phone-outgoing"></i> Voice Calls</a>
-                    </div>
-                  </li>
-                  <li class="nav-item dropdown">
-                    <a href="./reports" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                  <li class="nav-item">
+                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>

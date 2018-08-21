@@ -7,7 +7,7 @@
     exit; 
   }
 
-  if (isset($_GET['name'])&&isset($_GET['id'])) {
+  if (isset($_GET['id'])) {
     if ($user['user_type']!=='administrator' || !in_array(e($_GET['id']), $project_ids, true)) {
       header('HTTP/1.0 403 Forbidden');
       header('Location: ./403.html');
@@ -148,7 +148,7 @@
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="./data.php?logout='1'">
+                    <a class="dropdown-item" href="./overview.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -173,7 +173,7 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item dropdown">
+                  <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <?php if ($_GET['name'] === 'register-farmer') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
@@ -188,11 +188,11 @@
                       </div>
                     <?php } ?>
                   </li>
-                  <li class="nav-item">
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
-                  <li class="nav-item">
-                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -200,32 +200,107 @@
           </div>
         </div>
         <div class="my-3 my-md-5">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-3">
-                <h3 class="page-title mb-5">Data</h3>
-                <div>
-                  <div class="list-group list-group-transparent mb-0">
-                    <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="list-group-item list-group-item-action d-flex align-items-center">
-                      <span class="icon mr-3"><i class="fe fe-download-cloud"></i></span>Generate Report
-                    </a>
-                  </div>
-                  <div class="list-group list-group-transparent mb-0">
-                    <a href="./export.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="list-group-item list-group-item-action d-flex align-items-center active">
-                      <span class="icon mr-3"><i class="fe fe-share"></i></span>Export
-                    </a>
-                  </div>
-                  <div class="mt-6 mb-6">
-                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="btn btn-primary btn-block">Show Individual Responses</a>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-9">
+        <div class="container">
+            <div class="row row-cards row-deck">
+              <div class="col-md-4 col-xl-4">
                 <div class="card">
-                  <div class="card-head"></div>
-                  <div class="card-body"></div>
+                  <div class="card-header">
+                    <h3 class="card-title">Responses</h3>
+                    <div class="card-options">
+                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                    </div>
+                  </div>
+                  <div class="card-body text-center">
+                    <span class="display-3"><strong>0</strong></span>
+                  </div>
                 </div>
               </div>
+              <div class="col-md-4 col-xl-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Collectors</h3>
+                    <div class="card-options">
+                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                    </div>
+                  </div>
+                  <div class="card-body text-center">
+                    <span class="display-3"><strong>0</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4 col-xl-4">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Mobile Devices</h3>
+                    <div class="card-options">
+                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                    </div>
+                  </div>
+                  <div class="card-body text-center">
+                    <span class="display-3"><strong>0</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Responses Over Time</h3>
+                    <div class="card-options">
+                      <div class="btn-group btn-group-sm" role="group" aria-label="First group">
+                        <button type="button" class="btn btn-secondary">Day</button>
+                        <button type="button" class="btn btn-secondary">Week</button>
+                        <button type="button" class="btn btn-secondary">Month</button>
+                        <button type="button" class="btn btn-secondary">Quarter</button>
+                      </div>
+                      <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="dimmer">
+                      <div class="loader"></div>
+                      <div class="dimmer-content">
+                        <canvas id="responseChart" style="height: 30rem;"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <script>
+                require(['chart', 'jquery'], function(Chart, $){
+                  $(function() {
+                    function displayData(responses) {
+                      var ctx = $('#responseChart'),
+                        responseChart;
+                      responseChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                          datasets: [{
+                            data: [65,59,80,81,56,55,40],
+                            borderColor: tabler.colors["teal-dark"],
+                            fill: false,
+                            lineTension: 0.1
+                          }],
+                          labels: [
+                            "January",
+                            "February",
+                            "March",
+                            "April",
+                            "May",
+                            "June",
+                            "July"
+                          ]
+                        },
+                        options: {
+                          maintainAspectRatio: false,
+                          responsive: true
+                        }
+                      });
+                    }
+
+                    displayData();
+                  })
+                })
+              </script>
             </div>
           </div>
         </div>

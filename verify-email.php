@@ -61,7 +61,9 @@
                 <div class="card-body">
                   <h4>Hey there, <?php echo ucfirst($_SESSION['user']['username']); ?>!</h4>
                   <p>We just sent an activation link to <span><?php echo $_SESSION['user']['email']; ?></span>. Kindly click the link in the email to finish setting up your AgriData account.</p>
-                  <button type="submit" class="btn btn-primary btn-block mt-6" name="resend">Didn't get it? Resend</button>
+                  <form action="./verify-email.php" method="POST">
+                    <button type="submit" class="btn btn-primary btn-block mt-6" name="resend">Didn't get it? Resend</button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -69,43 +71,5 @@
         </div>
       </div>
     </div>
-    <script>
-      function createCORSRequest(method, url) {
-        var xhr = new XMLHttpRequest();
-        if ("withCredentials" in xhr) {
-          // XHR for Chrome/Firefox/Opera/Safari.
-          xhr.open(method, url, true);
-        } else if (typeof XDomainRequest != "undefined") {
-          // XDomainRequest for IE.
-          xhr = new XDomainRequest();     
-          xhr.open(method, url);
-        } else {
-          // CORS not supported.
-          xhr = null;
-        }
-        return xhr;
-      }
-
-      var url = "./verify-email.php";
-
-      function makeCorsRequest() {
-        var xhr = createCORSRequest('POST', url);
-        if (!xhr) {
-          alert('CORS not supported');
-          return;
-        }
-
-        // Response handlers.
-        xhr.onreadystatechange = function () {
-          var tbody = $('.results');
-          if (this.readyState === 4) {
-            if (this.status === 200) {
-              console.log("Clicked");
-            }
-          }
-        }
-        xhr.send();
-      }
-    </script>
   </body>
 </html>

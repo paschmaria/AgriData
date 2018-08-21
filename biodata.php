@@ -20,8 +20,9 @@
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
   <head>
-    <meta charset="UTF-8">
+  <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta http-equiv="Content-Language" content="en"/>
@@ -45,18 +46,19 @@
     <script src="./assets/js/require.min.js"></script>
     <script>
       setTimeout(hideURLbar, 0);
-      function hideURLbar(){
-        window.scrollTo(0,1);
+
+      function hideURLbar() {
+        window.scrollTo(0, 1);
       }
       requirejs.config({
-          baseUrl: '.'
+        baseUrl: '.'
       });
-      
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
     <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
   </head>
+
   <body class="">
     <div class="page">
       <div class="page-main">
@@ -74,14 +76,19 @@
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                     <a href="#" class="dropdown-item d-flex">
+                      <!-- <span class="avatar mr-3 align-self-center" style="background-image: url(demo/faces/male/41.jpg)"></span> -->
                       <div>
-                        <p>New farmer signed on - <strong>Musa Abdullahi</strong></p>
+                        <p>New farmer signed on -
+                          <strong>Musa Abdullahi</strong>
+                        </p>
                         <div class="small text-muted">10 minutes ago</div>
                       </div>
                     </a>
                     <a href="#" class="dropdown-item d-flex">
                       <div>
-                        <p>50 messages sent to farmers in <strong>Kano State</strong></p>
+                        <p>50 messages sent to farmers in
+                          <strong>Kano State</strong>
+                        </p>
                         <div class="small text-muted">1 hour ago</div>
                       </div>
                     </a>
@@ -137,11 +144,19 @@
                       <i class="dropdown-icon fe fe-settings"></i> Settings
                     </a>
                     <a class="dropdown-item" href="#">
-                      <span class="float-right"><span class="badge badge-primary">6</span></span>
+                      <span class="float-right">
+                        <span class="badge badge-primary">6</span>
+                      </span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
+                    <!-- <a class="dropdown-item" href="#">
+                      <i class="dropdown-icon fe fe-send"></i> Message
+                    </a> -->
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="farmer-profile.php?logout='1'">
+                    <!-- <a class="dropdown-item" href="#">
+                      <i class="dropdown-icon fe fe-help-circle"></i> Need help?
+                    </a> -->
+                    <a class="dropdown-item" href="./biodata.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -187,49 +202,62 @@
         </div>
         <div class="my-3 my-md-5">
           <div class="container">
-            <div class="page-header">
-              <div class="page-header">
-                <h1 class="page-title">Farmer's Profile</h1>
-              </div>
-            </div>
-            <div class="row row-cards">
-              <div class="col-lg-4 col-sm-12">
-                <div class="row">
-                  <div class="col-md-6 col-lg-12">
-                    <div class="card">
-                      <div class="dimmer active">
-                        <div class="loader"></div>
-                        <div class="dimmer-content">
-                          <div class="card-body username_pic"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+            <div class="page-header" style="flex-direction: row;">
+              <h1 class="page-title">Farmers' Biodata</h1>
+              <div class="page-subtitle">1 - 20 of 20 farmers</div>
+              <div class="page-options d-flex">
+                <select class="form-control custom-select w-auto">
+                  <option value="asc">Newest</option>
+                  <option value="desc">Oldest</option>
+                </select>
+                <div class="input-icon ml-2">
+                  <span class="input-icon-addon">
+                    <i class="fe fe-search"></i>
+                  </span>
+                  <input type="text" id="nameSearch" class="form-control w-10" placeholder="Search farmers by name...">
                 </div>
               </div>
-              <div class="col-lg-8 col-sm-12">
-                <div class="card">
-                  <div class="card-body">
-                    <div id="carousel-indicators" class="carousel slide" data-ride="carousel">
-                      <ol class="carousel-indicators"></ol>
-                      <div class="carousel-inner mb-5"></div>
-                    </div>
-                    <div class="profile-details-full"></div>
+            </div>
+            <div class="card">
+              <div class="table-responsive">
+                <div class="dimmer active">
+                  <div class="loader"></div>
+                  <div class="dimmer-content">
+                    <table id="bioTable" class="table table-hover table-outline table-vcenter text-nowrap card-table">
+                      <thead>
+                        <tr>
+                          <th class="text-center w-1">
+                            <i class="fe fe-image"></i>
+                          </th>
+                          <th>Farmer Name</th>
+                          <th>State</th>
+                          <th>LGA</th>
+                          <th>Town/Village</th>
+                          <th class="text-center">Land Size (ha)</th>
+                          <th>Phone Number(s)</th>
+                          <th class="text-center">Age</th>
+                          <th class="text-center">
+                            <i class="icon-settings"></i>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody class="results"></tbody>
+                    </table>
                   </div>
                 </div>
               </div>
               <script>
-                require(["jquery"], function ($) {
-                  $(function () {
+                require(['jquery'], function ($) {
+                  $(function() {
                      // Create the XHR object.
-                     function createCORSRequest(method, url) {
+                    function createCORSRequest(method, url) {
                       var xhr = new XMLHttpRequest();
                       if ("withCredentials" in xhr) {
                         // XHR for Chrome/Firefox/Opera/Safari.
                         xhr.open(method, url, true);
                       } else if (typeof XDomainRequest != "undefined") {
                         // XDomainRequest for IE.
-                        xhr = new XDomainRequest();
+                        xhr = new XDomainRequest();     
                         xhr.open(method, url);
                       } else {
                         // CORS not supported.
@@ -237,18 +265,8 @@
                       }
                       return xhr;
                     }
-                    // ID of the Google Spreadsheet
-                    var spreadsheetID = "1aZ8aYMpnsVpB6E0iOS5v_eX6sCloxLYlIvyJJoscurA";
 
-                    var url =
-                      `https://spreadsheets.google.com/feeds/list/${spreadsheetID}/1/public/values?alt=json`;
-                    
-                    // Get picture
-                    function getPic(url) {
-                      var picId = (url.match(/[-\w]{25,}/))[0];
-                      var picURL = `https://drive.google.com/thumbnail?authuser=0&sz=w320&id=${picId}`;
-                      return picURL;
-                    }
+                    var url = "./farmer-data.php";
 
                     // Get date of birth
                     function DOB(dob) {
@@ -264,7 +282,7 @@
                     function DOR(d) {
                       var fullDate = new Date(d);
                       var regMonth = fullDate.toString().split(' ')[1];
-                      var regDay = fullDate.getDay();
+                      var regDay = fullDate.getDay()+1;
                       var regYear = fullDate.getFullYear();
                       return `${regMonth} ${regDay}, ${regYear}`;
                       // console.log(regDay);
@@ -272,15 +290,24 @@
 
                     // Farm size - acres to hectares converter
                     function ath(a_size) {
-                      var h_size = parseFloat(Math.round(0.4 * a_size));
+                      var land = a_size.match(/\d+/)[0];
+                      var h_size = parseFloat(Math.round(0.4 * land));
                       return h_size;
                     }
 
                     // Display secondary phone number
                     function sph(num) {
-                      if (num) {
-                        return `, 0${num}`;
+                      if (num !== "") {
+                        return `, ${num}`;
+                      } else {
+                        return "";
                       }
+                    }
+
+                    // Navigate to Farmer profile page
+                    function navigateTo(url) {
+                      var userId = url.match(/[0-9a-zA-Z]{5}$/)[0];
+                      return userId;
                     }
 
                     // Make CORS Request
@@ -290,145 +317,69 @@
                         alert('CORS not supported');
                         return;
                       }
-                      
-                      var userId = window.location.search.substring(1);
-                      // console.log(userId);
 
                       // Response handlers.
                       xhr.onreadystatechange = function () {
+                        var tbody = $('.results');
                         if (this.readyState === 4) {
                           if (this.status === 200) {
-                            var data = JSON.parse(this.responseText);
-                            var entry = data.feed.entry;
-                            // console.log(entry);
-                            var userDetails = entry.find( results => results.id.$t === `https://spreadsheets.google.com/feeds/list/1aZ8aYMpnsVpB6E0iOS5v_eX6sCloxLYlIvyJJoscurA/1/public/values/${userId}`);
-                            
-                            var farmPicArr = userDetails.gsx$farmpicturesmaximumof5.$t.split(',');
-                            // console.log(farmPicArr);
-                            farmPicArr.forEach((e, i) => {
-                              if (i === 0) {
-                                $(".carousel-indicators").prepend(`
-                                  <li data-target="#carousel-indicators" data-slide-to="${i}" class="active"></li>
-                                `)
-                                $(".carousel-inner").prepend(`
-                                  <div class="carousel-item active">
-                                    <img class="d-block w-100 img-fluid" alt="farm-picture-${i}" src="${getPic(e)}" data-holder-rendered="true" style="max-height: 400px;">
-                                  </div>
-                                `)
-                              } else {
-                                $(".carousel-indicators").prepend(`
-                                  <li data-target="#carousel-indicators" data-slide-to="${i}"></li>
-                                `)
-                                $(".carousel-inner").prepend(`
-                                  <div class="carousel-item">
-                                    <img class="d-block w-100 img-fluid" alt="farm-picture-${i}" src="${getPic(e)}" data-holder-rendered="true" style="max-height: 400px;">
-                                  </div>
-                                `)
-                              }
+                            var farmerData = JSON.parse(this.responseText),
+                                   userUrl;
+
+                            farmerData.map(data => {
+                              tbody.prepend(`
+                                <tr>
+                                  <td class="text-center">
+                                    <div class="avatar d-block" style="background-image: url(${data.farmer_pic})">
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <p class="m-0">${data.firstname} ${data.lastname}</p>
+                                    <div class="small text-muted">
+                                      Registered: ${DOR(data.date_of_registration)}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div>${data.state}</div>
+                                  </td>
+                                  <td>
+                                    <div>${data.lga}</div>
+                                  </td>
+                                  <td>
+                                    <div>${data.town}</div>
+                                  </td>
+                                  <td>
+                                    <div class="text-center">
+                                      <strong>${ath(data.land_area)}</strong>
+                                  </td>
+                                  <td>
+                                      ${data.phone_primary}${sph(data.phone_secondary)}
+                                  </td>
+                                  <td class="text-center">
+                                    <div class="mx-auto chart-circle chart-circle-xs" data-value="${DOB(data.date_of_birth)/100}" data-thickness="3" data-color="blue"><canvas width="40" height="40"></canvas>
+                                      <div class="chart-circle-value">${DOB(data.date_of_birth)}</div>
+                                    </div>
+                                  </td>
+                                  <td class="text-center">
+                                    <div class="item-action dropdown">
+                                      <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
+                                      <div class="dropdown-menu dropdown-menu-right">
+                                        <a href="" id="navigator" class="dropdown-item"><i class="dropdown-icon fe fe-eye"></i> View Full Profile </a>
+                                      </div>
+                                    </div>
+                                  </td>
+                                </tr>
+                              `);  
+                              
+                              userUrl = data.id;
+                              var a = document.getElementById('navigator');
+                              a.href = `./farmer-profile.php?${userUrl}`;
                             });
-                            
-                            $(".username_pic").prepend(`
-                              <div class="mb-4 text-center">
-                                <img src="${getPic(userDetails.gsx$pictureoffarmer.$t)}" alt="${userDetails.gsx$firstname.$t} ${userDetails.gsx$lastname.$t}" class="img-fluid">
-                              </div>
-                              <h4 class="card-title text-center">${userDetails.gsx$firstname.$t} ${userDetails.gsx$lastname.$t}</h4>
-                              <div class="card-subtitle text-muted text-center">
-                                Registered on: ${DOR(userDetails.title.$t)}
-                              </div>
-                              <div class="mt-5 d-flex align-items-center">
-                                <div class="ml-auto">
-                                  <a href="javascript:void(0)" class="btn btn-primary disabled"><i class="fe fe-message-square"></i> Send SMS</a>
-                                </div>
-                              </div>
-                            `);
-
-                            $(".profile-details-full").prepend(`
-                              <div class="row">
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Phone Number(s)</label>
-                                    <div class="form-control-plaintext">0${userDetails.gsx$primaryphonenumber.$t}${sph(userDetails.gsx$secondaryphonenumberifavailable.$t)}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Email Address (if available)</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$emailaddress.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Gender</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$gender.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Annual Farm Income (₦)</label>
-                                    <div class="form-control-plaintext">${(userDetails.gsx$annualincomerange.$t)*100000}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Age</label>
-                                    <div class="form-control-plaintext">${DOB(userDetails.gsx$dateofbirth.$t)}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Family Size</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$familysize.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Highest Level of Education</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$highestlevelofeducation.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Land Size (ha)</label>
-                                    <div class="form-control-plaintext">${ath(userDetails.gsx$totallandareaacres.$t)}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">State</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$state.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Local Government Area</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$localgovernmentarealga.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Town/Village</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$townorvillage.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Planted Crops</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$plantedcrops.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Source of Farm Labour</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$sourceoffarmlabour.$t}</div>
-                                  </div>
-                                </div>
-                              </div>
-                            `);
-
                             $(".dimmer").removeClass("active");
                               
                           } else {
                             console.log("Unable to retrieve data");
+                            tbody.prepend()
                           }
                         }
                       };
@@ -436,6 +387,26 @@
                     }
                     makeCorsRequest();
 
+                    // Search for names 
+                    var input, filter, table, tr, td, i;
+                    input = document.getElementById("nameSearch");
+                    input.onkeyup = function() {
+                      filter = this.value.toUpperCase();
+                      table = document.getElementById("bioTable");
+                      tr = table.getElementsByTagName("tr");
+
+                      // Loop through all table rows, and hide those who don't match the search query
+                      for (i = 0; i < tr.length; i++) {
+                        td = tr[i].getElementsByTagName("td")[1];
+                        if (td) {
+                          if (td.firstElementChild.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                          } else {
+                            tr[i].style.display = "none";
+                          }
+                        } 
+                      }
+                    }
                   })
                 })
               </script>
@@ -447,7 +418,8 @@
         <div class="container">
           <div class="row align-items-center">
             <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
-              Copyright © 2018 <a href="../index.html" target="_blank" class="text-primary">Plurimus Technologies</a>. All rights reserved.
+              Copyright © 2018
+              <a href="../index.html" target="_blank" class="text-primary">Plurimus Technologies</a>. All rights reserved.
             </div>
           </div>
         </div>

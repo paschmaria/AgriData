@@ -52,7 +52,8 @@
                   <img src="./assets/images/logo.png" class="h-6" alt="[VERDE]">
                 </a>
               </div>
-              <form class="card" action="" method="post">
+              <?php echo alert(); ?>
+              <form class="card" action="./forgot-password.php" method="post">
                 <div class="card-body p-6">
                   <div class="card-title">Forgot password</div>
                   <p class="text-muted">Enter your email address and the password will be sent to you.</p>
@@ -66,7 +67,7 @@
                 </div>
               </form>
               <div class="text-center text-muted">
-                Forget it, <a href="./login.php.html">take me back</a> to the Login page.
+                Forget it, <a href="./login.php">take me back</a> to the Login page.
               </div>
             </div>
           </div>

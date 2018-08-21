@@ -1,8 +1,20 @@
 <?php 
   include('functions.php');
-  if(!$_SESSION['user']){ 
-      header("Location: ./login.php"); 
-      exit; 
+  $user = $_SESSION['user'];
+  $project_ids = explode(', ', $user['project_id']);
+  if(!$user){ 
+    header("Location: ./login.php"); 
+    exit; 
+  }
+
+  if (isset($_GET['id'])) {
+    if ($user['user_type']!=='administrator' || !in_array(e($_GET['id']), $project_ids, true)) {
+      header('HTTP/1.0 403 Forbidden');
+      header('Location: ./403.html');
+    }
+  } else {
+    header("Location: ./forms.php"); 
+    exit;
   }
 ?>
 
@@ -144,7 +156,7 @@
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="./farmer-biodata.php?logout='1'">
+                    <a class="dropdown-item" href="./biodata.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -170,26 +182,18 @@
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./farmer-overview.php" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./farmer-biodata.php" class="dropdown-item active"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./farmer-demography.php" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
-                      <a href="./farmer-cropinfo.php" class="dropdown-item"><i class="fe fe-activity"></i> Crop Information</a>
+                      <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                      <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
+                      <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
                     </div>
-                  </li>
-                  <!-- <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-send"></i> Push</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./sms" class="dropdown-item"><i class="fe fe-message-square"></i> SMS</a>
-                      <a href="./voice" class="dropdown-item"><i class="fe fe-phone-outgoing"></i> Voice Calls</a>
-                    </div>
-                  </li> -->
-                  <li class="nav-item dropdown">
-                    <a href="./data.php" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
                   <li class="nav-item">
-                    <a href="./collaborate.php" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
+                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -199,8 +203,8 @@
         <div class="my-3 my-md-5">
           <div class="container">
             <div class="page-header" style="flex-direction: row;">
-              <h1 class="page-title">Farmers' Biodata</h1>
-              <div class="page-subtitle">1 - 20 of 20 farmers</div>
+              <h1 class="page-title">Market Reports</h1>
+              <!-- <div class="page-subtitle">1 - 20 of 20 farmers</div> -->
               <div class="page-options d-flex">
                 <select class="form-control custom-select w-auto">
                   <option value="asc">Newest</option>
@@ -210,7 +214,7 @@
                   <span class="input-icon-addon">
                     <i class="fe fe-search"></i>
                   </span>
-                  <input type="text" id="nameSearch" class="form-control w-10" placeholder="Search farmers by name...">
+                  <input type="text" id="nameSearch" class="form-control w-10" placeholder="Search...">
                 </div>
               </div>
             </div>
@@ -219,22 +223,17 @@
                 <div class="dimmer active">
                   <div class="loader"></div>
                   <div class="dimmer-content">
-                    <table id="bioTable" class="table table-hover table-outline table-vcenter text-nowrap card-table">
+                    <table class="table table-hover table-outline table-vcenter text-nowrap card-table">
                       <thead>
                         <tr>
-                          <th class="text-center w-1">
-                            <i class="fe fe-image"></i>
-                          </th>
-                          <th>Farmer Name</th>
-                          <th>State</th>
-                          <th>LGA</th>
-                          <th>Town/Village</th>
-                          <th class="text-center">Land Size (ha)</th>
-                          <th>Phone Number(s)</th>
-                          <th class="text-center">Age</th>
-                          <th class="text-center">
-                            <i class="icon-settings"></i>
-                          </th>
+                          <th>Agent's First Name</th>
+                          <th>Agent's Last Name</th>
+                          <th>Market Name</th>
+                          <th>Market Location (LGA)</th>
+                          <th>Market Opening Time</th>
+                          <th>Market Closing Time</th>
+                          <th>Product Price per Bag (₦)</th>
+                          <th>Product Price per Tonne (₦)</th>
                         </tr>
                       </thead>
                       <tbody class="results"></tbody>
@@ -245,7 +244,7 @@
               <script>
                 require(['jquery'], function ($) {
                   $(function() {
-                     // Create the XHR object.
+                    // Create the XHR object.
                     function createCORSRequest(method, url) {
                       var xhr = new XMLHttpRequest();
                       if ("withCredentials" in xhr) {
@@ -253,7 +252,7 @@
                         xhr.open(method, url, true);
                       } else if (typeof XDomainRequest != "undefined") {
                         // XDomainRequest for IE.
-                        xhr = new XDomainRequest();     
+                        xhr = new XDomainRequest();
                         xhr.open(method, url);
                       } else {
                         // CORS not supported.
@@ -261,124 +260,62 @@
                       }
                       return xhr;
                     }
-
-                    var url = "./farmer-data.php";
-
-                    // Get date of birth
-                    function DOB(dob) {
-                      var today = new Date();
-                      var currentYear = today.getFullYear();
-                      var birthDate = new Date(dob);
-                      var birthYear = birthDate.getFullYear();
-                      var age = currentYear - birthYear;
-                      return age;
-                    }
-
-                    // Get date of registration
-                    function DOR(d) {
-                      var fullDate = new Date(d);
-                      var regMonth = fullDate.toString().split(' ')[1];
-                      var regDay = fullDate.getDay()+1;
-                      var regYear = fullDate.getFullYear();
-                      return `${regMonth} ${regDay}, ${regYear}`;
-                      // console.log(regDay);
-                    }
-
-                    // Farm size - acres to hectares converter
-                    function ath(a_size) {
-                      var land = a_size.match(/\d+/)[0];
-                      var h_size = parseFloat(Math.round(0.4 * land));
-                      return h_size;
-                    }
-
-                    // Display secondary phone number
-                    function sph(num) {
-                      if (num !== "") {
-                        return `, ${num}`;
-                      } else {
-                        return "";
-                      }
-                    }
-
-                    // Navigate to Farmer profile page
-                    function navigateTo(url) {
-                      var userId = url.match(/[0-9a-zA-Z]{5}$/)[0];
-                      return userId;
-                    }
-
-                    // Make CORS Request
+                    // ID of the Google Spreadsheet
+                    var spreadsheetID = "14RMyHz606jqFZ3K1kuaMV83uxNgK2jdRcy76cuzjQj0";
+                    
+                    var url = "https://spreadsheets.google.com/feeds/list/" + spreadsheetID + "/1/public/values?alt=json";
+                                    
                     function makeCorsRequest() {
                       var xhr = createCORSRequest('GET', url);
                       if (!xhr) {
                         alert('CORS not supported');
                         return;
                       }
-
+                    
                       // Response handlers.
-                      xhr.onreadystatechange = function () {
-                        var tbody = $('.results');
+                      xhr.onreadystatechange = function() {
                         if (this.readyState === 4) {
                           if (this.status === 200) {
-                            var farmerData = JSON.parse(this.responseText),
-                                   userUrl;
-
-                            farmerData.map(data => {
-                              tbody.prepend(`
-                                <tr>
-                                  <td class="text-center">
-                                    <div class="avatar d-block" style="background-image: url(${data.farmer_pic})">
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <p class="m-0">${data.firstname} ${data.lastname}</p>
-                                    <div class="small text-muted">
-                                      Registered: ${DOR(data.date_of_registration)}
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <div>${data.state}</div>
-                                  </td>
-                                  <td>
-                                    <div>${data.lga}</div>
-                                  </td>
-                                  <td>
-                                    <div>${data.town}</div>
-                                  </td>
-                                  <td>
-                                    <div class="text-center">
-                                      <strong>${ath(data.land_area)}</strong>
-                                  </td>
-                                  <td>
-                                      ${data.phone_primary}${sph(data.phone_secondary)}
-                                  </td>
-                                  <td class="text-center">
-                                    <div class="mx-auto chart-circle chart-circle-xs" data-value="${DOB(data.date_of_birth)/100}" data-thickness="3" data-color="blue"><canvas width="40" height="40"></canvas>
-                                      <div class="chart-circle-value">${DOB(data.date_of_birth)}</div>
-                                    </div>
-                                  </td>
-                                  <td class="text-center">
-                                    <div class="item-action dropdown">
-                                      <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
-                                      <div class="dropdown-menu dropdown-menu-right">
-                                        <a href="" id="navigator" class="dropdown-item"><i class="dropdown-icon fe fe-eye"></i> View Full Profile </a>
-                                      </div>
-                                    </div>
-                                  </td>
-                                </tr>
-                              `);  
-                              
-                              userUrl = data.id;
-                              var a = document.getElementById('navigator');
-                              a.href = `./farmer-profile.php?${userUrl}`;
+                            var data = JSON.parse(this.responseText);
+                            var entry = data.feed.entry;
+                            console.log(entry);
+                            $(entry).each(function(){
+                              $(".dimmer").removeClass("active")
+                              $('.results').prepend(`
+                                  <tr>
+                                      <td>
+                                          ${this.gsx$agentsfirstname.$t}
+                                      </td>
+                                      <td>
+                                          ${this.gsx$agentslastname.$t}
+                                      </td>
+                                      <td>
+                                          ${this.gsx$marketname.$t}
+                                      </td>
+                                      <td>
+                                          ${this.gsx$marketlocationlga.$t}
+                                      </td>
+                                      <td>
+                                          ${this.gsx$marketopeningtime.$t}
+                                      </td>
+                                      <td>
+                                          ${this.gsx$marketclosingtime.$t}
+                                      </td>
+                                      <td>
+                                          ${this.gsx$productpriceperbag.$t}
+                                      </td>
+                                      <td>
+                                          ${this.gsx$productpricepertonne.$t}
+                                      </td>
+                                  </tr>
+                              `);
                             });
-                            $(".dimmer").removeClass("active");
-                              
                           } else {
                             console.log("Unable to retrieve data");
-                            tbody.prepend()
                           }
                         }
                       };
+                    
                       xhr.send();
                     }
                     makeCorsRequest();

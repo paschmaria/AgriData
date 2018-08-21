@@ -3,13 +3,16 @@
 
   if (!empty($_GET['hvc'])) {
     $verify_code = e($_GET['hvc']);
-
-    $query = "SELECT * FROM users WHERE verify_code='$verify_code' AND verified=0 LIMIT 1";
-    if (mysqli_query($db, $query)) {
+    $zero = 0;
+    $one = 1;
+    $query = "SELECT * FROM users WHERE verified='$zero' AND verify_code='$verify_code' LIMIT 1";
+    $results = mysqli_query($db, $query);
+    if (mysqli_num_rows($results)===1) {
+      mysqli_query($db, "UPDATE users SET verified='$one' WHERE verify_code='$verify_code'");
       alert_message("Your account has been activated!", "success");
-      mysqli_query($db, "UPDATE users SET verified=1 WHERE verify_code='$verify_code'");
     } else {
-      header("Location: ./expired.php");
       alert_message("Account activation link expired! ⚠️", "danger");
+    //   header("Location: ./expired.php");
     }
+    mysqli_close($db);
   }

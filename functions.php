@@ -15,9 +15,9 @@
 	$alerts    		= array();
 	$project_name = array();
 
-	array_push($project_name, "Register Farmer");
-	array_push($project_name, "Market Prices");
-	array_push($project_name, "Farmer's Survey");
+	array_push($project_name, "register-farmer");
+	array_push($project_name, "market-prices");
+	array_push($project_name, "farmers-survey");
 
 	// call the register() function if register button is clicked
 	if (isset($_POST['register'])) {
@@ -53,7 +53,7 @@
 		// a user does not already exist with the same username and/or email
 		$user_check_query = "SELECT * FROM users WHERE username='$username' OR email='$email' LIMIT 1";
 		$result = mysqli_query($db, $user_check_query);
-		$user = mysqli_fetch_assoc($result);
+		$user = $project = mysqli_fetch_assoc($result);
 		
 		if ($user) { // if user exists
 			if ($user['username'] === $username && $user['email'] === $email) {
@@ -68,10 +68,9 @@
 		// register user if there are no errors in the form
 		if (count($errors) == 0) {
 			$password = md5($password_1); //encrypt the password before saving in the database
-			$verify_code = md5(rand(0,1000)); // Generate random 32 character hash and assign it to a local variable.
+			$verify_code = md5(uniqid(rand(0,1000))); // Generate random 32 character hash and assign it to a local variable.
 
-			$query = "INSERT INTO users (username, email, firstname, lastname, phone, gender, user_type, password, verify_code, verified, address, date_of_birth, bio, education, degree, state, lga) 
-							VALUES ('$username', '$email', '', '', '', '', 'agent', '$password', '$verify_code', 0, '', '1000-01-01', '', '', '', '', '')";
+			$query = "INSERT INTO users (username, email, firstname, lastname, phone, gender, user_type, password, verify_code, verified, address, date_of_birth, bio, education, degree, state, lga) VALUES ('$username', '$email', '', '', '', '', 'agent', '$password', '$verify_code', 0, '', '1000-01-01', '', '', '', '', '')";
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
 			} else {
@@ -101,7 +100,7 @@
 				<br />
 				------------------------------------------------
 				<br />
-				<a href='https://agridata.plurimustech.ng/login.php?hvc=\"'.$verify_code.'\"'>
+				<a href='https://agridata.plurimustech.ng/login.php?hvc=".$verify_code."'>
 					<button type='button' style='padding: 0.75rem; background-color: #817729; -webkit-appearance: button; font-size: 0.8215rem; text-align: center; border-radius: 3px; border: 1px solid #786e21; color: #fff;'>Activate Account</button>
 				</a>
 				
@@ -117,8 +116,8 @@
 		$apiKey = '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';
 		$sg = new \SendGrid($apiKey);
 		$response = $sg->client->mail()->send()->post($mail);
-		var_dump($response->statusCode());
-		var_dump($response->body());
+		// var_dump($response->statusCode());
+		// var_dump($response->body());
 
 	}
 
@@ -129,7 +128,7 @@
 		$query = "SELECT * FROM users WHERE id=$id";
 		$result = mysqli_query($db, $query);
 
-		$user = mysqli_fetch_assoc($result);
+		$user = $project = mysqli_fetch_assoc($result);
 		return $user;
 	}
 
@@ -171,7 +170,7 @@
 		global $alerts;
 
 		array_push($alerts,
-		'<div class="alert alert-'. $type .'" role="alert">'
+		'<div class="alert alert-'. $type .' text-center" role="alert">'
 			. $message .
 		'</div>');
 	}
@@ -234,30 +233,95 @@
 		}
 
 		// attempt login if no errors on form
-		if (count($errors) == 0) {
+		if (count($errors) === 0) {
 			$password = md5($password);
 
 			$query = "SELECT * FROM users WHERE username='$username' AND password='$password' LIMIT 1";
 			$results = mysqli_query($db, $query);
 
-			if (mysqli_num_rows($results) == 1) { // user found
-				// check if user is admin or user
+			if (mysqli_num_rows($results) === 1) { // user found
+				// check if user is administrator or agent
 				$logged_in_user = mysqli_fetch_assoc($results);
-				if ($logged_in_user['user_type'] == 'admin') {
+				if ($logged_in_user['verified']!=="1") {
+					alert_message("Your account has not been activated!", "danger");
+				} else {
+					if ($logged_in_user['user_type'] === 'administrator') {
 
-					$_SESSION['user'] = $logged_in_user;
-					$_SESSION['success']  = "You are now logged in as Admin";
-					header('location: ./forms.php');		  
-				}else{
-					$_SESSION['user'] = $logged_in_user;
-					$_SESSION['success']  = "You are now logged in";
-					header('location: ./forms.php');
+						$_SESSION['user'] = $logged_in_user;
+						$_SESSION['success']  = "You are now logged in as Administrator";
+						assign_project($_SESSION['user']);
+						update_projects($_SESSION['user']);
+						redirect_url();
+					}else{
+						$_SESSION['user'] = $logged_in_user;
+						$_SESSION['success']  = "You are now logged in";
+						update_projects($_SESSION['user']);
+						redirect_url();
+					}
 				}
-			}else {
+				
+			} else {
 				array_push($errors, "Wrong username/password combination");
 			}
 		}
+
 	}
+
+	// set project id of the project the user is on
+	function assign_project($user) {
+		global $db;
+
+		$project_name = $user['project_name'];
+		$project_arr = explode(', ', $project_name);
+		$project_ids = array();
+		
+		foreach ($project_arr as $key => $project) {
+			$query = "SELECT project_id FROM projects WHERE project_name='$project' LIMIT 1";
+			$results = mysqli_query($db, $query);
+			$projects = mysqli_fetch_assoc($results);
+			array_push($project_ids, $projects['project_id']);
+		}
+		
+		$project_id = implode(', ', $project_ids);
+		$new_query = "UPDATE users SET project_id='$project_id' WHERE project_name='$project_name'";
+		if (!mysqli_query($db, $new_query)) {
+			var_dump(mysqli_error($db));
+		}
+	}
+
+	function update_projects($user) {
+		global $db, $project_name;
+		
+		$project_name_arr = explode(', ', $user['project_name']);
+		// Insert details of each project into the database
+		foreach ($project_name as $key=>$project) {
+			$project_key	 = md5($key);
+			$project_id 	 = md5(base_convert(cos($key),10,5));
+			$project_owner = $user['user_type']==='administrator'&&in_array($project, $project_name_arr, true) ? $user['username'] : "";
+			$responses 		 = 0;
+			$status 			 = "Published";
+			$collaborators = "";
+			$present_user	 = $user['username'];
+			// var_dump($project_owner);
+			$query = "INSERT INTO projects (project_key, project_name, project_id, no_of_responses, status, collaborators, project_owner, present_user) VALUES ('$project_key', '$project', '$project_id', '$responses', '$status', '$collaborators', '$project_owner', '$present_user') ON DUPLICATE KEY UPDATE project_name = VALUES(project_name), project_id = VALUES(project_id), project_owner = VALUES(project_owner), present_user = VALUES(present_user)";
+			if (!mysqli_query($db, $query)) {
+				var_dump(mysqli_error($db));
+			}
+		}
+	}
+
+	// redirect to previous locaton on login
+	function redirect_url()	{
+		// var_dump($_GET['location']);
+		if (!empty($_GET['location'])) {
+			$new_url = e($_GET['location']);
+			header("location: {$new_url}");
+		} else {
+			header("location: ./forms.php");
+		}
+	}
+
+	
 
 	// Variable declaration
 	$month 				= "";
@@ -455,7 +519,7 @@
 		// first check the database to make sure farmer's details have not already been submitted
 		$farmer_check_query = "SELECT * FROM farmers WHERE phone_primary='$phone1' LIMIT 1";
 		$result = mysqli_query($db, $farmer_check_query);
-		$farmer = mysqli_fetch_assoc($result);
+		$farmer = $project = mysqli_fetch_assoc($result);
 		if ($farmer) { // if farmer exists
 			if ($farmer['firstname'] === $firstname && $farmer['lastname'] === $lastname && $farmer['phone_primary'] === $phone1) {
 				array_push($errors, "Farmer has been registered!");

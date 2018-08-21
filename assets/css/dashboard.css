@@ -18724,8 +18724,21 @@ svg {
 .mapsvg-region {
   transition: opacity 0.5s ease-in-out;
 }
+
 .mapsvg-region:hover {
   opacity: 0.6;
+}
+
+.no-form.active {
+  display: block;
+}
+
+.no-form:not(.active) {
+  display: none;
+}
+
+.no-form img {
+  width: 10rem;
 }
 
 @media (max-width: 320px) {
