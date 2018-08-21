@@ -85,5 +85,15 @@
         </div>
       </div>
     </div>
+    <script>
+      require(['jquery'], function ($) {
+        $(function() {
+          var form = $('form.card');
+          form.submit(function (e) {
+            $("button[type=submit]").addClass("disabled");
+          })
+        })
+      })
+    </script>
   </body>
 </html>

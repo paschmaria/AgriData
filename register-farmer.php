@@ -657,68 +657,73 @@
     <script src="./assets/js/lga.js"></script>
     <script>
       require(['jquery'], function ($) {
-        var sID = "1ONcoQNAxfJzf8Wia2WsBqrPZWslEQ8k9WM5Ud3-ZXFc";
-        var url =`https://spreadsheets.google.com/feeds/list/${sID}/1/public/values?alt=json`;
-        // var form = $("#farmerForm");
-        // var fBtn = $("#farmerBtn");
+        // var sID = "1ONcoQNAxfJzf8Wia2WsBqrPZWslEQ8k9WM5Ud3-ZXFc";
+        // var url =`https://spreadsheets.google.com/feeds/list/${sID}/1/public/values?alt=json`;
+        // // var form = $("#farmerForm");
+        // // var fBtn = $("#farmerBtn");
 
-        form.on('submit', function(e) {
-          e.preventDefault();
-          var formArr = form.serializeArray();
+        // form.on('submit', function(e) {
+        //   e.preventDefault();
+        //   var formArr = form.serializeArray();
 
-          fetch(url, {
-            method: "GET",
-            mode: "cors",
-            cache: "no-cache"
-          }).then(function(response) {
-            if (!response.ok) {
-                throw Error(response.statusText);
-            }
-            return response;
-          }).then(function(response) {
-            // form.submit();
-          }).catch(function(error) {
-            window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+        //   fetch(url, {
+        //     method: "GET",
+        //     mode: "cors",
+        //     cache: "no-cache"
+        //   }).then(function(response) {
+        //     if (!response.ok) {
+        //         throw Error(response.statusText);
+        //     }
+        //     return response;
+        //   }).then(function(response) {
+        //     // form.submit();
+        //   }).catch(function(error) {
+        //     window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-            var request = window.indexedDB.open("FarmersDB", 1);
-            var db,tx,store,index;
+        //     var request = window.indexedDB.open("FarmersDB", 1);
+        //     var db,tx,store,index;
 
-            request.onupgradeneeded = function (e) {
-              let db  = request.result,
-                store = db.createObjectStore("farmerstore",
-                  {keyPath: "name"}
-                ),
-                index = store.createIndex("value", "value", {unique: false});
-            }
+        //     request.onupgradeneeded = function (e) {
+        //       let db  = request.result,
+        //         store = db.createObjectStore("farmerstore",
+        //           {keyPath: "name"}
+        //         ),
+        //         index = store.createIndex("value", "value", {unique: false});
+        //     }
 
-            request.onsuccess = function(e) {
-                console.log('[onsuccess]', request.result);
-                db = request.result;
-                tx = db.transaction(["farmerstore"], "readwrite");
-                store = tx.objectStore("farmerstore");
-                index = store.index("value");
-                db.onerror = function(e) {
-                  e.stopPropagation();
-                  console.log("[ERROR]", request.errorCode);
-                }
+        //     request.onsuccess = function(e) {
+        //         console.log('[onsuccess]', request.result);
+        //         db = request.result;
+        //         tx = db.transaction(["farmerstore"], "readwrite");
+        //         store = tx.objectStore("farmerstore");
+        //         index = store.index("value");
+        //         db.onerror = function(e) {
+        //           e.stopPropagation();
+        //           console.log("[ERROR]", request.errorCode);
+        //         }
 
-                $(formArr).each(function() {
-                  var request = store.put(this);
-                  request.onsuccess = function (e) {
-                    console.log(e.target.result);
-                  }
-                })
+        //         $(formArr).each(function() {
+        //           var request = store.put(this);
+        //           request.onsuccess = function (e) {
+        //             console.log(e.target.result);
+        //           }
+        //         })
 
-                tx.oncomplete = function() {
-                  db.close();
-                  console.log("Done");
-                }
-            };
+        //         tx.oncomplete = function() {
+        //           db.close();
+        //           console.log("Done");
+        //         }
+        //     };
 
-            request.onerror = function(e) {
-                console.log('[onerror]', request.error);
-            };
-          });
+        //     request.onerror = function(e) {
+        //         console.log('[onerror]', request.error);
+        //     };
+        //   });
+        // });
+
+        var form = $('form.card');
+        form.submit(function (e) {
+          $("button[type=submit]").addClass("disabled");
         })
       })
     </script>
