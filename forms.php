@@ -1,8 +1,8 @@
 <?php 
   include('project-config.php');
   if(!$_SESSION['user']){ 
-      header("Location: ./login.php"); 
-      exit; 
+    header("Location: ./login.php?nexturl=forms.php?$_SERVER[QUERY_STRING]");
+    exit; 
   }
 ?>
 
@@ -93,9 +93,9 @@
                         $lastname = $_SESSION['user']['lastname'];
 
                         if ($firstname) {
-                          $words = explode(" ", '$firstname $lastname');
+                          $words = explode(" ", $firstname .' '. $lastname);
                           $initials = null;
-                          foreach ($words as  $w) {
+                          foreach ($words as $w) {
                             $initials .= $w[0];
                           }
                           echo $initials;
@@ -120,7 +120,7 @@
                     </span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a class="dropdown-item" href="./profile.php">
+                    <a class="dropdown-item" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#">
@@ -131,7 +131,7 @@
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="register-farmer.php?logout='1'">
+                    <a class="dropdown-item" href="./forms.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
                   </div>
@@ -281,13 +281,13 @@
                             ${data.present_user===data.project_owner ?
                               `<ul class="list-inline m-0 text-right">
                                 <li class="list-inline-item">
-                                  <a href="./collaborate.php" class="" title="Add Collaborator"><i class="fe fe-user-plus"></i></a>
+                                  <a href="./collaborate.php?name=${data.project_name}&id=${data.project_id}" class="" title="Add Collaborator"><i class="fe fe-user-plus"></i></a>
                                 </li>
                                 <li class="list-inline-item">
-                                  <a href="./overview.php" class="" title="Analytics"><i class="fe fe-trending-up"></i></a>
+                                  <a href="./overview.php?name=${data.project_name}&id=${data.project_id}" class="" title="Analytics"><i class="fe fe-trending-up"></i></a>
                                 </li>
                                 <li class="list-inline-item">
-                                  <a href="./data.php" class="" title="View Data"><i class="fe fe-file-text"></i></a>
+                                  <a href="./data.php?name=${data.project_name}&id=${data.project_id}" class="" title="View Data"><i class="fe fe-file-text"></i></a>
                                 </li>
                               </ul>`
                               : ""
@@ -313,7 +313,11 @@
                       $(this).removeClass('shadow-lg');
                     }
                   );
-                  $(".no-form").removeClass("active");
+                  
+                  if (projectData.length!==0) {
+                     $(".no-form").removeClass("active");
+                  }
+                  
                   $(".dimmer").removeClass("active");
                 } else {
                   console.log("Unable to retrieve data");

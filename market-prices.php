@@ -1,8 +1,22 @@
 <?php 
   include('functions.php');
-  if(!$_SESSION['user']){ 
-      header("Location: ./login.php"); 
-      exit; 
+  $user = $_SESSION['user'];
+  $project_ids = explode(', ', $user['project_id']);
+  $project_names = explode(', ', $user['project_name']);
+ 
+  if(!$user){ 
+    header("Location: ./login.php?nexturl=market-prices.php?$_SERVER[QUERY_STRING]");
+    exit; 
+  }
+  
+  if (isset($_GET['name'])&&isset($_GET['id'])) {
+    if (!in_array(e($_GET['name']), $project_names, true)||!in_array(e($_GET['id']), $project_ids, true)) {
+      header('HTTP/1.0 404 Not Found');
+      header('Location: ./404.html');
+    }
+  } else {
+    header("Location: ./forms.php"); 
+    exit;
   }
 ?>
 
@@ -90,9 +104,9 @@
                         $lastname = $_SESSION['user']['lastname'];
 
                         if ($firstname) {
-                          $words = explode(" ", '$firstname $lastname');
+                          $words = explode(" ", $firstname .' '. $lastname);
                           $initials = null;
-                          foreach ($words as  $w) {
+                          foreach ($words as $w) {
                             $initials .= $w[0];
                           }
                           echo $initials;
@@ -117,7 +131,7 @@
                     </span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a class="dropdown-item" href="./profile.php">
+                    <a class="dropdown-item" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#">
@@ -128,7 +142,7 @@
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="register-farmer.php?logout='1'">
+                    <a class="dropdown-item" href="market-prices.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
                   </div>

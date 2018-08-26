@@ -5,7 +5,8 @@ require.config({
     'tablesorter': ['jquery'],
     'vector-map-world': ['vector-map', 'jquery'],
     'circle-progress': ['jquery'],
-    'core': ['bootstrap', 'jquery']
+    'core': ['bootstrap', 'jquery'],
+    'cloudinary': ['jquery']
   },
   paths: {
     'core': './assets/js/core',
@@ -15,7 +16,8 @@ require.config({
     'selectize': './assets/js/vendors/selectize.min',
     'tablesorter': './assets/js/vendors/jquery.tablesorter.min',
     'circle-progress': './assets/js/vendors/circle-progress.min',
-    'chart': './assets/js/vendors/chart.bundle.min'
+    'chart': './assets/js/vendors/chart.bundle.min',
+    'cloudinary': './assets/js/vendors/widget.cloudinary.min'
   }
 });
 window.tabler = {

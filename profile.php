@@ -1,9 +1,10 @@
 <?php 
-  include('functions.php');
+  include('profile-config.php');
   if(!$_SESSION['user']){ 
-      header("Location: ./login.php"); 
-      exit; 
+    header("Location: ./login.php?nexturl=profile.php");
+    exit; 
   }
+  // var_dump($_SESSION['user']['firstname']);
 ?>
 
 <!DOCTYPE html>
@@ -87,7 +88,21 @@
                 <div class="dropdown">
                   <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
                     <span class="avatar avatar-blue">
-                        PT
+                      <?php
+                        $firstname = $_SESSION['user']['firstname'];
+                        $lastname = $_SESSION['user']['lastname'];
+
+                        if ($firstname) {
+                          $words = explode(" ", $firstname .' '. $lastname);
+                          $initials = null;
+                          foreach ($words as $w) {
+                            $initials .= $w[0];
+                          }
+                          echo $initials;
+                        } else if ($_SESSION['user']['user_type'] === 'agent') {
+                          echo "A";
+                        }
+                      ?>
                     </span>
                     <span class="ml-2 d-none d-lg-block">
                       <span class="text-primary">
@@ -105,7 +120,7 @@
                     </span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a class="dropdown-item active" href="./profile.php">
+                    <a class="dropdown-item active" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#">
@@ -122,7 +137,7 @@
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="profile.php?logout='1'">
+                    <a class="dropdown-item" href="./profile.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -147,25 +162,25 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                  <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator'||!isset($_GET['name'])) { ?>visibility: hidden;<?php } ?>">
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
-                    <?php if ($_GET['name'] === 'register-farmer') { ?>
+                    <?php if (isset($_GET['name'])&&$_GET['name']==='register-farmer') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
                         <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                         <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
                         <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
                       </div>
-                    <?php } elseif ($_GET['name'] === 'market-prices') { ?>
+                    <?php } elseif (isset($_GET['name'])&&$_GET['name']==='market-prices') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
                         <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                         <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Price Tables</a>
                       </div>
                     <?php } ?>
                   </li>
-                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator'||!isset($_GET['name'])) { ?>visibility: hidden;<?php } ?>">
                     <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
-                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator'||!isset($_GET['name'])) { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
@@ -175,21 +190,105 @@
         </div>
         <div class="my-3 my-md-5">
           <div class="container">
+            <?php echo alert(); ?>
             <div class="row">
               <div class="col-lg-4">
                 <div class="card card-profile">
                   <div class="card-header">
                   </div>
                   <div class="card-body text-center">
-                    <img class="card-profile-img" src="./assets/images/user.png">
+                    <form class="mb-4 text-center" id="profile-form" style="position: relative" enctype="multipart/form-data">
+                      <div class="dimmer">
+                        <div class="loader"></div>
+                        <div class="dimmer-content">
+                          <img class="card-profile-img" src="./assets/images/user.png">
+                          <div id="picPreview" class="profile-pic-preview"></div>
+                        </div>
+                      </div>
+                      <label for="profile-pic-input" id="profilePic" class="m-0">
+                        <img src="./assets/images/edit.png" alt="" class="img-fluid edit" style="width: 1rem;">
+                      </label>
+                      <input type="file" name="profile_pic" id="profile-pic-input" onchange="getPicture(this.files);" accept="image/*" required>
+                      <button type="submit" class="d-none pic-upload"></button>
+                    </form>
+                    <script>
+                      function getPicture(files) {
+                        var edit = document.querySelector(".edit"),
+                         preview = document.querySelector("#picPreview"),
+                        imgInput = document.querySelector("#profile-pic-input");
+                        var file = files[0];
+                        
+                        // if (!file.type.startsWith('image/')){ continue }
+                        var img = document.createElement("img"),
+                            div = document.createElement("div");
+                          
+                        function createImage() {      
+                          img.classList.add("profile-pic");
+                          div.classList.add("profile-pic-wrapper");
+                          img.file = file;
+                          div.appendChild(img);
+                          preview.appendChild(div);
+                          
+                          var reader = new FileReader();
+                          reader.onload = (function(myImg) {
+                            uploadPic(img);
+                          })(img);
+                          reader.readAsDataURL(file);
+                        }
+                        
+                        // console.log($("#profile-pic-input").val());
+                        var that = preview.childNodes[0];
+                        // console.log(preview.childNodes);
+                        if (preview.childNodes.length === 0) {
+                          createImage();
+                        } else {
+                          preview.removeChild(that);
+                          createImage();
+                        }
+
+                        function uploadPic(myImg) {
+                          require(['cloudinary', 'jquery'], function(cloudinary, $) {
+                            console.log("done");
+                            // $.post("save_profile_pic.php",
+                            // {
+                            //   picture: $("#profile-pic-input").val()
+                            // }).done(
+                            //   function(data,status){
+                            //     console.log("returned data is" + data);
+                            //   }
+                            // );
+                            $(function() {
+                              $.cloudinary.config({ cloud_name: 'plurimus-technologies', api_key: '917764174897416'});
+                              // Initiate upload
+                              cloudinary.openUploadWidget({ cloud_name: 'plurimus-technologies', upload_preset: 'z1esecda', tags: ['agridata_user_pic']}, 
+                              function(error, result) {
+                                if(error) console.log(error);
+                                // If NO error, log image data to console
+                                var id = result[0].public_id;
+                                console.log(processImage(id));
+                              });
+                            })
+                            function processImage(id) {
+                              var options = {
+                                client_hints: true,
+                              };
+                              
+                              return function() {
+                                myImg.src = $.cloudinary.url(id, options);
+                              };
+                            } 
+                          })
+                        }
+                      }
+                    </script>
                     <h3 class="mb-3">
-                        <?php
-                            if ($_SESSION['user']['firstname']) {
-                                echo $_SESSION['user']['firstname'].' '.$_SESSION['user']['lastname'];
-                            } else {
-                                echo "User";
-                            }
-                        ?>
+                      <?php
+                        if ($_SESSION['user']['firstname']) {
+                            echo $_SESSION['user']['firstname'].' '.$_SESSION['user']['lastname'];
+                        } else {
+                            echo "User";
+                        }
+                      ?>
                     </h3>
                     <p class="mb-4">
                       <small class="d-block">
@@ -198,9 +297,9 @@
                         ?>
                       </small>
                       <span>
-                          <?php
-                            echo ucfirst($_SESSION['user']['user_type']);
-                          ?>
+                        <?php
+                          echo ucfirst($_SESSION['user']['user_type']);
+                        ?>
                       </span>
                     </p>
                     <a href="mailto:<?php echo $_SESSION['user']['email'];?>" class="btn-sm btn-outline-primary btn">
@@ -219,7 +318,7 @@
                       <h5>About Me</h5>
                       <p>
                         <?php
-                            if ($_SESSION['user']['bio']) {
+                            if ($_SESSION['user']['bio']!=="") {
                                 echo $_SESSION['user']['bio'];
                             } else {
                                 echo "N/A";
@@ -231,11 +330,11 @@
                       <h5>Phone number</h5>
                       <p>
                         <?php
-                            if ($_SESSION['user']['phone']) {
-                                echo $_SESSION['user']['phone'];
-                            } else {
-                                echo "N/A";
-                            }
+                          if ($_SESSION['user']['phone']) {
+                              echo $_SESSION['user']['phone'];
+                          } else {
+                              echo "N/A";
+                          }
                         ?>
                       </p>
                     </div>
@@ -325,24 +424,46 @@
                         ?>
                       </p>
                     </div>
+                    <div class="">
+                      <h5>Town/Village</h5>
+                      <p>
+                        <?php
+                            if ($_SESSION['user']['town']) {
+                                echo $_SESSION['user']['town'];
+                            } else {
+                                echo "N/A";
+                            }
+                        ?>
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="col-lg-8">
-                <form class="card">
+                <form class="card" method="POST" action="./profile.php">
                   <div class="card-body">
                     <h3 class="card-title">Edit Profile</h3>
                     <div class="row">
-                      <div class="col-sm-6 col-md-6">
+                      <div class="col-sm-5 col-md-5">
                         <div class="form-group">
                           <label class="form-label">First Name<span class="form-required">*</span></label>
-                          <input type="text" class="form-control" placeholder="First Name" required>
+                          <input type="text" class="form-control" placeholder="First Name" name="firstname" required>
                         </div>
                       </div>
-                      <div class="col-sm-6 col-md-6">
+                      <div class="col-sm-5 col-md-5">
                         <div class="form-group">
                           <label class="form-label">Last Name<span class="form-required">*</span></label>
-                          <input type="text" class="form-control" placeholder="Last Name" required>
+                          <input type="text" class="form-control" placeholder="Last Name" name="lastname" required>
+                        </div>
+                      </div>
+                      <div class="col-sm-2 col-md-2">
+                        <div class="form-group">
+                          <label class="form-label">Gender<span class="form-required">*</span></label>
+                          <select name="gender" class="form-control custom-select" required>
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                          </select>
                         </div>
                       </div>
                       <div class="col-sm-12 col-md-12">
@@ -350,7 +471,7 @@
                           <label class="form-label">Date of Birth<span class="form-required">*</span></label>
                           <div class="row gutters-xs">
                             <div class="col-5">
-                              <select name="user[month]" class="form-control custom-select" required>
+                              <select name="dob_month" class="form-control custom-select" required>
                                 <option value="">Month</option>
                                 <option value="1">January</option>
                                 <option value="2">February</option>
@@ -367,7 +488,7 @@
                               </select>
                             </div>
                             <div class="col-3">
-                              <select name="user[day]" class="form-control custom-select" required>
+                              <select name="dob_day" class="form-control custom-select" required>
                                 <option value="">Day</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -403,7 +524,7 @@
                               </select>
                             </div>
                             <div class="col-4">
-                              <select name="user[year]" class="form-control custom-select" required>
+                              <select name="dob_year" class="form-control custom-select" required>
                                 <option value="">Year</option>
                                 <option value="2000">2000</option>
                                 <option value="1999">1999</option>
@@ -466,25 +587,25 @@
                       <div class="col-md-5">
                         <div class="form-group">
                           <label class="form-label">Username</label>
-                          <input type="text" class="form-control" disabled="" placeholder="Username" value="<?php echo $_SESSION['user']['username'];?>">
+                          <input type="text" class="form-control" disabled="disabled" placeholder="Username" value="<?php echo $_SESSION['user']['username'];?>">
                         </div>
                       </div>
                       <div class="col-sm-6 col-md-3">
                         <div class="form-group">
                           <label class="form-label">Phone Number<span class="form-required">*</span></label>
-                          <input type="number" class="form-control" placeholder="Phone Number" required>
+                          <input type="number" class="form-control" placeholder="Phone Number" name="phone" required>
                         </div>
                       </div>
                       <div class="col-sm-6 col-md-4">
                         <div class="form-group">
-                          <label class="form-label">Email address<span class="form-required">*</span></label>
-                          <input type="email" class="form-control" placeholder="Email" required>
+                          <label class="form-label">Email address</label>
+                          <input type="email" class="form-control" placeholder="Email" disabled="disabled" value="<?php echo $_SESSION['user']['email'];?>">
                         </div>
                       </div>
                       <div class="col-md-12">
                         <div class="form-group">
                           <label class="form-label">Address<span class="form-required">*</span></label>
-                          <input type="text" class="form-control" placeholder="Address" required>
+                          <input type="text" class="form-control" placeholder="Address" name="address" required>
                         </div>
                       </div>
                       <div class="col-lg-6 col-md-12">
@@ -492,54 +613,64 @@
                           <label class="form-label">Highest Level of Education<span class="form-required">*</span></label>
                           <select name="education" class="form-control custom-select" required>
                             <option value="">Select</option>
-                            <option value="1">None</option>
-                            <option value="2">Quaranic</option>
-                            <option value="3">Primary</option>
-                            <option value="4">Secondary</option>
-                            <option value="5">Tertiary</option>
+                            <option value="None">None</option>
+                            <option value="Quaranic">Quaranic</option>
+                            <option value="Primary">Primary</option>
+                            <option value="Secondary">Secondary</option>
+                            <option value="Tertiary">Tertiary</option>
                           </select>
                         </div>
                       </div>
                       <div class="col-lg-6 col-md-12">
                         <div class="form-group">
                           <label class="form-label">Degree - If available</label>
-                          <select name="education" class="form-control custom-select">
+                          <select name="degree" class="form-control custom-select">
                             <option value="">Select</option>
-                            <option value="1">None</option>
-                            <option value="2">Quaranic</option>
-                            <option value="3">Primary</option>
-                            <option value="4">Secondary</option>
-                            <option value="5">Tertiary</option>
+                            <option value="B.Tech">B.Tech</option>
+                            <option value="B.Eng">B.Eng</option>
+                            <option value="B.Sc">B.Sc</option>
+                            <option value="B.A">B.A</option>
+                            <option value="B.Arch">B.Arch</option>
+                            <option value="M.B">M.B.B.S</option>
+                            <option value="B.Pharm">B.Pharm</option>
+                            <option value="B.Ed">B.Ed</option>
+                            <option value="LL.B">LL.B</option>
+                            <option value="Others">Others</option>
                           </select>
                         </div>
                       </div>
-                      <div class="col-sm-6 col-md-6">
+                      <div class="col-lg-4 col-md-12">
                         <div class="form-group">
-                          <label class="form-label">State of Residence<span class="form-required">*</span></label>
-                          <select name="state" class="form-control custom-select" required>
+                          <label class="form-label">State<span class="form-required">*</span></label>
+                          <select name="user_state" class="form-control custom-select" id="state-select"  onChange="updateTownSelect(this.value);" required>
                             <option value="">Select state</option>
-                            <option value="1">Kano</option>
                           </select>
                         </div>
                       </div>
-                      <div class="col-md-6">
+                      <div class="col-lg-4 col-md-12">
                         <div class="form-group">
-                          <label class="form-label">Local Government Area<span class="form-required">*</span></label>
-                          <select name="town" class="form-control custom-select" required>
+                          <label class="form-label">Local Gov't Area (LGA)<span class="form-required">*</span></label>
+                          <select name="user_lga" class="form-control custom-select" id="lga-select" required>
                             <option value="">Select LGA</option>
                           </select>
+                        </div>
+                      </div>
+                      <div class="col-lg-4 col-md-12">
+                        <div class="form-group">
+                          <label class="form-label">Town/Village<span class="form-required">*</span></label>
+                          <input type="text" name="user_town" class="form-control" autocomplete="off" required>
                         </div>
                       </div>
                       <div class="col-md-12">
                         <div class="form-group mb-0">
                           <label class="form-label">About Me</label>
-                          <textarea rows="5" class="form-control" placeholder="Brief description about you..."></textarea>
+                          <textarea rows="5" class="form-control" placeholder="Brief description about you..." name="about_user"></textarea>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div class="card-footer text-right">
-                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                    <button type="submit" class="btn btn-primary" name="update_profile">Update Profile</button>
                   </div>
                 </form>
               </div>
@@ -557,5 +688,9 @@
         </div>
       </footer>
     </div>
+    <!-- LGA Data -->
+    <script src="./assets/js/lga_data.js"></script>
+    <!-- LGA js -->
+    <script src="./assets/js/lga.js"></script>
   </body>
 </html>

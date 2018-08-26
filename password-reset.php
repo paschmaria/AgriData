@@ -1,5 +1,5 @@
 <?php 
-  include('functions.php');
+  include('password_reset_config.php');
 ?>
 
 <!DOCTYPE html>
@@ -53,17 +53,20 @@
                 </a>
               </div>
               <?php echo alert(); ?>
-              <form class="card" action="./forgot-password.php" method="post">
+              <form class="card" action="./password-reset.php<?php echo isset($_GET['pass_rc']) ? '?pass_rc='.e($_GET['pass_rc']) : null ?>" method="post">
                 <div class="card-body p-6">
-                  <div class="card-title text-center">Forgot password</div>
-                  <p class="text-muted">Enter your email address and we will send you a link to reset your password.</p>
+                  <div class="card-title text-center">Create New Password</div>
                   <div class="form-group">
-                    <label class="form-label" for="userEmail">Email address</label>
-                    <input type="email" class="form-control" name="email" id="userEmail" aria-describedby="emailHelp" placeholder="Enter email address" required>
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control" name="passw_1" placeholder="Password" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" name="passw_2" placeholder="Confirm password" required>
                   </div>
                   <?php echo display_error(); ?>
                   <div class="form-footer">
-                    <button type="submit" class="btn btn-primary btn-block" name="send_email">Send password reset email</button>
+                    <button type="submit" class="btn btn-primary btn-block" name="reset_password">Reset password</button>
                   </div>
                 </div>
               </form>

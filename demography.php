@@ -3,14 +3,17 @@
   $user = $_SESSION['user'];
   $project_ids = explode(', ', $user['project_id']);
   if(!$user){ 
-    header("Location: ./login.php"); 
+    header("Location: ./login.php?nexturl=demography.php?$_SERVER[QUERY_STRING]");
     exit; 
   }
 
   if (isset($_GET['id'])) {
-    if ($user['user_type']!=='administrator' || !in_array(e($_GET['id']), $project_ids, true)) {
+    if ($user['user_type']!=='administrator') {
       header('HTTP/1.0 403 Forbidden');
       header('Location: ./403.html');
+    } elseif (!in_array(e($_GET['id']), $project_ids, true)) {
+      header('HTTP/1.0 404 Not Found');
+      header('Location: ./404.html');
     }
   } else {
     header("Location: ./forms.php"); 
@@ -103,9 +106,9 @@
                         $lastname = $_SESSION['user']['lastname'];
 
                         if ($firstname) {
-                          $words = explode(" ", '$firstname $lastname');
+                          $words = explode(" ", $firstname .' '. $lastname);
                           $initials = null;
-                          foreach ($words as  $w) {
+                          foreach ($words as $w) {
                             $initials .= $w[0];
                           }
                           echo $initials;
@@ -130,7 +133,7 @@
                     </span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a class="dropdown-item" href="./profile.php">
+                    <a class="dropdown-item" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#">
@@ -173,18 +176,18 @@
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
                       <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                       <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
+                      <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-bar-chart-2"></i> Demographics</a>
                     </div>
                   </li>
                   <li class="nav-item">
                     <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
                   <li class="nav-item">
-                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>
+                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>

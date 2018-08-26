@@ -1,5 +1,8 @@
 <?php 
   include('verification-config.php');
+  // if ($_SESSION['user']) {
+  //   header("Location: ./forms.php");
+  // }
 ?>
 
 <!DOCTYPE html>
@@ -53,7 +56,7 @@
                 </a>
               </div>
               <?php echo alert(); ?>
-              <form class="card" action="./login.php" method="post">
+              <form class="card" action="./login.php<?php echo isset($_GET['nexturl'])&&isset($_GET['id']) ? '?nexturl='. e($_GET['nexturl'].'&id='.$_GET['id']) : null ?>" method="post">
                 <div class="card-body p-6">
                   <h3 class="card-title text-center">Welcome</h3>
                   <div class="form-group">
@@ -63,7 +66,7 @@
                   <div class="form-group">
                     <label for="loginPass" class="form-label">Password</label>
                     <input type="password" class="form-control" id="loginPass" placeholder="Password" name="password" required>
-                    <a href="./forgot-password.html" class="float-right small">Forgot password</a>
+                    <a href="./forgot-password.php" class="float-right small">Forgot password</a>
                   </div>
                   <div class="form-group">
                     <label class="custom-control custom-checkbox">

@@ -36,7 +36,7 @@
     }
   }
 
-  if (!empty($_GET['id'])) {
+  if (isset($_GET['name'])&&isset($_GET['id'])) {
     $user_project_name = $user['project_name'];
     $project_name_arr = explode(', ', $user_project_name);
     $user_project_id = $user['project_id'];
@@ -44,10 +44,10 @@
     $project_name = e($_GET['name']);
     $project_id = e($_GET['id']);
 
-    if(!$user){ 
-      header("Location: ./login.php?location=agridata.plurimustech.ng/forms.php&name={$project_name}&id={$project_id}"); 
-      exit;
-    }
+    // if(!$user){ 
+    //   header("Location: ./login.php?location=agridata.plurimustech.ng/forms.php&name={$project_name}&id={$project_id}"); 
+    //   exit;
+    // }
 
     if ($user['user_type']==="administrator") {
       foreach ($project_name_arr as $project) {
@@ -74,6 +74,8 @@
       }
     } elseif ($user['user_type']==="agent") {
       $collaborator = $user['username'];
+
+      // get all the collaborators on this project
       $query = "SELECT collaborators FROM projects WHERE project_name='$project_name' AND project_id='$project_id' LIMIT 1";
       $merged_arr = is_array(fetch_users($query, 'collaborators')) ? array_merge($collaborator_arr, fetch_users($query, 'collaborators')) : $collaborator_arr;
 
@@ -84,12 +86,14 @@
       }
 
       $new_collaborators = implode(', ', $merged_arr);
-      // var_dump($merged_arr);
+
+      // add user as a collaborator on the project
       $query = "UPDATE projects SET collaborators='$new_collaborators' WHERE project_name='$project_name' AND project_id='$project_id' LIMIT 1";
       if (!mysqli_query($db, $query)) {
         var_dump(mysqli_error($db));
       }
 
+      // update project status on user database
       update_user_project($collaborator, $project_name);
     }
   }

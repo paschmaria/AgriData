@@ -1,7 +1,7 @@
 <?php
   include('functions.php');
 
-  if (!empty($_GET['hvc'])) {
+  if (isset($_GET['hvc'])) {
     $verify_code = e($_GET['hvc']);
     $zero = 0;
     $one = 1;

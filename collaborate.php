@@ -1,16 +1,20 @@
 <?php 
-  include('functions.php');
+  include('invite-user.php');
   $user = $_SESSION['user'];
+  // var_dump($_SERVER['QUERY_STRING']);
   $project_ids = explode(', ', $user['project_id']);
   if(!$user){ 
-    header("Location: ./login.php"); 
+    header("Location: ./login.php?nexturl=collaborate.php?$_SERVER[QUERY_STRING]"); 
     exit; 
   }
 
   if (isset($_GET['id'])) {
-    if ($user['user_type']!=='administrator' || !in_array(e($_GET['id']), $project_ids, true)) {
+    if ($user['user_type']!=='administrator') {
       header('HTTP/1.0 403 Forbidden');
       header('Location: ./403.html');
+    } elseif (!in_array(e($_GET['id']), $project_ids, true)) {
+      header('HTTP/1.0 404 Not Found');
+      header('Location: ./404.html');
     }
   } else {
     header("Location: ./forms.php"); 
@@ -129,7 +133,7 @@
                     </span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a class="dropdown-item" href="./profile.php">
+                    <a class="dropdown-item" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#">
@@ -140,7 +144,7 @@
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="register-farmer.php?logout='1'">
+                    <a class="dropdown-item" href="./collaborate.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
                   </div>
@@ -193,19 +197,22 @@
         </div>
         <div class="my-3 my-md-5">
           <div class="container">
+            <?php echo display_error(); ?>
             <div class="card">
               <div class="card-header">
-                <div class="card-title d-inline-flex">
-                  <select class="form-control custom-select m-2">
+                <div class="card-title d-inline-flex flex-sm-row flex-column">
+                  <select class="form-control custom-select m-2 mw-sm" style="width: 60%;">
                     <option value="1">Accepted Invitation</option>
                     <option value="2">Pending Invitation</option>
                   </select>
-                  <div class="input-group m-2">
-                    <input type="email" class="form-control" placeholder="Enter email address...">
-                    <span class="input-group-append">
-                      <button class="btn btn-primary" type="button">Invite</button>
-                    </span>
-                  </div>
+                  <form method="POST" action="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="invite-form">
+                    <div class="input-group m-2">
+                      <input type="email" class="form-control" placeholder="Enter email address..." name="email_invite">
+                      <span class="input-group-append">
+                        <button class="btn btn-primary" type="submit" name="invite_user">Invite</button>
+                      </span>
+                    </div>
+                  </form>
                 </div>
                 <div class="card-options">
                   <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
@@ -216,14 +223,14 @@
                   <thead>
                     <tr>
                       <th class="w-1">S/N</th>
-                      <th>Invoice Subject</th>
-                      <th>Client</th>
-                      <th>VAT No.</th>
-                      <th>Created</th>
-                      <th>Status</th>
-                      <th>Price</th>
-                      <th></th>
-                      <th></th>
+                      <th>Full Name</th>
+                      <th>Phone Number</th>
+                      <th>Email Address</th>
+                      <th>Sent Invite</th>
+                      <th>Accepted Invite</th>
+                      <th>Signed Up</th>
+                      <th>Response(s) Collected</th>
+                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -244,5 +251,30 @@
         </div>
       </footer>
     </div>
+    <script>
+      require(['jquery'], function ($) {
+        $(function () {
+          // $('form.invite-form').submit(function(e) {
+          //   $("button[type=submit]").addClass("disabled");
+          //   var formData = $('input[name=email_invite]').val();
+          //   $.ajax({
+          //     type      :'POST',
+          //     url       :'invite-user.php',
+          //     data      :formData,
+          //     contentType: "application/json;charset=UTF-8"
+          //   }).done(function(data) {
+          //     console.log(data);
+          //     $('input[name=email_invite]').val('');
+          //     $("button[type=submit]").removeClass("disabled");
+          //   }).fail(function (error) {
+          //     console.log(error);
+          //     $('input[name=email_invite]').val('');
+          //     $("button[type=submit]").removeClass("disabled");
+          //   })
+          //   e.preventDefault();
+          // })
+        })
+      })
+    </script>
   </body>
 </html>

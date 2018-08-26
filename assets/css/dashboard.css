@@ -18694,7 +18694,7 @@ svg {
   cursor: pointer;
 }
 
-#farmer-pic-input {
+#farmer-pic-input,#profile-pic-input {
   position: absolute;
   top: 0;
   display: none;
@@ -18704,6 +18704,47 @@ svg {
   height: 100%;
   border-radius: 3px;
   max-width: 100%;
+}
+
+#profilePic {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  max-width: 2rem;
+  height: auto;
+  width: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  top: -40%;
+  left: 53%;
+  padding: 7px;
+}
+
+.profile-pic {
+  max-width: 6rem;
+  height: 100%;
+  width: 100%;
+}
+
+.profile-pic-wrapper {
+  height: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.profile-pic-preview {
+  height: 6rem;
+  max-width: 6rem;
+  position: absolute;
+  top: -250%;
+  left: 42.5%;
 }
 
 .m-h {
@@ -18770,5 +18811,11 @@ svg {
     -ms-flex: 0 0 14.28571429%;
     flex: 0 0 14.28571429%;
     max-width: 14.28571429%;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .mw-sm {
+    width: 100% !important;
   }
 }

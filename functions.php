@@ -19,11 +19,6 @@
 	array_push($project_name, "market-prices");
 	array_push($project_name, "farmers-survey");
 
-	// call the register() function if register button is clicked
-	if (isset($_POST['register'])) {
-		register();
-	}
-
 	// REGISTER USER
 	function register(){
 		global $db, $errors, $username, $email;
@@ -45,6 +40,9 @@
 		if (empty($password_1)) { 
 			array_push($errors, "Password is required"); 
 		}
+		if (empty($password_2)) { 
+			array_push($errors, "Please confirm password"); 
+		}
 		if ($password_1 !== $password_2) {
 			array_push($errors, "The two passwords do not match");
 		}
@@ -53,7 +51,7 @@
 		// a user does not already exist with the same username and/or email
 		$user_check_query = "SELECT * FROM users WHERE username='$username' OR email='$email' LIMIT 1";
 		$result = mysqli_query($db, $user_check_query);
-		$user = $project = mysqli_fetch_assoc($result);
+		$user = mysqli_fetch_assoc($result);
 		
 		if ($user) { // if user exists
 			if ($user['username'] === $username && $user['email'] === $email) {
@@ -66,11 +64,12 @@
 		}
 
 		// register user if there are no errors in the form
-		if (count($errors) == 0) {
+		if (count($errors) === 0) {
 			$password = md5($password_1); //encrypt the password before saving in the database
 			$verify_code = md5(uniqid(rand(0,1000))); // Generate random 32 character hash and assign it to a local variable.
+			$signed_up_time = date("Y-m-d H:i:s", time());
 
-			$query = "INSERT INTO users (username, email, firstname, lastname, phone, gender, user_type, password, verify_code, verified, address, date_of_birth, bio, education, degree, state, lga) VALUES ('$username', '$email', '', '', '', '', 'agent', '$password', '$verify_code', 0, '', '1000-01-01', '', '', '', '', '')";
+			$query = "INSERT INTO users (username, email, firstname, lastname, phone, gender, user_type, password, verify_code, verified, address, date_of_birth, bio, education, degree, state, lga, signed_up) VALUES ('$username', '$email', '', '', '', '', 'agent', '$password', '$verify_code', 0, '', '1000-01-01', '', '', '', '', '', '$signed_up_time')";
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
 			} else {
@@ -78,7 +77,7 @@
 				$logged_in_user_id = mysqli_insert_id($db);
 				$_SESSION['user'] = getUserById($logged_in_user_id); // put logged in user in session
 				$_SESSION['success']  = "You are now logged in";
-				send_email($email, $verify_code);
+				verification_email_content($email, $verify_code);
 
 				header('location: ./verify-email.php');
 			}
@@ -86,13 +85,38 @@
 			exit;
 		}
 	}
-	// Send email to our user
-	function send_email($email, $verify_code) {
-		require("./sendgrid/sendgrid-php.php");
-		$from = new SendGrid\Email("AgriData Team", "noreply@plurimustech.ng");
+
+	function invite_email_content($email, $id, $name, $user) {
+		$name_arr			= explode("-", $name);
+		$project_name = ucfirst(implode(" ", $name_arr));
+		$subject			= "You are invited to collaborate on the " . $project_name . " project!";
+		$message			= "
+			<h1>Hey there!</h1>
+			<br />
+			<p>You've been invited by ". ucfirst($user) ." to join the ". $project_name ." project.</p>
+			<br />
+			<p>Click on the button below to join.</p>
+
+			<a href='https://agridata.plurimustech.ng/forms?name=". $name ."&id=". $id ."'>
+					<button type='button' style='padding: 0.75rem; background-color: #817729; -webkit-appearance: button; font-size: 0.8215rem; text-align: center; border-radius: 3px; border: 1px solid #786e21; color: #fff;'>Activate Account</button>
+				</a>
+				
+			<br />
+			<p> or copy the following link to your browser:</p>
+			<br />
+			https://agridata.plurimustech.ng/forms?name=". $name ."&id=". $id ."
+			<br />
+
+			<p>Thanks</p>
+			<p>Your friends at AgriData</p>
+		";
+
+		send_email($subject, $email, $message);
+	}
+
+	function verification_email_content($email, $code) {
 		$subject = "Welcome to AgriData! Activate Your Account";
-		$to = new SendGrid\Email("", $email);
-		$content = new SendGrid\Content("text/html", "
+		$message = "
 			<div style='background-color: #f5f7fb; color: #495057;'>
 				<h1>You're almost there!</h1>
 				<br />
@@ -100,25 +124,62 @@
 				<br />
 				------------------------------------------------
 				<br />
-				<a href='https://agridata.plurimustech.ng/login.php?hvc=".$verify_code."'>
+				<a href='https://agridata.plurimustech.ng/login?hvc=".$code."'>
 					<button type='button' style='padding: 0.75rem; background-color: #817729; -webkit-appearance: button; font-size: 0.8215rem; text-align: center; border-radius: 3px; border: 1px solid #786e21; color: #fff;'>Activate Account</button>
 				</a>
 				
 				<br />
 				<p> or copy the link to your browser:</p>
 				<br />
-				https://agridata.plurimustech.ng/login.php?hvc=".$verify_code."
+				https://agridata.plurimustech.ng/login?hvc=".$code."
 				<br />
 				------------------------------------------------
+
+				<p>Thanks</p>
+				<p>Your friends at AgriData</p>
 			</div>
-		");
+		";
+
+		send_email($subject, $email, $message);
+	}
+
+	function password_reset_email_content($email, $code) {
+		global $db;
+
+		$subject = "Please reset your password";
+		$message = "
+			<p>We are so sorry you lost your AgriData password!</p>
+
+			<p>But don't worry, you'll be back in as soon as possible! Click on the link below to reset your password:</p>
+
+			https://agridata.plurimustech.ng/password-reset?pass_rc=".$code."
+
+			<br />
+			<p>This link will expire within 3 hours if you don't use it. To get a new password reset link, visit https://agridata.plurimustech.ng/forgot-password</p>
+			
+			<p>Thanks</p>
+			<p>Your friends at AgriData</p>
+		";
+
+		send_email($subject, $email, $message);
+
+		$query = "UPDATE users SET password_reset_code='$code' WHERE email='$email' LIMIT 1";
+		if (!mysqli_query($db, $query)) {
+			mysqli_error($db);
+		}
+	}
+
+	// Send email to our user
+	function send_email($subject, $email, $message) {
+		require("./sendgrid/sendgrid-php.php");
+		$from = new SendGrid\Email("AgriData Team", "noreply@plurimustech.ng");
+		// $subject = $subject;
+		$to = new SendGrid\Email("", $email);
+		$content = new SendGrid\Content("text/html", $message);
 		$mail = new SendGrid\Mail($from, $subject, $to, $content);
 		$apiKey = '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';
 		$sg = new \SendGrid($apiKey);
 		$response = $sg->client->mail()->send()->post($mail);
-		// var_dump($response->statusCode());
-		// var_dump($response->body());
-
 	}
 
 	// return user array from their id
@@ -128,7 +189,7 @@
 		$query = "SELECT * FROM users WHERE id=$id";
 		$result = mysqli_query($db, $query);
 
-		$user = $project = mysqli_fetch_assoc($result);
+		$user = mysqli_fetch_assoc($result);
 		return $user;
 	}
 
@@ -185,6 +246,11 @@
 		}
 	}
 
+	// call the register() function if register button is clicked
+	if (isset($_POST['register'])) {
+		register();
+	}
+
 	// log user out when logout link is clicked
 	if (isset($_GET['logout'])) {
 		session_destroy();
@@ -192,20 +258,15 @@
 		header("location: login.php");
 	}
 
-	// call the send_email() function if resend btn is clicked
+	// call the resend_email() function if resend btn is clicked
 	if (isset($_POST['resend'])) {
-		global $db;
-
-		$verify_code = md5(rand(0,1000));
-		$email = $_SESSION['user']['email'];
-		$query = "UPDATE users SET verify_code='$verify_code' WHERE email='$email'";
-		if (!mysqli_query($db, $query)) {
-			var_dump(mysqli_error($db));
-		} else {
-			send_email($email, $verify_code);
-		}
-    
-  }
+		resend_email();
+	}
+	
+	// call the reset password function if the button is clicked
+	if (isset($_POST['send_email'])) {
+		reset_password();
+	}
 
 	// call the login() function if login btn is clicked
 	if (isset($_POST['login'])) {
@@ -215,6 +276,50 @@
 	// call the register_farmer() function if the Forms btn is clicked
 	if (isset($_POST['register_farmer'])) {
 		register_farmer();
+	}
+
+	// resend email
+	function resend_email() {
+		global $db;
+		
+		$verify_code = md5(rand(0,1000));
+		$email = $_SESSION['user']['email'];
+		$query = "UPDATE users SET verify_code='$verify_code' WHERE email='$email'";
+		if (!mysqli_query($db, $query)) {
+			var_dump(mysqli_error($db));
+		} else {
+			verification_email_content($email, $verify_code);
+		}
+	}
+
+	function reset_password() {
+		global $db, $errors, $email;
+
+		// receive input from the form. 
+		// call the e() function to escape email value
+		$email = e(e_valid($_POST['email']));
+		$verify_code = md5(uniqid(rand(1000,3000)));
+
+		// form validation: ensure that the form is correctly filled
+		if (empty($email)) { 
+			array_push($errors, "Email is required"); 
+		}
+
+		$query = "SELECT * FROM users WHERE email='$email' LIMIT 1";
+		$results = mysqli_query($db, $query);
+
+		if (mysqli_num_rows($results)===1) {
+			password_reset_email_content($email, $verify_code);
+			alert_message("Check your email for a link to reset your password. If it doesn’t appear within a few minutes, check your spam folder.", "success");
+
+			$query = "CREATE EVENT expireevent ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 3 HOURS DO UPDATE users SET password_reset_code='' WHERE email='$email' LIMIT 1";
+
+			if (!mysqli_query($db, $query)) {
+				mysqli_error($db);
+			}
+		} else {
+			array_push($errors, "User with email address does not exist!");
+		}
 	}
 
 	// LOGIN USER
@@ -243,7 +348,7 @@
 				// check if user is administrator or agent
 				$logged_in_user = mysqli_fetch_assoc($results);
 				if ($logged_in_user['verified']!=="1") {
-					alert_message("Your account has not been activated!", "danger");
+					alert_message("Your account has not been activated! Click on the link sent to your email.", "danger");
 				} else {
 					if ($logged_in_user['user_type'] === 'administrator') {
 
@@ -254,12 +359,11 @@
 						redirect_url();
 					}else{
 						$_SESSION['user'] = $logged_in_user;
-						$_SESSION['success']  = "You are now logged in";
+						$_SESSION['success']  = "You are now logged in as a Collaborator";
 						update_projects($_SESSION['user']);
 						redirect_url();
 					}
-				}
-				
+				}				
 			} else {
 				array_push($errors, "Wrong username/password combination");
 			}
@@ -270,7 +374,8 @@
 	// set project id of the project the user is on
 	function assign_project($user) {
 		global $db;
-
+        
+		$username = $user['username'];
 		$project_name = $user['project_name'];
 		$project_arr = explode(', ', $project_name);
 		$project_ids = array();
@@ -283,8 +388,8 @@
 		}
 		
 		$project_id = implode(', ', $project_ids);
-		$new_query = "UPDATE users SET project_id='$project_id' WHERE project_name='$project_name'";
-		if (!mysqli_query($db, $new_query)) {
+		$new_query = "UPDATE users SET project_id='$project_id' WHERE username='$username' LIMIT 1";
+		if (!mysqli_query($db, $query)) {
 			var_dump(mysqli_error($db));
 		}
 	}
@@ -312,16 +417,14 @@
 
 	// redirect to previous locaton on login
 	function redirect_url()	{
-		// var_dump($_GET['location']);
-		if (!empty($_GET['location'])) {
-			$new_url = e($_GET['location']);
-			header("location: {$new_url}");
+		if (isset($_GET['nexturl'])&&isset($_GET['id'])) {
+			// var_dump($_GET['nexturl'].'&id='.$_GET['id']);
+			$new_url = e($_GET['nexturl'].'&id='.$_GET['id']);
+			header("Location: {$new_url}");
 		} else {
-			header("location: ./forms.php");
+			header("Location: ./forms.php");
 		}
 	}
-
-	
 
 	// Variable declaration
 	$month 				= "";
@@ -332,14 +435,14 @@
 	$produce_size = "";
 	$produce_unit = "";
 
-	function check_and_save_file($fs,$fn,$ft) {
+	function check_and_save_file($fs,$fn,$ft,$f_n) {
 		global $errors;
 		// Check size
 		if($fs > 2097152){
 			array_push($errors, "File size must be less than 2 MB");
 		}
 
-		$dir_name				= "./assets/images/farmers_pictures";
+		$dir_name				= "./assets/images/".$f_n;
 		$picFileType 		= strtolower(pathinfo("$dir_name/".$fn, PATHINFO_EXTENSION));
 		$extensions_arr = array("jpg","jpeg","png","svg");
 		// Check extension
@@ -359,7 +462,7 @@
 		return $newFN;
 	}
 
-	function getFileProp($files) {
+	function getFileProp($files,$folder_name) {
 		$fileNameArr = array();
 		if (isset($files)) {
 			foreach ($files["tmp_name"] as $key => $tmp_name) {
@@ -368,7 +471,7 @@
 				$file_tmp  = $files['tmp_name'][$key];
 				$file_type = $files['type'][$key];
 
-				array_push($fileNameArr, check_and_save_file($file_size, $file_name, $file_tmp));
+				array_push($fileNameArr, check_and_save_file($file_size,$file_name,$file_tmp,$folder_name));
 			}
 		}
 		return $fileNameArr;
@@ -411,11 +514,11 @@
 		$farmer_pic_size = $farmer_pic['size'];
 		$farmer_pic_tmp  = $farmer_pic['tmp_name'];
 		
-		$user					=  $_SESSION['user']['username'];
-		$land_area		=  $land_size." ".$land_unit;
-		$produce_volume= $produce_size." ".$produce_unit;
-		$new_farmer_pic= check_and_save_file($farmer_pic_size,$farmer_pic_name,$farmer_pic_tmp);
-		$new_farm_pic	= (implode(",", getFileProp($farm_pic)));
+		$user					  = $_SESSION['user']['username'];
+		$land_area		  = $land_size." ".$land_unit;
+		$produce_volume = $produce_size." ".$produce_unit;
+		$new_farmer_pic = check_and_save_file($farmer_pic_size,$farmer_pic_name,$farmer_pic_tmp,"farmers_pictures");
+		$new_farm_pic	  = implode(",", getFileProp($farm_pic,"farmers_pictures"));
 		
 		// form validation: ensure that the form is correctly filled
 		$n = $firstname;
@@ -519,7 +622,7 @@
 		// first check the database to make sure farmer's details have not already been submitted
 		$farmer_check_query = "SELECT * FROM farmers WHERE phone_primary='$phone1' LIMIT 1";
 		$result = mysqli_query($db, $farmer_check_query);
-		$farmer = $project = mysqli_fetch_assoc($result);
+		$farmer = mysqli_fetch_assoc($result);
 		if ($farmer) { // if farmer exists
 			if ($farmer['firstname'] === $firstname && $farmer['lastname'] === $lastname && $farmer['phone_primary'] === $phone1) {
 				array_push($errors, "Farmer has been registered!");
