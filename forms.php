@@ -120,7 +120,7 @@
                     </span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a class="dropdown-item" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
+                    <a class="dropdown-item profile" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#">
@@ -296,6 +296,9 @@
                         </div>
                       </div>
                     `);
+
+                    var a = document.querySelector(".profile");
+                    a.href = `./profile.php?name=${data.project_name}&id=${data.project_id}`
                   });
                   
                   var card = $('.card');

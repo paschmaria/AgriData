@@ -17,7 +17,7 @@
       $projid = e($_GET['id']);
       $sent_invite = date("Y-m-d H:i:s", time());
       $admin = $_SESSION['user']['username'];
-      // var_dump($sent_invite);
+
       // form validation: ensure that the form is correctly filled
       if (empty($email)) { 
         array_push($errors, "Email is required"); 
@@ -43,6 +43,5 @@
         }
       }
     }
-    // var_dump($_GET['name']);
-    // echo $errors;
+    
 	}

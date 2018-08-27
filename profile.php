@@ -214,6 +214,7 @@
                     <script>
                       function getPicture(files) {
                         var edit = document.querySelector(".edit"),
+                          dimmer = document.querySelector(".dimmer"),
                          preview = document.querySelector("#picPreview"),
                         imgInput = document.querySelector("#profile-pic-input");
                         var file = files[0];
@@ -231,7 +232,12 @@
                           
                           var reader = new FileReader();
                           reader.onload = (function(myImg) {
-                            uploadPic(img);
+                            // uploadPic(img);
+                            dimmer.classList.add("active");
+                            return function(e) {
+                              myImg.src = e.target.result;
+                              dimmer.classList.remove("active");
+                            };
                           })(img);
                           reader.readAsDataURL(file);
                         }
@@ -246,39 +252,39 @@
                           createImage();
                         }
 
-                        function uploadPic(myImg) {
-                          require(['cloudinary', 'jquery'], function(cloudinary, $) {
-                            console.log("done");
-                            // $.post("save_profile_pic.php",
-                            // {
-                            //   picture: $("#profile-pic-input").val()
-                            // }).done(
-                            //   function(data,status){
-                            //     console.log("returned data is" + data);
-                            //   }
-                            // );
-                            $(function() {
-                              $.cloudinary.config({ cloud_name: 'plurimus-technologies', api_key: '917764174897416'});
-                              // Initiate upload
-                              cloudinary.openUploadWidget({ cloud_name: 'plurimus-technologies', upload_preset: 'z1esecda', tags: ['agridata_user_pic']}, 
-                              function(error, result) {
-                                if(error) console.log(error);
-                                // If NO error, log image data to console
-                                var id = result[0].public_id;
-                                console.log(processImage(id));
-                              });
-                            })
-                            function processImage(id) {
-                              var options = {
-                                client_hints: true,
-                              };
+                        // function uploadPic(myImg) {
+                        //   require(['cloudinary', 'jquery'], function(cloudinary, $) {
+                        //     console.log("done");
+                        //     // $.post("save_profile_pic.php",
+                        //     // {
+                        //     //   picture: $("#profile-pic-input").val()
+                        //     // }).done(
+                        //     //   function(data,status){
+                        //     //     console.log("returned data is" + data);
+                        //     //   }
+                        //     // );
+                        //     $(function() {
+                        //       $.cloudinary.config({ cloud_name: 'plurimus-technologies', api_key: '917764174897416'});
+                        //       // Initiate upload
+                        //       cloudinary.openUploadWidget({ cloud_name: 'plurimus-technologies', upload_preset: 'z1esecda', tags: ['agridata_user_pic']}, 
+                        //       function(error, result) {
+                        //         if(error) console.log(error);
+                        //         // If NO error, log image data to console
+                        //         var id = result[0].public_id;
+                        //         console.log(processImage(id));
+                        //       });
+                        //     })
+                        //     function processImage(id) {
+                        //       var options = {
+                        //         client_hints: true,
+                        //       };
                               
-                              return function() {
-                                myImg.src = $.cloudinary.url(id, options);
-                              };
-                            } 
-                          })
-                        }
+                        //       return function() {
+                        //         myImg.src = $.cloudinary.url(id, options);
+                        //       };
+                        //     } 
+                        //   })
+                        // }
                       }
                     </script>
                     <h3 class="mb-3">

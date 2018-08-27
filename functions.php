@@ -69,7 +69,7 @@
 			$verify_code = md5(uniqid(rand(0,1000))); // Generate random 32 character hash and assign it to a local variable.
 			$signed_up_time = date("Y-m-d H:i:s", time());
 
-			$query = "INSERT INTO users (username, email, firstname, lastname, phone, gender, user_type, password, verify_code, verified, address, date_of_birth, bio, education, degree, state, lga, signed_up) VALUES ('$username', '$email', '', '', '', '', 'agent', '$password', '$verify_code', 0, '', '1000-01-01', '', '', '', '', '', '$signed_up_time')";
+			$query = "INSERT INTO users (username, email, firstname, lastname, profile_pic, phone, gender, user_type, password, password_reset_code, project_name, project_id, verify_code, verified, address, date_of_birth, bio, education, degree, state, lga, town, signed_up) VALUES ('$username', '$email', '', '', '', '', '', 'agent', '$password', '', '', '', '$verify_code', 0, '', '1000-01-01', '', '', '', '', '', '', '$signed_up_time')";
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
 			} else {
@@ -98,7 +98,7 @@
 			<p>Click on the button below to join.</p>
 
 			<a href='https://agridata.plurimustech.ng/forms?name=". $name ."&id=". $id ."'>
-					<button type='button' style='padding: 0.75rem; background-color: #817729; -webkit-appearance: button; font-size: 0.8215rem; text-align: center; border-radius: 3px; border: 1px solid #786e21; color: #fff;'>Activate Account</button>
+					<button type='button' style='padding: 0.75rem; background-color: #817729; -webkit-appearance: button; font-size: 0.8215rem; text-align: center; border-radius: 3px; border: 1px solid #786e21; color: #fff;'>Join Project</button>
 				</a>
 				
 			<br />

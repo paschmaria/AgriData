@@ -9,7 +9,7 @@
     $results = mysqli_query($db, $query);
     if (mysqli_num_rows($results)===1) {
       mysqli_query($db, "UPDATE users SET verified='$one' WHERE verify_code='$verify_code'");
-      alert_message("Your account has been activated!", "success");
+      alert_message("Your account has been activated! Login to continue.", "success");
     } else {
       alert_message("Account activation link expired! ⚠️", "danger");
     //   header("Location: ./expired.php");

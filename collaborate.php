@@ -106,7 +106,7 @@
                         $lastname = $_SESSION['user']['lastname'];
 
                         if ($firstname) {
-                          $words = explode(" ", '$firstname $lastname');
+                          $words = explode(" ", $firstname .' '. $lastname);
                           $initials = null;
                           foreach ($words as  $w) {
                             $initials .= $w[0];

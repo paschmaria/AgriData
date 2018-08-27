@@ -2351,6 +2351,7 @@ select.form-control-lg:not([size]):not([multiple]), .input-group-lg > select.for
 
 .btn.disabled, .btn:disabled {
   opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .btn:not(:disabled):not(.disabled) {
@@ -18758,10 +18759,6 @@ svg {
   margin-bottom: 0.25em;
 }
 
-.btn.disabled, .btn:disabled {
-  cursor: not-allowed;
-}
-
 .mapsvg-region {
   transition: opacity 0.5s ease-in-out;
 }
@@ -18789,6 +18786,10 @@ svg {
   .m-h {
     height: 18em;
   }
+  .profile-pic-preview {
+    left: 30%;
+    margin-left: -1px;
+  }
 }
 
 @media (max-width: 375px) {
@@ -18804,6 +18805,23 @@ svg {
   .m-h {
     height: 25em;
   }
+  .profile-pic-preview {
+    left: 36%;
+    margin-left: -2px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .mw-sm {
+    width: 100% !important;
+  }
+}
+
+@media (min-width: 576px) {
+  .profile-pic-preview {
+    left: 40%;
+    margin-left: -1px;
+  }
 }
 
 @media (min-width: 768px) {
@@ -18814,8 +18832,14 @@ svg {
   }
 }
 
-@media (max-width: 575.98px) {
-  .mw-sm {
-    width: 100% !important;
+@media (min-width: 992px) {
+  .profile-pic-preview {
+    left: 30%;
+  }
+}
+
+@media (min-width: 1280px) {
+  .profile-pic-preview {
+    left: 35%;
   }
 }

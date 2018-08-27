@@ -100,5 +100,18 @@
 				$_SESSION['user'] = mysqli_fetch_assoc($results); // put logged in user in session
 				// var_dump($_SESSION['user']);
 			}
+
+			$user = $_SESSION['user'];
+
+			if ($user['user_type']==="agent") {
+				$fullname = $user['firstname']. " " .$user['lastname'];
+				$phone = $user['phone'];
+				$email = $user['email'];
+				
+				$query = "UPDATE agents SET fullname='$fullname', phone='$phone' WHERE email='$email'";
+				if (!mysqli_query($db, $query)) {
+					var_dump(mysqli_error($db));
+				}
+			}
 		}
   }
