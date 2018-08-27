@@ -35,7 +35,7 @@ CREATE TABLE `agents` (
   `project_id` varchar(100) COLLATE utf8_unicode_520_ci NOT NULL,
   `project_owner` varchar(100) COLLATE utf8_unicode_520_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_520_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_520_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,7 +75,7 @@ CREATE TABLE `projects` (
   `present_user` varchar(100) COLLATE utf8_unicode_520_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `project_key` (`project_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_520_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_520_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -145,9 +145,9 @@ CREATE TABLE `users` (
   `state` varchar(100) COLLATE utf8_unicode_520_ci NOT NULL,
   `lga` varchar(100) COLLATE utf8_unicode_520_ci NOT NULL,
   `town` varchar(100) COLLATE utf8_unicode_520_ci NOT NULL,
-  `signedup` datetime NOT NULL,
+  `signed_up` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_520_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_520_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -159,4 +159,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-08-26 13:37:33
+-- Dump completed on 2018-08-27 15:57:43

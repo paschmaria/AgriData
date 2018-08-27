@@ -30,6 +30,7 @@
     <title>Verde - Agricultural Extension and Analytics</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+    <script charset="utf-8" src="./assets/js/pace.min.js"></script>
     <script src="./assets/js/require.min.js"></script>
     <script>
       setTimeout(hideURLbar, 0);
@@ -37,11 +38,12 @@
         window.scrollTo(0,1);
       }
       requirejs.config({
-          baseUrl: '.'
+        baseUrl: '.'
       });
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
+    <link href="./assets/css/pace.css" rel="stylesheet" />
     <script src="./assets/js/dashboard.js"></script>
   </head>
   <body class="">
@@ -257,7 +259,6 @@
                 if (this.status === 200) {
                   var projectData = JSON.parse(this.responseText);
                   projectData.map(data => {
-                    console.log(data);
                     row.prepend(`
                       <div class="col-md-6 col-xl-4">
                         <div class="card" data-form="${data.project_name}" data-id="${data.project_id}">

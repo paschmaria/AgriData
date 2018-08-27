@@ -383,8 +383,10 @@
 		foreach ($project_arr as $key => $project) {
 			$query = "SELECT project_id FROM projects WHERE project_name='$project' LIMIT 1";
 			$results = mysqli_query($db, $query);
-			$projects = mysqli_fetch_assoc($results);
-			array_push($project_ids, $projects['project_id']);
+			while ($projects = mysqli_fetch_assoc($results)) {
+				array_push($project_ids, $projects['project_id']);
+				// remember to confirm this...
+			}
 		}
 		
 		$project_id = implode(', ', $project_ids);
