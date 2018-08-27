@@ -3,6 +3,7 @@
   $user = $_SESSION['user'];
   // var_dump($_SERVER['QUERY_STRING']);
   $project_ids = explode(', ', $user['project_id']);
+  $project_names = explode(', ', $user['project_name']);
   if(!$user){ 
     header("Location: ./login.php?nexturl=collaborate.php?$_SERVER[QUERY_STRING]"); 
     exit; 
@@ -12,7 +13,7 @@
     if ($user['user_type']!=='administrator') {
       header('HTTP/1.0 403 Forbidden');
       header('Location: ./403.html');
-    } elseif (!in_array(e($_GET['id']), $project_ids, true)) {
+    } elseif (!in_array(e($_GET['id']), $project_ids, true)||!in_array(e($_GET['name']), $project_names, true)) {
       header('HTTP/1.0 404 Not Found');
       header('Location: ./404.html');
     }
@@ -46,6 +47,7 @@
     <title>Verde - Agricultural Extension and Analytics</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+    <script charset="utf-8" src="./assets/js/pace.min.js"></script>
     <script src="./assets/js/require.min.js"></script>
     <script>
       setTimeout(hideURLbar, 0);
@@ -53,11 +55,12 @@
         window.scrollTo(0,1);
       }
       requirejs.config({
-          baseUrl: '.'
+        baseUrl: '.'
       });
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
+    <link href="./assets/css/pace.css" rel="stylesheet" />
     <script src="./assets/js/dashboard.js"></script>
   </head>
   <body class="">
@@ -229,11 +232,55 @@
                       <th>Sent Invite</th>
                       <th>Accepted Invite</th>
                       <th>Signed Up</th>
-                      <th>Response(s) Collected</th>
+                      <th>Response(s)</th>
                       <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
+                    <?php
+                      if (isset($_GET['name'])&&isset($_GET['id'])) {
+                        $user = $_SESSION['user'];
+                        $project_ids = explode(', ', $user['project_id']);
+                        $project_names = explode(', ', $user['project_name']);
+                        $project_name = e($_GET['name']);
+                        $project_id = e($_GET['id']);
+
+                        if (in_array($project_id, $project_ids, true)&&in_array($project_name, $project_names, true)) {
+                          $query = "SELECT * FROM agents";
+                          $results = mysqli_query($db, $query);
+                          $count = 1;
+
+                          function stringify_date($mysqldate) {
+                            $date = date("F j, Y, g:i a", strtotime($mysqldate));
+                            return $date;
+                          }
+
+                          while ($agents = mysqli_fetch_assoc($results)) {
+                            echo '<tr>
+                              <td><span class="text-muted">'. $count++ .'</span></td>
+                              <td>'. $agents['fullname'] .'</td>
+                              <td>'. $agents['phone'] .'</td>
+                              <td>'. $agents['email'] .'</td>
+                              <td>'. stringify_date($agents['sent_invite']) .'</td>
+                              <td>'. stringify_date($agents['accepted_invite']) .'</td>
+                              <td>'. stringify_date($agents['signed_up']) .'</td>
+                              <td class="text-center">'. $agents['responses'] .'</td>
+                              <td class="w-1 text-center">
+                                <a href="" class="icon">
+                                  <i class="fe fe-trash-2"></i>
+                                </a>
+                              </td>
+                            </tr>';
+                          }
+                        } else {
+                          echo '
+                            <tr>
+                              <td class="display-4 text-center p-8" colspan="9"><strong>No Data Found!</strong></td>
+                            </tr>
+                          ';
+                        }
+                      }
+                    ?>
                   </tbody>
                 </table>
               </div>
