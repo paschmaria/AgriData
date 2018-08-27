@@ -4,6 +4,7 @@
   // var_dump($_SERVER['QUERY_STRING']);
   $project_ids = explode(', ', $user['project_id']);
   $project_names = explode(', ', $user['project_name']);
+  
   if(!$user){ 
     header("Location: ./login.php?nexturl=collaborate.php?$_SERVER[QUERY_STRING]"); 
     exit; 
@@ -246,7 +247,7 @@
                         $project_id = e($_GET['id']);
 
                         if (in_array($project_id, $project_ids, true)&&in_array($project_name, $project_names, true)) {
-                          $query = "SELECT * FROM agents";
+                          $query = "SELECT * FROM agents WHERE project_name='$project_name' AND project_id='$project_id'";
                           $results = mysqli_query($db, $query);
                           $count = 1;
 

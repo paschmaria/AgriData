@@ -388,12 +388,22 @@
 				// remember to confirm this...
 			}
 		}
+		// var_dump($project_ids);
 		
 		$project_id = implode(', ', $project_ids);
 		$new_query = "UPDATE users SET project_id='$project_id' WHERE username='$username' LIMIT 1";
-		if (!mysqli_query($db, $query)) {
+		if (!mysqli_query($db, $new_query)) {
 			var_dump(mysqli_error($db));
 		}
+
+		$new_query = "SELECT * FROM users WHERE username='$username' LIMIT 1";
+		$results = mysqli_query($db, $new_query);
+		
+		if (mysqli_num_rows($results) === 1) {
+			$_SESSION['user'] = mysqli_fetch_assoc($results); // put logged in user in session
+		}
+
+		$user = $_SESSION['user'];
 	}
 
 	function update_projects($user) {
@@ -409,7 +419,7 @@
 			$status 			 = "Published";
 			$collaborators = "";
 			$present_user	 = $user['username'];
-			// var_dump($project_owner);
+			
 			$query = "INSERT INTO projects (project_key, project_name, project_id, no_of_responses, status, collaborators, project_owner, present_user) VALUES ('$project_key', '$project', '$project_id', '$responses', '$status', '$collaborators', '$project_owner', '$present_user') ON DUPLICATE KEY UPDATE project_name = VALUES(project_name), project_id = VALUES(project_id), project_owner = VALUES(project_owner), present_user = VALUES(present_user)";
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
@@ -633,7 +643,6 @@
 			}
 		}
 
-		// var_dump($errors);
 		// Forms if there are no errors in the form
 		if (count($errors) === 0) {
 			$query = "INSERT INTO farmers (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, user) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user')";

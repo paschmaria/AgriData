@@ -2,8 +2,10 @@
   include('functions.php');
   $user = $_SESSION['user'];
   $project_ids = explode(', ', $user['project_id']);
+  $project_names = explode(', ', $user['project_name']);
+  
   if(!$user){ 
-    header("Location: ./login.php?nexturl=demography.php?$_SERVER[QUERY_STRING]");
+    header("Location: ./login.php?nexturl=collaborate.php?$_SERVER[QUERY_STRING]"); 
     exit; 
   }
 
@@ -11,7 +13,7 @@
     if ($user['user_type']!=='administrator') {
       header('HTTP/1.0 403 Forbidden');
       header('Location: ./403.html');
-    } elseif (!in_array(e($_GET['id']), $project_ids, true)) {
+    } elseif (!in_array(e($_GET['id']), $project_ids, true)||!in_array(e($_GET['name']), $project_names, true)) {
       header('HTTP/1.0 404 Not Found');
       header('Location: ./404.html');
     }
