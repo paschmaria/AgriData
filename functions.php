@@ -15,9 +15,9 @@
 	$alerts    		= array();
 	$project_name = array();
 
-	array_push($project_name, "register-farmer");
-	array_push($project_name, "market-prices");
-	array_push($project_name, "farmers-survey");
+	array_push($project_name, "register_farmer");
+	array_push($project_name, "market_prices");
+	array_push($project_name, "farmers_survey");
 
 	// REGISTER USER
 	function register(){

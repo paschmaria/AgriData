@@ -5,7 +5,7 @@
   $project_names = explode(', ', $user['project_name']);
   
   if(!$user){ 
-    header("Location: ./login.php?nexturl=collaborate.php?$_SERVER[QUERY_STRING]"); 
+    header("Location: ./login.php?nexturl=market_prices.php?$_SERVER[QUERY_STRING]"); 
     exit; 
   }
 
@@ -145,7 +145,7 @@
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="market-prices.php?logout='1'">
+                    <a class="dropdown-item" href="market_prices.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
                   </div>

@@ -5,7 +5,7 @@
   $project_names = explode(', ', $user['project_name']);
   
   if(!$user){ 
-    header("Location: ./login.php?nexturl=collaborate.php?$_SERVER[QUERY_STRING]"); 
+    header("Location: ./login.php?nexturl=register_farmer.php?$_SERVER[QUERY_STRING]"); 
     exit; 
   }
 
@@ -147,7 +147,7 @@
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="./register-farmer.php?logout='1'">
+                    <a class="dropdown-item" href="./register_farmer.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
                     </a>
                   </div>
@@ -196,7 +196,7 @@
             <div class="row">
               <div class="col-12">
                 <!-- <div class="alert alert-danger" role="alert"></div> -->
-                <form action="./register-farmer.php" method="POST" class="card" id="farmerForm" enctype="multipart/form-data">
+                <form action="./register_farmer.php" method="POST" class="card" id="farmerForm" enctype="multipart/form-data">
                   <div class="card-header">
                     <h3 class="card-title">Register New Farmer</h3>
                   </div>

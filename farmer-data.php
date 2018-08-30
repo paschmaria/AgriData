@@ -2,7 +2,7 @@
   include('functions.php');
   
   $user = $_SESSION['user']['username'];
-  $query = "SELECT * FROM farmers WHERE user='$user' LIMIT 1";
+  $query = "SELECT * FROM register_farmer";
   $result = mysqli_query($db, $query);
   $data_array = array();
   while ($farmers = mysqli_fetch_assoc($result)) {

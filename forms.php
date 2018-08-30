@@ -237,7 +237,7 @@
           }
 
           function displayName(name) {
-            var name = name.split("-");
+            var name = name.split("_");
             for (var i = 0; i < name.length; i++) {
                 name[i] = name[i][0].toUpperCase() + name[i].substr(1);
             }
@@ -258,6 +258,7 @@
               if (this.readyState === 4) {
                 if (this.status === 200) {
                   var projectData = JSON.parse(this.responseText);
+                  console.log(projectData);
                   projectData.map(data => {
                     row.prepend(`
                       <div class="col-md-6 col-xl-4">

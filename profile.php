@@ -165,13 +165,13 @@
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator'||!isset($_GET['name'])) { ?>visibility: hidden;<?php } ?>">
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
-                    <?php if (isset($_GET['name'])&&$_GET['name']==='register-farmer') { ?>
+                    <?php if (isset($_GET['name'])&&$_GET['name']==='register_farmer') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
                         <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                         <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
                         <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
                       </div>
-                    <?php } elseif (isset($_GET['name'])&&$_GET['name']==='market-prices') { ?>
+                    <?php } elseif (isset($_GET['name'])&&$_GET['name']==='market_prices') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
                         <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                         <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Price Tables</a>
@@ -237,6 +237,7 @@
                             dimmer.classList.add("active");
                             return function(e) {
                               myImg.src = e.target.result;
+                              uploadPic(myImg);
                               dimmer.classList.remove("active");
                             };
                           })(img);
@@ -253,39 +254,34 @@
                           createImage();
                         }
 
-                        // function uploadPic(myImg) {
-                        //   require(['cloudinary', 'jquery'], function(cloudinary, $) {
-                        //     console.log("done");
-                        //     // $.post("save_profile_pic.php",
-                        //     // {
-                        //     //   picture: $("#profile-pic-input").val()
-                        //     // }).done(
-                        //     //   function(data,status){
-                        //     //     console.log("returned data is" + data);
-                        //     //   }
-                        //     // );
-                        //     $(function() {
-                        //       $.cloudinary.config({ cloud_name: 'plurimus-technologies', api_key: '917764174897416'});
-                        //       // Initiate upload
-                        //       cloudinary.openUploadWidget({ cloud_name: 'plurimus-technologies', upload_preset: 'z1esecda', tags: ['agridata_user_pic']}, 
-                        //       function(error, result) {
-                        //         if(error) console.log(error);
-                        //         // If NO error, log image data to console
-                        //         var id = result[0].public_id;
-                        //         console.log(processImage(id));
-                        //       });
-                        //     })
-                        //     function processImage(id) {
-                        //       var options = {
-                        //         client_hints: true,
-                        //       };
-                              
-                        //       return function() {
-                        //         myImg.src = $.cloudinary.url(id, options);
-                        //       };
-                        //     } 
-                        //   })
-                        // }
+                        function uploadPic(myImg) {
+                          require(['jquery'], function($) {
+                            console.log("done");
+                            var picture = $("#profile-pic-input").val();
+                            $.ajax({
+                              type: "POST",
+                              url: "./save_profile_pic.php",
+                              data: picture,
+                              dataType: "json",
+                              processData: false,  // tell jQuery not to process the data
+                              contentType: false,  // tell jQuery not to set contentType
+                  
+                              success: function (data) {
+                                console.log(data['error']);
+                                if(data.error == 1) {
+                                // $('.alert-danger').removeClass('hide').addClass('show').html(data['msg']);
+                                } else {
+                                // $('.alert-success').removeClass('hide').addClass('show').html('Uploaded');
+                                console.log(data);
+                                }
+                              },
+                              error: function (data) {
+                                console.log(data);
+                                // $('.alert-danger').removeClass('hide').addClass('show').html(data);
+                              },
+                          });
+                          })
+                        }
                       }
                     </script>
                     <h3 class="mb-3">

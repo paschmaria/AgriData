@@ -5,7 +5,7 @@
   $project_names = explode(', ', $user['project_name']);
   
   if(!$user){ 
-    header("Location: ./login.php?nexturl=collaborate.php?$_SERVER[QUERY_STRING]"); 
+    header("Location: ./login.php?nexturl=demography.php?$_SERVER[QUERY_STRING]"); 
     exit; 
   }
 

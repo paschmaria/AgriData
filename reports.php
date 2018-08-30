@@ -5,7 +5,7 @@
   $project_names = explode(', ', $user['project_name']);
   
   if(!$user){ 
-    header("Location: ./login.php?nexturl=collaborate.php?$_SERVER[QUERY_STRING]"); 
+    header("Location: ./login.php?nexturl=reports.php?$_SERVER[QUERY_STRING]"); 
     exit; 
   }
 
@@ -195,7 +195,7 @@
                     <?php } ?>
                   </li>
                   <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
-                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-file-text"></i> Data</a>
                   </li>
                   <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
@@ -208,7 +208,7 @@
         <div class="my-3 my-md-5">
           <div class="container">
             <div class="row">
-              <div class="col-md-3">
+              <div class="col-lg-3 col-md-4">
                 <h3 class="page-title mb-5">Data</h3>
                 <div>
                   <div class="list-group list-group-transparent mb-0">
@@ -226,11 +226,246 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-9">
-                <div class="card">
-                  <div class="card-head"></div>
-                  <div class="card-body"></div>
-                </div>
+              <div class="col-lg-9 col-md-8">
+              <form action="./reports.php" method="POST" class="card" id="pdfReportForm" enctype="multipart/form-data">
+                  <div class="card-header">
+                    <h3 class="card-title">Generate PDF Data Tables</h3>
+                  </div>
+                  <div class="card-body">
+                    <?php echo display_error(); ?>
+                    <div class="row">
+                      <div class="col-lg-6 col-md-12">
+                        <h3>Table Header</h3>
+                        <div class="form-group">
+                          <label class="form-label">Background Color<span class="form-required">*</span></label>
+                          <input type="color" class="form-control" name="header_bgcolor" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Text Color<span class="form-required">*</span></label>
+                          <input type="color" class="form-control" name="header_txtcolor" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Border<span class="form-required">*</span></label>
+                          <div class="custom-controls-stacked">
+                            <label class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" name="header_border" value="male" required checked>
+                              <span class="custom-control-label">None</span>
+                            </label>
+                            <label class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" name="header_border" value="female" required>
+                              <span class="custom-control-label">All</span>
+                            </label>
+                            <label class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" name="header_border" value="female" required>
+                              <span class="custom-control-label">Left-Right</span>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Border Color<span class="form-required">*</span></label>
+                          <input type="color" class="form-control" id="headerBdColor" name="header_bdcolor" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Border Width<span class="form-required">*</span></label>
+                          <div class="row">
+                            <div class="col">
+                              <input type="range" id="widthRange" class="form-control custom-range" step="1" min="1" max="5" name="header_bdwidth">
+                            </div>
+                            <div class="col">
+                              <input type="number" id="widthBox" class="form-control" value="2" required>
+                            </div>
+                          </div>
+                        </div>
+                        <script>
+                          var slider = document.getElementById("widthRange");
+                          var output = document.getElementById("widthBox");
+                          output.value = slider.value;
+                          slider.oninput = function() {
+                            output.value = this.value;
+                          }
+                          output.oninput = function() {
+                            slider.value = this.value;
+                          }
+                        </script>
+                      </div>
+                      <div class="col-lg-6 col-md-12">
+                        <h3>Table Body</h3>
+                        <div class="form-group">
+                          <label class="form-label">Background Color<span class="form-required">*</span></label>
+                          <input type="color" class="form-control" name="body_bgcolor" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Text Color<span class="form-required">*</span></label>
+                          <input type="color" class="form-control" name="body_txtcolor" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">Border<span class="form-required">*</span></label>
+                          <div class="custom-controls-stacked">
+                            <label class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" name="body_border" value="male" required checked>
+                              <span class="custom-control-label">None</span>
+                            </label>
+                            <label class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" name="body_border" value="female" required>
+                              <span class="custom-control-label">All</span>
+                            </label>
+                            <label class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" name="body_border" value="female" required>
+                              <span class="custom-control-label">Left-Right</span>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            Border Color
+                            <span class="form-required">*</span>
+                            <span class="col-auto align-self-center">
+                              <span class="form-help" data-toggle="popover" data-placement="top" data-content="<p class='m-0'>Auto-generated data. Not available for editing</p>
+                              ">?</span>
+                            </span>
+                          </label>
+                          <input type="color" class="form-control" id="bodyBdColor" name="body_bdcolor" autocomplete="off" required disabled>
+                        </div>
+                        <div class="form-group">
+                          <label class="form-label">
+                            Border Width
+                            <span class="form-required">*</span>
+                            <span class="col-auto align-self-center">
+                              <span class="form-help" data-toggle="popover" data-placement="top" data-content="<p class='m-0'>Auto-generated data. Not available for editing</p>
+                              ">?</span>
+                            </span>
+                          </label>
+                          <div class="row">
+                            <div class="col">
+                              <input type="range" class="form-control custom-range" id="bodyBdWidth" step="1" min="1" max="5" name="body_bdwidth" disabled>
+                            </div>
+                          </div>
+                        </div>
+                        <script>
+                          var headerBdColor = document.getElementById("headerBdColor");
+                          var bodyBdColor = document.getElementById("bodyBdColor");
+                          var bodyBdWidth = document.getElementById("bodyBdWidth");
+                          var slider = document.getElementById("widthRange");
+                          
+                          handleChange(slider,bodyBdWidth);
+                          handleChange(headerBdColor,bodyBdColor);
+
+                          function handleChange(x,y) {
+                            x.value = y.value;
+                            x.oninput = function() {
+                              y.value = this.value;
+                            }
+                          }
+                        </script>
+                        <div class="row">
+                          <div class="col-lg-6 col-md-12">
+                            <div class="form-group">
+                              <label class="form-label">
+                                Stripped Rows
+                                <span class="form-required">*</span>
+                                <span class="col-auto align-self-center">
+                                  <span class="form-help" data-toggle="popover" data-placement="top" data-content="<p class='m-0'>Select to add zebra-striping to table rows.</p>
+                                  ">?</span>
+                                </span>
+                              </label>
+                              <div class="custom-controls-stacked">
+                                <label class="custom-control custom-radio custom-control-inline">
+                                  <input type="radio" class="custom-control-input" name="stripped_body_rows" value="yes" required checked>
+                                  <span class="custom-control-label">Yes</span>
+                                </label>
+                                <label class="custom-control custom-radio custom-control-inline">
+                                  <input type="radio" class="custom-control-input" name="stripped_body_rows" value="no" required>
+                                  <span class="custom-control-label">No</span>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-lg-6 col-md-12">
+                            <div class="form-group">
+                              <label class="form-label">Font Name<span class="form-required">*</span></label>
+                              <select name="bd_fontname" class="form-control custom-select" required>
+                                <option value="">Select</option>
+                                <option value="Courier" style="font-family: Courier;">Courier</option>
+                                <option value="Arial" style="font-family: Arial">Arial</option>
+                                <option value="Times" style="font-family: Times">Times</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-lg-6 col-md-12">
+                            <div class="form-group">
+                              <label class="form-label">
+                                Font Size
+                                <span class="form-required">*</span>
+                                <span class="col-auto align-self-center">
+                                  <span class="form-help" data-toggle="popover" data-placement="top" data-content="<p class='m-0'>Available values range from 10 to 20.</p>
+                                  ">?</span>
+                                </span>
+                              </label>
+                              <input type="number" name="bd_fontsize" class="form-control" min="10" max="20" step="2" required>
+                            </div>
+                          </div>
+                          <div class="col-lg-6 col-md-12">
+                            <div class="form-group">
+                              <label class="form-label">Font Style<span class="form-required">*</span></label>
+                              <select name="bd_fontstyle" class="form-control custom-select" id="lga-select" required>
+                                <option value="">Select</option>
+                                <option value="B" style="font-weight: bold;">Bold</option>
+                                <option value="I" style="font-style: italic;">Italics</option>
+                                <option value="U" style="text-decoration: underline;">Underline</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="form-label">Select Table Column Headings<span class="form-required">*</span></div>
+                          <div>
+                            <?php
+                              if (isset($_GET['name'])&&isset($_GET['id'])) {
+                                $user = $_SESSION['user'];
+                                $project_ids = explode(', ', $user['project_id']);
+                                $project_names = explode(', ', $user['project_name']);
+                                $project_name = e($_GET['name']);
+                                $project_id = e($_GET['id']);
+        
+                                if (in_array($project_id, $project_ids, true)&&in_array($project_name, $project_names, true)) {
+                                  $query = "SELECT `COLUMN_NAME` 
+                                            FROM `INFORMATION_SCHEMA`.`COLUMNS` 
+                                            WHERE `TABLE_SCHEMA`='agridata' 
+                                            AND `TABLE_NAME`='$project_name'";
+                                  $results = mysqli_query($db, $query);
+                                  $count = 1;
+                                  
+                                  function split_string($item) {
+                                    $item_arr = str_replace("_", ' ', $item);
+                                    return ucfirst($item_arr);
+                                  }
+
+                                  while ($headers = mysqli_fetch_row($results)) {
+                                    foreach ($headers as $key => $header) {
+                                      if ($header!=="id"&&$header!=="farm_pic"&&$header!=="farmer_pic") {
+                                        echo '
+                                          <label class="custom-control custom-checkbox custom-control-inline">
+                                            <input type="checkbox" class="custom-control-input" name="'. $header .'" value='. split_string($header) .' required>
+                                            <span class="custom-control-label">'. split_string($header) .'</span>
+                                          </label>
+                                        ';
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ?>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-footer text-right">
+                    <button type="submit" class="btn btn-primary" id="printBtn" name="print_PDF">Print PDF</button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
