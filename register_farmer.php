@@ -676,6 +676,12 @@
     <script src="./assets/js/lga.js"></script>
     <script>
       require(['jquery'], function ($) {
+        $(function () {
+          var form = $('form.card');
+          form.submit(function (e) {
+            $("button[type=submit]").addClass("disabled");
+          })
+        })
         // var sID = "1ONcoQNAxfJzf8Wia2WsBqrPZWslEQ8k9WM5Ud3-ZXFc";
         // var url =`https://spreadsheets.google.com/feeds/list/${sID}/1/public/values?alt=json`;
         // // var form = $("#farmerForm");
@@ -739,11 +745,6 @@
         //     };
         //   });
         // });
-
-        var form = $('form.card');
-        form.submit(function (e) {
-          $("button[type=submit]").addClass("disabled");
-        })
       })
     </script>
   </body>

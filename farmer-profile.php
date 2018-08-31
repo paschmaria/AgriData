@@ -1,12 +1,12 @@
 <?php 
   include('functions.php');
   $user = $_SESSION['user'];
-  var_dump($_SERVER['QUERY_STRING']);
+  // var_dump($_SERVER['QUERY_STRING']);
   $project_ids = explode(', ', $user['project_id']);
   $project_names = explode(', ', $user['project_name']);
   
   if(!$user){ 
-    header("Location: ./login.php?nexturl=farmer-profile.php?$_SERVER[QUERY_STRING]"); 
+    header("Location: ./login.php?nexturl=biodata.php?name=$_GET[name]&id=$_GET[id]"); 
     exit; 
   }
 
@@ -21,6 +21,18 @@
   } else {
     header("Location: ./forms.php"); 
     exit;
+  }
+  
+  if (isset($_GET['uid'])) {
+    $user_id = substr(e($_GET['uid']), 0, -13);
+    $query = "SELECT * FROM register_farmer WHERE id=$user_id LIMIT 1";
+    $results = mysqli_query($db,$query);
+    
+    if ($results===false) {
+      header("Location: ./biodata.php?name=$_GET[name]&id=$_GET[id]");
+    }
+  } else {
+    header("Location: ./biodata.php?name=$_GET[name]&id=$_GET[id]");
   }
 ?>
 
@@ -174,10 +186,10 @@
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
                       <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
+                      <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Bio-data</a>
                       <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
                     </div>
                   </li>
@@ -185,7 +197,7 @@
                     <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
                   <li class="nav-item">
-                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>
+                    <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
                   </li>
                 </ul>
               </div>
@@ -200,257 +212,215 @@
               </div>
             </div>
             <div class="row row-cards">
-              <div class="col-lg-4 col-sm-12">
-                <div class="row">
-                  <div class="col-md-6 col-lg-12">
-                    <div class="card">
-                      <div class="dimmer active">
-                        <div class="loader"></div>
-                        <div class="dimmer-content">
-                          <div class="card-body username_pic"></div>
+              <?php
+                if (isset($_GET['name'])&&isset($_GET['id'])&&isset($_GET['uid'])) {
+                  $user = $_SESSION['user'];
+                  $project_ids = explode(', ', $user['project_id']);
+                  $project_names = explode(', ', $user['project_name']);
+                  $project_name = e($_GET['name']);
+                  $project_id = e($_GET['id']);
+                  $user_id = substr(e($_GET['uid']), 0, -13);
+
+                  $query = "SELECT * FROM register_farmer WHERE id='$user_id'";
+                  $results = mysqli_query($db, $query);
+                  $farmer = mysqli_fetch_assoc($results);
+                  // var_dump($farmer);
+
+                  // Get date of registration
+                  function DOR($d) {
+                    $date = date("F j, Y, g:i a", strtotime($d));
+                    return $date;
+                  }
+
+                  // Get date of birth
+                  function DOB($dob) {
+                    //explode the date to get month, day and year
+                    $birthDate = explode("-", $dob);
+                    //get age from date or birthdate
+                    $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md")
+                      ? ((date("Y") - $birthDate[0]) - 1)
+                      : (date("Y") - $birthDate[0]));
+                    return $age;
+                  }
+
+                  // Display secondary phone number
+                  function sph($num) {
+                    if ($num !== "") {
+                      return ', '. $num;
+                    } else {
+                      return '';
+                    }
+                  }
+
+                  $farm_picture = null;
+                  if ($farmer['farm_pic']!=="") {
+                    $farm_picture = explode(",", $farmer['farm_pic']);
+                  }
+                  
+                  function display_indicators() {
+                    global $farm_picture;
+
+                    $indicator = '';
+                    for ($i=0; $i<count($farm_picture); $i++) { 
+                      $indicator .= '<li data-target="#carousel-indicators" data-slide-to="'. ($i) .'" class="'. ($i===1?'active':null) .'"></li>';
+                    }
+                    return $indicator;
+                  }
+
+                  function display_images() {
+                    global $farm_picture;
+
+                    $picture = '';
+                    for ($i=0; $i<count($farm_picture); $i++) {
+                      // var_dump($i);
+                      $picture .= '
+                        <div class="carousel-item '. ($i===0?'active':null) .'">
+                          <img class="d-block w-100 img-fluid" alt="farm-picture-'. ($i+1) .'" src="./assets/images/farmers_pictures/'. $farm_picture[$i] .'" data-holder-rendered="true" style="max-height: 400px;">
+                        </div>
+                      ';
+                    }
+                    return $picture;
+                  }
+
+                  // Farm size - acres to hectares converter
+                  function ath($a_size) {
+                    preg_match_all('/\d+/', $a_size, $matches);
+                    $land = (int)implode('', $matches[0]);
+                    $h_size = round(0.4 * $land);
+                    return $h_size;
+                  }
+                  
+                  function split_string($item) {
+                    $item_arr = str_replace("_", ' ', $item);
+                    return ucfirst($item_arr);
+                  }
+
+                  echo '
+                    <div class="col-lg-4 col-sm-12">
+                      <div class="card">
+                        <div class="card-body username_pic">
+                          <div class="mb-4 text-center">
+                            <img src="./assets/images/farmers_pictures/'. $farmer['farmer_pic'] .'" alt="'. $farmer['firstname'] .' '. $farmer['lastname'] .'" class="img-fluid">
+                          </div>
+                          <h4 class="card-title text-center">'. $farmer['firstname'] .' '. $farmer['lastname'] .'</h4>
+                          <div class="card-subtitle text-muted text-center">
+                            Registered on: '. DOR($farmer['date_of_registration']) .'
+                          </div>
+                          <div class="mt-5 d-flex align-items-center">
+                            <div class="ml-auto">
+                              <a href="javascript:void(0)" class="btn btn-primary disabled"><i class="fe fe-message-square"></i> Send SMS</a>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-8 col-sm-12">
-                <div class="card">
-                  <div class="card-body">
-                    <div id="carousel-indicators" class="carousel slide" data-ride="carousel">
-                      <ol class="carousel-indicators"></ol>
-                      <div class="carousel-inner mb-5"></div>
+                    <div class="col-lg-8 col-sm-12">
+                      <div class="card">
+                        <div class="card-body">
+                          <div id="carousel-indicators" class="carousel slide" data-ride="carousel">
+                            <ol class="carousel-indicators">'.
+                              display_indicators()
+                            .'</ol>
+                            <div class="carousel-inner mb-5">'.
+                              display_images()
+                            .'</div>
+                          </div>
+                          <div class="profile-details-full">
+                            <div class="row">
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Phone Number(s)</label>
+                                  <div class="form-control-plaintext">'.
+                                    $farmer['phone_primary'].sph($farmer['phone_secondary'])
+                                  .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Email Address (if available)</label>
+                                  <div class="form-control-plaintext">'. ($farmer['email']?$farmer['email']:'N/A') .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Gender</label>
+                                  <div class="form-control-plaintext">'. ucfirst($farmer['gender']) .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Annual Farm Income (₦)</label>
+                                  <div class="form-control-plaintext">₦'. number_format($farmer['income']) .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Age</label>
+                                  <div class="form-control-plaintext">'. DOB($farmer['date_of_birth']) .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Family Size</label>
+                                  <div class="form-control-plaintext">'. $farmer['family_size'] .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Highest Level of Education</label>
+                                  <div class="form-control-plaintext">'. $farmer['education'] .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Land Size (ha)</label>
+                                  <div class="form-control-plaintext">'. ath($farmer['land_area']) .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">State</label>
+                                  <div class="form-control-plaintext">'. $farmer['state'] .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Local Government Area</label>
+                                  <div class="form-control-plaintext">'. $farmer['lga'] .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Town/Village</label>
+                                  <div class="form-control-plaintext">'. $farmer['town'] .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Planted Crops</label>
+                                  <div class="form-control-plaintext">'. $farmer['crops'] .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Source of Farm Labour</label>
+                                  <div class="form-control-plaintext">'. split_string($farmer['farm_labour']) .'</div>
+                                </div>
+                              </div>
+                              <div class="col-sm-6 col-md-6">
+                                <div class="form-group">
+                                  <label class="form-label">Annual Produce Volume (Tonnes)</label>
+                                  <div class="form-control-plaintext">'. $farmer['produce_volume'] .'</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="profile-details-full"></div>
-                  </div>
-                </div>
-              </div>
-              <script>
-                require(["jquery"], function ($) {
-                  $(function () {
-                     // Create the XHR object.
-                     function createCORSRequest(method, url) {
-                      var xhr = new XMLHttpRequest();
-                      if ("withCredentials" in xhr) {
-                        // XHR for Chrome/Firefox/Opera/Safari.
-                        xhr.open(method, url, true);
-                      } else if (typeof XDomainRequest != "undefined") {
-                        // XDomainRequest for IE.
-                        xhr = new XDomainRequest();
-                        xhr.open(method, url);
-                      } else {
-                        // CORS not supported.
-                        xhr = null;
-                      }
-                      return xhr;
-                    }
-                    // ID of the Google Spreadsheet
-                    var spreadsheetID = "1aZ8aYMpnsVpB6E0iOS5v_eX6sCloxLYlIvyJJoscurA";
-
-                    var url =
-                      `https://spreadsheets.google.com/feeds/list/${spreadsheetID}/1/public/values?alt=json`;
-                    
-                    // Get picture
-                    function getPic(url) {
-                      var picId = (url.match(/[-\w]{25,}/))[0];
-                      var picURL = `https://drive.google.com/thumbnail?authuser=0&sz=w320&id=${picId}`;
-                      return picURL;
-                    }
-
-                    // Get date of birth
-                    function DOB(dob) {
-                      var today = new Date();
-                      var currentYear = today.getFullYear();
-                      var birthDate = new Date(dob);
-                      var birthYear = birthDate.getFullYear();
-                      var age = currentYear - birthYear;
-                      return age;
-                    }
-
-                    // Get date of registration
-                    function DOR(d) {
-                      var fullDate = new Date(d);
-                      var regMonth = fullDate.toString().split(' ')[1];
-                      var regDay = fullDate.getDay();
-                      var regYear = fullDate.getFullYear();
-                      return `${regMonth} ${regDay}, ${regYear}`;
-                      // console.log(regDay);
-                    }
-
-                    // Farm size - acres to hectares converter
-                    function ath(a_size) {
-                      var h_size = parseFloat(Math.round(0.4 * a_size));
-                      return h_size;
-                    }
-
-                    // Display secondary phone number
-                    function sph(num) {
-                      if (num) {
-                        return `, 0${num}`;
-                      }
-                    }
-
-                    // Make CORS Request
-                    function makeCorsRequest() {
-                      var xhr = createCORSRequest('GET', url);
-                      if (!xhr) {
-                        alert('CORS not supported');
-                        return;
-                      }
-                      
-                      var userId = new URLSearchParams(window.location.search);
-                      // console.log(urlParams.has('post')); // true
-                      // console.log(urlParams.get('action')); // "edit"
-                      // console.log(urlParams.getAll('action')); // ["edit"]
-                      // console.log(urlParams.toString()); // "?post=1234&action=edit"
-                      // console.log(urlParams.append('active', '1')); // "?post=1234&action=edit&active=1"
-                      // console.log(userId);
-
-                      // Response handlers.
-                      xhr.onreadystatechange = function () {
-                        if (this.readyState === 4) {
-                          if (this.status === 200) {
-                            var data = JSON.parse(this.responseText);
-                            var entry = data.feed.entry;
-                            // console.log(entry);
-                            var userDetails = entry.find( results => results.id.$t === `https://spreadsheets.google.com/feeds/list/1aZ8aYMpnsVpB6E0iOS5v_eX6sCloxLYlIvyJJoscurA/1/public/values/${userId}`);
-                            
-                            var farmPicArr = userDetails.gsx$farmpicturesmaximumof5.$t.split(',');
-                            // console.log(farmPicArr);
-                            farmPicArr.forEach((e, i) => {
-                              if (i === 0) {
-                                $(".carousel-indicators").prepend(`
-                                  <li data-target="#carousel-indicators" data-slide-to="${i}" class="active"></li>
-                                `)
-                                $(".carousel-inner").prepend(`
-                                  <div class="carousel-item active">
-                                    <img class="d-block w-100 img-fluid" alt="farm-picture-${i}" src="${getPic(e)}" data-holder-rendered="true" style="max-height: 400px;">
-                                  </div>
-                                `)
-                              } else {
-                                $(".carousel-indicators").prepend(`
-                                  <li data-target="#carousel-indicators" data-slide-to="${i}"></li>
-                                `)
-                                $(".carousel-inner").prepend(`
-                                  <div class="carousel-item">
-                                    <img class="d-block w-100 img-fluid" alt="farm-picture-${i}" src="${getPic(e)}" data-holder-rendered="true" style="max-height: 400px;">
-                                  </div>
-                                `)
-                              }
-                            });
-                            
-                            $(".username_pic").prepend(`
-                              <div class="mb-4 text-center">
-                                <img src="${getPic(userDetails.gsx$pictureoffarmer.$t)}" alt="${userDetails.gsx$firstname.$t} ${userDetails.gsx$lastname.$t}" class="img-fluid">
-                              </div>
-                              <h4 class="card-title text-center">${userDetails.gsx$firstname.$t} ${userDetails.gsx$lastname.$t}</h4>
-                              <div class="card-subtitle text-muted text-center">
-                                Registered on: ${DOR(userDetails.title.$t)}
-                              </div>
-                              <div class="mt-5 d-flex align-items-center">
-                                <div class="ml-auto">
-                                  <a href="javascript:void(0)" class="btn btn-primary disabled"><i class="fe fe-message-square"></i> Send SMS</a>
-                                </div>
-                              </div>
-                            `);
-
-                            $(".profile-details-full").prepend(`
-                              <div class="row">
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Phone Number(s)</label>
-                                    <div class="form-control-plaintext">0${userDetails.gsx$primaryphonenumber.$t}${sph(userDetails.gsx$secondaryphonenumberifavailable.$t)}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Email Address (if available)</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$emailaddress.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Gender</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$gender.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Annual Farm Income (₦)</label>
-                                    <div class="form-control-plaintext">${(userDetails.gsx$annualincomerange.$t)*100000}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Age</label>
-                                    <div class="form-control-plaintext">${DOB(userDetails.gsx$dateofbirth.$t)}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Family Size</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$familysize.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Highest Level of Education</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$highestlevelofeducation.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Land Size (ha)</label>
-                                    <div class="form-control-plaintext">${ath(userDetails.gsx$totallandareaacres.$t)}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">State</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$state.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Local Government Area</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$localgovernmentarealga.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Town/Village</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$townorvillage.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Planted Crops</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$plantedcrops.$t}</div>
-                                  </div>
-                                </div>
-                                <div class="col-sm-6 col-md-6">
-                                  <div class="form-group">
-                                    <label class="form-label">Source of Farm Labour</label>
-                                    <div class="form-control-plaintext">${userDetails.gsx$sourceoffarmlabour.$t}</div>
-                                  </div>
-                                </div>
-                              </div>
-                            `);
-
-                            $(".dimmer").removeClass("active");
-                              
-                          } else {
-                            console.log("Unable to retrieve data");
-                          }
-                        }
-                      };
-                      xhr.send();
-                    }
-                    makeCorsRequest();
-
-                  })
-                })
-              </script>
+                  ';
+                }
+              ?>
             </div>
           </div>
         </div>

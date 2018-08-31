@@ -280,7 +280,7 @@
                     $tr .= '
                       <tr>
                         <td class="text-center">
-                          <div class="avatar d-block" style="background-image: url(./assets/images/farmer_pictures/'. $tables['farmer_pic'] .')">
+                          <div class="avatar d-block" style="background-image: url(/assets/images/farmers_pictures/'. $tables['farmer_pic'] .')">
                           </div>
                         </td>
                         <td>

@@ -632,7 +632,7 @@
 		}
 
 		// first check the database to make sure farmer's details have not already been submitted
-		$farmer_check_query = "SELECT * FROM farmers WHERE phone_primary='$phone1' LIMIT 1";
+		$farmer_check_query = "SELECT * FROM register_farmer WHERE phone_primary='$phone1' LIMIT 1";
 		$result = mysqli_query($db, $farmer_check_query);
 		$farmer = mysqli_fetch_assoc($result);
 		if ($farmer) { // if farmer exists
@@ -645,7 +645,7 @@
 
 		// Forms if there are no errors in the form
 		if (count($errors) === 0) {
-			$query = "INSERT INTO farmers (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, user) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user')";
+			$query = "INSERT INTO register_farmer (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, user) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user')";
 			// mysqli_query($db, $query);
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
