@@ -111,12 +111,12 @@
                           if ($_SESSION['user']['firstname']) {
                             echo $_SESSION['user']['firstname'].' '.$_SESSION['user']['lastname'];
                           } else {
-                            echo ucfirst($_SESSION['user']['username']);
+                            echo ucwords($_SESSION['user']['username']);
                           }
                         ?>  
                       </span>
                       <small class="text-muted d-block mt-1">
-                        <?php echo ucfirst($_SESSION['user']['user_type']); ?>
+                        <?php echo ucwords($_SESSION['user']['user_type']); ?>
                       </small>
                     </span>
                   </a>
@@ -301,7 +301,7 @@
                       </small>
                       <span>
                         <?php
-                          echo ucfirst($_SESSION['user']['user_type']);
+                          echo ucwords($_SESSION['user']['user_type']);
                         ?>
                       </span>
                     </p>

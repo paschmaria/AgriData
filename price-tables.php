@@ -133,12 +133,12 @@
                           if ($_SESSION['user']['firstname']) {
                             echo $_SESSION['user']['firstname'].' '.$_SESSION['user']['lastname'];
                           } else {
-                            echo ucfirst($_SESSION['user']['username']);
+                            echo ucwords($_SESSION['user']['username']);
                           }
                         ?>  
                       </span>
                       <small class="text-muted d-block mt-1">
-                        <?php echo ucfirst($_SESSION['user']['user_type']); ?>
+                        <?php echo ucwords($_SESSION['user']['user_type']); ?>
                       </small>
                     </span>
                   </a>
@@ -217,146 +217,170 @@
           <div class="container">
             <div class="page-header" style="flex-direction: row;">
               <h1 class="page-title">Market Reports</h1>
-              <!-- <div class="page-subtitle">1 - 20 of 20 farmers</div> -->
+              <div class="page-subtitle">
+                <?php
+                  $query = "SELECT * FROM market_prices";
+                  $results = mysqli_query($db, $query);
+                  $rows = mysqli_num_rows($results);
+                  $page_num = 0;
+
+                  if (isset($_GET['pagenum'])&&is_numeric($_GET['pagenum'])) {
+                    $page_num = (int)$_GET['pagenum'];
+                  }  
+                  
+                  echo '
+                    <p class="m-0">
+                      '. ($page_num>0?($page_num*10)+1:0) .' - '. ((($page_num*10)+10)>$rows?$rows:(($page_num*10)+10)) .' of '. $rows .' Market Records
+                    </p>
+                  ';
+                ?>
+              </div>
               <div class="page-options d-flex">
-                <select class="form-control custom-select w-auto">
+                <!-- <select class="form-control custom-select w-auto">
                   <option value="asc">Newest</option>
                   <option value="desc">Oldest</option>
-                </select>
+                </select> -->
                 <div class="input-icon ml-2">
                   <span class="input-icon-addon">
                     <i class="fe fe-search"></i>
                   </span>
-                  <input type="text" id="nameSearch" class="form-control w-10" placeholder="Search...">
+                  <input type="text" id="marketSearch" class="form-control w-10" placeholder="Search for market...">
                 </div>
               </div>
             </div>
-            <div class="card">
-              <div class="table-responsive">
-                <div class="dimmer active">
-                  <div class="loader"></div>
-                  <div class="dimmer-content">
-                    <table class="table table-hover table-outline table-vcenter text-nowrap card-table">
-                      <thead>
-                        <tr>
-                          <th>Agent's First Name</th>
-                          <th>Agent's Last Name</th>
-                          <th>Market Name</th>
-                          <th>Market Location (LGA)</th>
-                          <th>Market Opening Time</th>
-                          <th>Market Closing Time</th>
-                          <th>Product Price per Bag (₦)</th>
-                          <th>Product Price per Tonne (₦)</th>
-                        </tr>
-                      </thead>
-                      <tbody class="results"></tbody>
-                    </table>
+            <?php
+              if (isset($_GET['name'])&&isset($_GET['id'])) {
+                $user = $_SESSION['user'];
+                $project_ids = explode(', ', $user['project_id']);
+                $project_names = explode(', ', $user['project_name']);
+                $project_name = e($_GET['name']);
+                $project_id = e($_GET['id']);
+                $page_num = 0;
+
+                $query = "SELECT * FROM $project_name";
+                $results = mysqli_query($db, $query);
+                $rows = mysqli_num_rows($results);
+                $rows_per_page = 10;
+                $pages = (int)ceil($rows/$rows_per_page);
+                
+                function create_pagination() {
+                  global $pages;
+                  $list_item = '';
+                  for ($i=1; $i <= $pages; $i++) { 
+                    $list_item .= '<li class="page-item"><a class="page-link" href="./price-tables.php?name='. $project_name .'&id='. $project_id . ($i===1 ? '' : ('&pagenum='. ($i-1))) .'">'. $i .'</a></li><br />';
+                  }
+                  return $list_item;
+                }
+
+                if (isset($_GET['pagenum'])&&is_numeric($_GET['pagenum'])) {
+                  $page_num = (int)$_GET['pagenum'];
+                }
+
+                $limit = $page_num*$rows_per_page .', '. $rows_per_page;
+                
+                $new_query = "SELECT * FROM $project_name LIMIT $limit";
+                $table_results = mysqli_query($db, $new_query);
+
+                function display_table_data() {
+                  global $table_results;
+                  $tr = '';
+                  $count = 1;
+
+                  while ($tables = mysqli_fetch_assoc($table_results)) {
+                    $tr .= '
+                      <tr>
+                        <td><span class="text-muted">'. $count++ .'</span></td>
+                        <td>'. $tables['collectors_firstname'] .'</td>
+                        <td>'. $tables['collectors_lastname'] .'</td>
+                        <td>'. $tables['state'] .'</td>
+                        <td>'. $tables['market_name'] .'</td>
+                        <td>'. $tables['market_lga'] .'</td>
+                        <td>'. $tables['market_days'] .'</td>
+                        <td>'. $tables['produce_price_per_bag'] .'</td>
+                        <td>'. $tables['produce_price_per_tonne'] .'</td>
+                        <td>'. DC($tables['date_collected']) .'</td>
+                      </tr>
+                    ';
+                  }
+                  return $tr;
+                }
+
+                // Get date of registration
+                function DC($d) {
+                  $date = date("F j, Y, g:i a", strtotime($d));
+                  return $date;
+                }
+
+                echo '
+                  <div class="card">
+                    <div class="table-responsive">
+                      <table id="priceTable" class="table table-hover table-outline table-vcenter text-nowrap card-table">
+                        <thead>
+                          <tr>
+                            <th class="w-1">S/N</th>
+                            <th>Collectors\'s First Name</th>
+                            <th>Collectors\'s Last Name</th>
+                            <th>State</th>
+                            <th>Market Name</th>
+                            <th>Market Location (LGA)</th>
+                            <th>Market Days</th>
+                            <th>Produce Price per Bag (₦)</th>
+                            <th>Produce Price per Tonne (₦)</th>
+                            <th>Date Collected</th>
+                          </tr>
+                        </thead>
+                        <tbody class="results">'.
+                          display_table_data()
+                        .'</tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <script>
-                require(['jquery'], function ($) {
-                  $(function() {
-                    // Create the XHR object.
-                    function createCORSRequest(method, url) {
-                      var xhr = new XMLHttpRequest();
-                      if ("withCredentials" in xhr) {
-                        // XHR for Chrome/Firefox/Opera/Safari.
-                        xhr.open(method, url, true);
-                      } else if (typeof XDomainRequest != "undefined") {
-                        // XDomainRequest for IE.
-                        xhr = new XDomainRequest();
-                        xhr.open(method, url);
-                      } else {
-                        // CORS not supported.
-                        xhr = null;
-                      }
-                      return xhr;
-                    }
-                    // ID of the Google Spreadsheet
-                    var spreadsheetID = "14RMyHz606jqFZ3K1kuaMV83uxNgK2jdRcy76cuzjQj0";
-                    
-                    var url = "https://spreadsheets.google.com/feeds/list/" + spreadsheetID + "/1/public/values?alt=json";
-                                    
-                    function makeCorsRequest() {
-                      var xhr = createCORSRequest('GET', url);
-                      if (!xhr) {
-                        alert('CORS not supported');
-                        return;
-                      }
-                    
-                      // Response handlers.
-                      xhr.onreadystatechange = function() {
-                        if (this.readyState === 4) {
-                          if (this.status === 200) {
-                            var data = JSON.parse(this.responseText);
-                            var entry = data.feed.entry;
-                            console.log(entry);
-                            $(entry).each(function(){
-                              $(".dimmer").removeClass("active")
-                              $('.results').prepend(`
-                                  <tr>
-                                      <td>
-                                          ${this.gsx$agentsfirstname.$t}
-                                      </td>
-                                      <td>
-                                          ${this.gsx$agentslastname.$t}
-                                      </td>
-                                      <td>
-                                          ${this.gsx$marketname.$t}
-                                      </td>
-                                      <td>
-                                          ${this.gsx$marketlocationlga.$t}
-                                      </td>
-                                      <td>
-                                          ${this.gsx$marketopeningtime.$t}
-                                      </td>
-                                      <td>
-                                          ${this.gsx$marketclosingtime.$t}
-                                      </td>
-                                      <td>
-                                          ${this.gsx$productpriceperbag.$t}
-                                      </td>
-                                      <td>
-                                          ${this.gsx$productpricepertonne.$t}
-                                      </td>
-                                  </tr>
-                              `);
-                            });
-                          } else {
-                            console.log("Unable to retrieve data");
-                          }
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      <li class="page-item'. ($page_num===0?' disabled':null) .'">
+                        <a class="page-link" href="./biodata.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b'. ($page_num<=1 ? '' : ('&pagenum='. ($page_num-1))) .'" aria-label="Previous">
+                          <span aria-hidden="true">&laquo;</span>
+                          <span class="sr-only">Previous</span>
+                        </a>
+                      </li>'.
+                        create_pagination()
+                      .'<li class="page-item'. ($page_num===($pages-1)||$pages===0?' disabled':null) .'">
+                        <a class="page-link" href="./biodata.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b&pagenum='. ($page_num+1) .'" aria-label="Next">
+                          <span aria-hidden="true">&raquo;</span>
+                          <span class="sr-only">Next</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                ';
+              }
+            ?>
+            <script>
+              require(['jquery'], function ($) {
+                $(function() {
+                  // Search for names 
+                  var input, filter, table, tr, td, i;
+                  input = document.getElementById("marketSearch");
+                  input.onkeyup = function() {
+                    filter = this.value.toUpperCase();
+                    table = document.getElementById("priceTable");
+                    tr = table.getElementsByTagName("tr");
+
+                    // Loop through all table rows, and hide those who don't match the search query
+                    for (i = 0; i < tr.length; i++) {
+                      td = tr[i].getElementsByTagName("td");
+                      if (td) {
+                        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                          tr[i].style.display = "";
+                        } else {
+                          tr[i].style.display = "none";
                         }
-                      };
-                    
-                      xhr.send();
+                      } 
                     }
-                    makeCorsRequest();
-
-                    // Search for names 
-                    var input, filter, table, tr, td, i;
-                    input = document.getElementById("nameSearch");
-                    input.onkeyup = function() {
-                      filter = this.value.toUpperCase();
-                      table = document.getElementById("bioTable");
-                      tr = table.getElementsByTagName("tr");
-
-                      // Loop through all table rows, and hide those who don't match the search query
-                      for (i = 0; i < tr.length; i++) {
-                        td = tr[i].getElementsByTagName("td")[1];
-                        if (td) {
-                          if (td.firstElementChild.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                            tr[i].style.display = "";
-                          } else {
-                            tr[i].style.display = "none";
-                          }
-                        } 
-                      }
-                    }
-                  })
+                  }
                 })
-              </script>
-            </div>
+              })
+            </script>
           </div>
         </div>
       </div>

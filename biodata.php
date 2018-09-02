@@ -132,12 +132,12 @@
                           if ($_SESSION['user']['firstname']) {
                             echo $_SESSION['user']['firstname'].' '.$_SESSION['user']['lastname'];
                           } else {
-                            echo ucfirst($_SESSION['user']['username']);
+                            echo ucwords($_SESSION['user']['username']);
                           }
                         ?>  
                       </span>
                       <small class="text-muted d-block mt-1">
-                        <?php echo ucfirst($_SESSION['user']['user_type']); ?>
+                        <?php echo ucwords($_SESSION['user']['user_type']); ?>
                       </small>
                     </span>
                   </a>
@@ -249,17 +249,17 @@
                 $project_id = e($_GET['id']);
                 $page_num = 0;
 
-                $query = "SELECT * FROM register_farmer";
+                $query = "SELECT * FROM $project_name";
                 $results = mysqli_query($db, $query);
                 $rows = mysqli_num_rows($results);
                 $rows_per_page = 10;
                 $pages = (int)ceil($rows/$rows_per_page);
 
                 function create_pagination() {
-                  global $pages;
+                  global $pages,$project_name,$project_id;
                   $list_item = '';
                   for ($i=1; $i <= $pages; $i++) { 
-                    $list_item .= '<li class="page-item"><a class="page-link" href="./biodata.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b'. ($i===1 ? '' : ('&pagenum='. ($i-1))) .'">'. $i .'</a></li><br />';
+                    $list_item .= '<li class="page-item"><a class="page-link" href="./biodata.php?name='. $project_name .'&id='. $project_id . ($i===1 ? '' : ('&pagenum='. ($i-1))) .'">'. $i .'</a></li><br />';
                   }
                   return $list_item;
                 }
@@ -270,7 +270,7 @@
 
                 $limit = $page_num*$rows_per_page .', '. $rows_per_page;
                 
-                $new_query = "SELECT * FROM register_farmer LIMIT $limit";
+                $new_query = "SELECT * FROM $project_name LIMIT $limit";
                 $table_results = mysqli_query($db, $new_query);
                 function display_table_data() {
                   global $table_results;

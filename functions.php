@@ -88,12 +88,12 @@
 
 	function invite_email_content($email, $id, $name, $user) {
 		$name_arr			= explode("-", $name);
-		$project_name = ucfirst(implode(" ", $name_arr));
+		$project_name = ucwords(implode(" ", $name_arr));
 		$subject			= "You are invited to collaborate on the " . $project_name . " project!";
 		$message			= "
 			<h1>Hey there!</h1>
 			<br />
-			<p>You've been invited by ". ucfirst($user) ." to join the ". $project_name ." project.</p>
+			<p>You've been invited by ". ucwords($user) ." to join the ". $project_name ." project.</p>
 			<br />
 			<p>Click on the button below to join.</p>
 
@@ -218,7 +218,7 @@
 		global $errors;
 
 		if (count($errors) > 0){
-			echo '<p class="text-danger mb-0">';
+			echo '<p class="invalid-feedback mb-0">';
 				foreach ($errors as $error){
 					echo $error .'<br>';
 				}
@@ -244,6 +244,19 @@
 				echo $alert;
 			}
 		}
+	}
+                                  
+  function split_string($item) {
+    $item_arr = str_replace("_", ' ', $item);
+    return ucwords($item_arr);
+	}
+	
+	function hex_to_RGB($hex) {
+		preg_match("/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/", $hex, $matches);
+		$r = hexdec($matches[1]);
+		$g = hexdec($matches[2]);
+		$b = hexdec($matches[3]);
+		return $r.','.$g.','.$b;
 	}
 
 	// call the register() function if register button is clicked

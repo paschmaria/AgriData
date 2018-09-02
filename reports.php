@@ -1,5 +1,5 @@
 <?php 
-  include('functions.php');
+  include('report-config.php');
   $user = $_SESSION['user'];
   $project_ids = explode(', ', $user['project_id']);
   $project_names = explode(', ', $user['project_name']);
@@ -127,12 +127,12 @@
                           if ($_SESSION['user']['firstname']) {
                             echo $_SESSION['user']['firstname'].' '.$_SESSION['user']['lastname'];
                           } else {
-                            echo ucfirst($_SESSION['user']['username']);
+                            echo ucwords($_SESSION['user']['username']);
                           }
                         ?>
                       </span>
                       <small class="text-muted d-block mt-1">
-                        <?php echo ucfirst($_SESSION['user']['user_type']); ?>
+                        <?php echo ucwords($_SESSION['user']['user_type']); ?>
                       </small>
                     </span>
                   </a>
@@ -181,7 +181,7 @@
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
-                    <?php if ($_GET['name'] === 'register-farmer') { ?>
+                    <?php if ($_GET['name'] === 'register_farmer') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
                         <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                         <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
@@ -227,7 +227,7 @@
                 </div>
               </div>
               <div class="col-lg-9 col-md-8">
-              <form action="./reports.php" method="POST" class="card" id="pdfReportForm" enctype="multipart/form-data">
+              <form action="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" method="POST" class="card" id="pdfReportForm" enctype="multipart/form-data">
                   <div class="card-header">
                     <h3 class="card-title">Generate PDF Data Tables</h3>
                   </div>
@@ -238,32 +238,32 @@
                         <h3>Table Header</h3>
                         <div class="form-group">
                           <label class="form-label">Background Color<span class="form-required">*</span></label>
-                          <input type="color" class="form-control" name="header_bgcolor" autocomplete="off" required>
+                          <input type="color" class="form-control" name="header_bgcolor" autocomplete="off" value="#ffffff" required>
                         </div>
                         <div class="form-group">
                           <label class="form-label">Text Color<span class="form-required">*</span></label>
-                          <input type="color" class="form-control" name="header_txtcolor" autocomplete="off" required>
+                          <input type="color" class="form-control" name="header_txtcolor" autocomplete="off" value="#222222" required>
                         </div>
                         <div class="form-group">
                           <label class="form-label">Border<span class="form-required">*</span></label>
                           <div class="custom-controls-stacked">
                             <label class="custom-control custom-radio custom-control-inline">
-                              <input type="radio" class="custom-control-input" name="header_border" value="male" required checked>
+                              <input type="radio" class="custom-control-input" name="header_border" value="zero" required checked>
                               <span class="custom-control-label">None</span>
                             </label>
                             <label class="custom-control custom-radio custom-control-inline">
-                              <input type="radio" class="custom-control-input" name="header_border" value="female" required>
+                              <input type="radio" class="custom-control-input" name="header_border" value="one" required>
                               <span class="custom-control-label">All</span>
                             </label>
                             <label class="custom-control custom-radio custom-control-inline">
-                              <input type="radio" class="custom-control-input" name="header_border" value="female" required>
+                              <input type="radio" class="custom-control-input" name="header_border" value="LR" required>
                               <span class="custom-control-label">Left-Right</span>
                             </label>
                           </div>
                         </div>
                         <div class="form-group">
                           <label class="form-label">Border Color<span class="form-required">*</span></label>
-                          <input type="color" class="form-control" id="headerBdColor" name="header_bdcolor" autocomplete="off" required>
+                          <input type="color" class="form-control" id="headerBdColor" name="header_bdcolor" autocomplete="off" value="#222222" required>
                         </div>
                         <div class="form-group">
                           <label class="form-label">Border Width<span class="form-required">*</span></label>
@@ -276,41 +276,30 @@
                             </div>
                           </div>
                         </div>
-                        <script>
-                          var slider = document.getElementById("widthRange");
-                          var output = document.getElementById("widthBox");
-                          output.value = slider.value;
-                          slider.oninput = function() {
-                            output.value = this.value;
-                          }
-                          output.oninput = function() {
-                            slider.value = this.value;
-                          }
-                        </script>
                       </div>
                       <div class="col-lg-6 col-md-12">
                         <h3>Table Body</h3>
                         <div class="form-group">
                           <label class="form-label">Background Color<span class="form-required">*</span></label>
-                          <input type="color" class="form-control" name="body_bgcolor" autocomplete="off" required>
+                          <input type="color" class="form-control" name="body_bgcolor" autocomplete="off" value="#ffffff" required>
                         </div>
                         <div class="form-group">
                           <label class="form-label">Text Color<span class="form-required">*</span></label>
-                          <input type="color" class="form-control" name="body_txtcolor" autocomplete="off" required>
+                          <input type="color" class="form-control" name="body_txtcolor" autocomplete="off" value="#222222" required>
                         </div>
                         <div class="form-group">
                           <label class="form-label">Border<span class="form-required">*</span></label>
                           <div class="custom-controls-stacked">
                             <label class="custom-control custom-radio custom-control-inline">
-                              <input type="radio" class="custom-control-input" name="body_border" value="male" required checked>
+                              <input type="radio" class="custom-control-input" name="body_border" value="zero" required checked>
                               <span class="custom-control-label">None</span>
                             </label>
                             <label class="custom-control custom-radio custom-control-inline">
-                              <input type="radio" class="custom-control-input" name="body_border" value="female" required>
+                              <input type="radio" class="custom-control-input" name="body_border" value="one" required>
                               <span class="custom-control-label">All</span>
                             </label>
                             <label class="custom-control custom-radio custom-control-inline">
-                              <input type="radio" class="custom-control-input" name="body_border" value="female" required>
+                              <input type="radio" class="custom-control-input" name="body_border" value="LR" required>
                               <span class="custom-control-label">Left-Right</span>
                             </label>
                           </div>
@@ -346,14 +335,19 @@
                           var bodyBdColor = document.getElementById("bodyBdColor");
                           var bodyBdWidth = document.getElementById("bodyBdWidth");
                           var slider = document.getElementById("widthRange");
+                          var output = document.getElementById("widthBox");
                           
-                          handleChange(slider,bodyBdWidth);
-                          handleChange(headerBdColor,bodyBdColor);
+                          handleChange(slider,output,bodyBdWidth);
+                          handleChange(output,slider,bodyBdWidth);
+                          handleChange(headerBdColor,bodyBdColor,null);
 
-                          function handleChange(x,y) {
-                            x.value = y.value;
-                            x.oninput = function() {
+                          function handleChange(x,y,z) {
+                            z==null
+                              ? x.value = y.value
+                              : x.value = y.value = z.value;
+                            x.onchange = function() {
                               y.value = this.value;
+                              z.value = this.value;
                             }
                           }
                         </script>
@@ -383,7 +377,7 @@
                           <div class="col-lg-6 col-md-12">
                             <div class="form-group">
                               <label class="form-label">Font Name<span class="form-required">*</span></label>
-                              <select name="bd_fontname" class="form-control custom-select" required>
+                              <select name="body_fontname" class="form-control custom-select" required>
                                 <option value="">Select</option>
                                 <option value="Courier" style="font-family: Courier;">Courier</option>
                                 <option value="Arial" style="font-family: Arial">Arial</option>
@@ -403,16 +397,17 @@
                                   ">?</span>
                                 </span>
                               </label>
-                              <input type="number" name="bd_fontsize" class="form-control" min="10" max="20" step="2" required>
+                              <input type="number" name="body_fontsize" class="form-control" min="10" max="20" step="2" value="10" required>
                             </div>
                           </div>
                           <div class="col-lg-6 col-md-12">
                             <div class="form-group">
                               <label class="form-label">Font Style<span class="form-required">*</span></label>
-                              <select name="bd_fontstyle" class="form-control custom-select" id="lga-select" required>
+                              <select name="body_fontstyle" class="form-control custom-select" id="lga-select" required>
                                 <option value="">Select</option>
                                 <option value="B" style="font-weight: bold;">Bold</option>
                                 <option value="I" style="font-style: italic;">Italics</option>
+                                <option value="N">Normal</option>
                                 <option value="U" style="text-decoration: underline;">Underline</option>
                               </select>
                             </div>
@@ -435,19 +430,13 @@
                                             WHERE `TABLE_SCHEMA`='agridata' 
                                             AND `TABLE_NAME`='$project_name'";
                                   $results = mysqli_query($db, $query);
-                                  $count = 1;
-                                  
-                                  function split_string($item) {
-                                    $item_arr = str_replace("_", ' ', $item);
-                                    return ucfirst($item_arr);
-                                  }
 
                                   while ($headers = mysqli_fetch_row($results)) {
                                     foreach ($headers as $key => $header) {
                                       if ($header!=="id"&&$header!=="farm_pic"&&$header!=="farmer_pic") {
                                         echo '
                                           <label class="custom-control custom-checkbox custom-control-inline">
-                                            <input type="checkbox" class="custom-control-input" name="'. $header .'" value='. split_string($header) .' required>
+                                            <input type="checkbox" class="custom-control-input" name="pdf_heading[]" value='. $header .'>
                                             <span class="custom-control-label">'. split_string($header) .'</span>
                                           </label>
                                         ';
@@ -463,7 +452,7 @@
                     </div>
                   </div>
                   <div class="card-footer text-right">
-                    <button type="submit" class="btn btn-primary" id="printBtn" name="print_PDF">Print PDF</button>
+                    <button type="submit" class="btn btn-primary" id="printBtn" name="generate_PDF">Generate PDF</button>
                   </div>
                 </form>
               </div>

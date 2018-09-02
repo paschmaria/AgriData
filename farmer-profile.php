@@ -139,12 +139,12 @@
                           if ($_SESSION['user']['firstname']) {
                             echo $_SESSION['user']['firstname'].' '.$_SESSION['user']['lastname'];
                           } else {
-                            echo ucfirst($_SESSION['user']['username']);
+                            echo ucwords($_SESSION['user']['username']);
                           }
                         ?>  
                       </span>
                       <small class="text-muted d-block mt-1">
-                        <?php echo ucfirst($_SESSION['user']['user_type']); ?>
+                        <?php echo ucwords($_SESSION['user']['user_type']); ?>
                       </small>
                     </span>
                   </a>
@@ -289,11 +289,6 @@
                     $h_size = round(0.4 * $land);
                     return $h_size;
                   }
-                  
-                  function split_string($item) {
-                    $item_arr = str_replace("_", ' ', $item);
-                    return ucfirst($item_arr);
-                  }
 
                   echo '
                     <div class="col-lg-4 col-sm-12">
@@ -344,7 +339,7 @@
                               <div class="col-sm-6 col-md-6">
                                 <div class="form-group">
                                   <label class="form-label">Gender</label>
-                                  <div class="form-control-plaintext">'. ucfirst($farmer['gender']) .'</div>
+                                  <div class="form-control-plaintext">'. ucwords($farmer['gender']) .'</div>
                                 </div>
                               </div>
                               <div class="col-sm-6 col-md-6">
