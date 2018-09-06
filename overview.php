@@ -208,7 +208,7 @@
         <div class="my-3 my-md-5">
         <div class="container">
             <div class="row row-cards row-deck">
-              <div class="col-md-4 col-xl-4">
+              <div class="col-md-6 col-xl-6">
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Responses</h3>
@@ -217,24 +217,62 @@
                     </div>
                   </div>
                   <div class="card-body text-center">
-                    <span class="display-3"><strong>0</strong></span>
+                    <span class="display-3">
+                      <strong>
+                        <?php
+                          if (isset($_GET['name'])&&isset($_GET['id'])) {
+                            $user = $_SESSION['user'];
+                            $project_ids = explode(', ', $user['project_id']);
+                            $project_names = explode(', ', $user['project_name']);
+                            $project_name = e($_GET['name']);
+                            $project_id = e($_GET['id']);
+    
+                            if (in_array($project_id, $project_ids, true)&&in_array($project_name, $project_names, true)) {
+                              $query = "SELECT no_of_responses FROM projects WHERE project_name='$project_name' LIMIT 1";
+                              $results = mysqli_query($db, $query);
+                              $responses = implode(",",mysqli_fetch_row($results));
+                              echo $responses;
+                            }
+                          }
+                        ?>
+                      </strong>
+                    </span>
                   </div>
                 </div>
               </div>
-              <div class="col-md-4 col-xl-4">
+              <div class="col-md-6 col-xl-6">
                 <div class="card">
                   <div class="card-header">
-                    <h3 class="card-title">Collectors</h3>
+                    <h3 class="card-title">Collaborators</h3>
                     <div class="card-options">
                       <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
                     </div>
                   </div>
                   <div class="card-body text-center">
-                    <span class="display-3"><strong>0</strong></span>
+                    <span class="display-3">
+                      <strong>
+                        <?php
+                          if (isset($_GET['name'])&&isset($_GET['id'])) {
+                            $user = $_SESSION['user'];
+                            $project_ids = explode(', ', $user['project_id']);
+                            $project_names = explode(', ', $user['project_name']);
+                            $project_name = e($_GET['name']);
+                            $project_id = e($_GET['id']);
+    
+                            if (in_array($project_id, $project_ids, true)&&in_array($project_name, $project_names, true)) {
+                              $query = "SELECT collaborators FROM projects WHERE project_name='$project_name' LIMIT 1";
+                              $results = mysqli_query($db, $query);
+                              $collaborators = explode(",",implode(",",mysqli_fetch_row($results)));
+                              echo count($collaborators);
+                            }
+                          }
+                        ?>
+                      </strong>
+                    </span>
                   </div>
                 </div>
               </div>
-              <div class="col-md-4 col-xl-4">
+              <!-- <div class="col-md-4 col-xl-4">
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Mobile Devices</h3>
@@ -243,20 +281,22 @@
                     </div>
                   </div>
                   <div class="card-body text-center">
-                    <span class="display-3"><strong>0</strong></span>
+                    <span class="display-3">
+                      <strong></strong>
+                    </span>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <div class="col-lg-12">
                 <div class="card">
                   <div class="card-header">
                     <h3 class="card-title">Responses Over Time</h3>
                     <div class="card-options">
                       <div class="btn-group btn-group-sm" role="group" aria-label="First group">
-                        <button type="button" class="btn btn-secondary">Day</button>
-                        <button type="button" class="btn btn-secondary">Week</button>
-                        <button type="button" class="btn btn-secondary">Month</button>
-                        <button type="button" class="btn btn-secondary">Quarter</button>
+                        <button type="button" data-range="day" class="btn btn-secondary btn-response">Day</button>
+                        <button type="button" data-range="week" class="btn btn-secondary btn-response">Week</button>
+                        <button type="button" data-range="month" class="btn btn-secondary btn-response">Month</button>
+                        <!-- <button type="button" data-range="quarter" class="btn btn-secondary btn-response">Quarter</button> -->
                       </div>
                       <a href="#" class="card-options-collapse" data-toggle="card-collapse"><i class="fe fe-chevron-up"></i></a>
                     </div>
@@ -274,27 +314,38 @@
               <script>
                 require(['chart', 'jquery'], function(Chart, $){
                   $(function() {
+                    function loadData(data) {
+                      let urlParams = new URLSearchParams(window.location.search);
+                      let name = urlParams.get('name');
+                      let id = urlParams.get('id');
+                      $.post('response_data.php', {
+                        response: data,
+                        projName: name,
+                        projId: id
+                      }, function (response, status) {
+                        displayData(JSON.parse(response));
+                      })
+                    }
+                    loadData("day");
+                    $(".btn-response").click(function (e) {
+                      let data = $(this).data("range");
+                      loadData(data);
+                    })
+
                     function displayData(responses) {
+                      var resArr = responses[1];
                       var ctx = $('#responseChart'),
                         responseChart;
                       responseChart = new Chart(ctx, {
                         type: 'line',
                         data: {
                           datasets: [{
-                            data: [65,59,80,81,56,55,40],
+                            data: resArr,
                             borderColor: tabler.colors["teal-dark"],
                             fill: false,
                             lineTension: 0.1
                           }],
-                          labels: [
-                            "January",
-                            "February",
-                            "March",
-                            "April",
-                            "May",
-                            "June",
-                            "July"
-                          ]
+                          labels: responses[0]
                         },
                         options: {
                           maintainAspectRatio: false,

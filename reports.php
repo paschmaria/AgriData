@@ -470,5 +470,15 @@
         </div>
       </footer>
     </div>
+    <script>
+      require(['jquery'], function ($) {
+        $(function() {
+          var form = $('form.card');
+          form.submit(function (e) {
+            $("button[type=submit]").addClass("btn-loading");
+          })
+        })
+      })
+    </script>
   </body>
 </html>

@@ -84,7 +84,7 @@
         $(function() {
           var form = $('form.card');
           form.submit(function (e) {
-            $("button[type=submit]").addClass("disabled");
+            $("button[type=submit]").addClass("btn-loading");
           })
         })
       })

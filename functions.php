@@ -79,13 +79,14 @@
 				$_SESSION['success']  = "You are now logged in";
 				verification_email_content($email, $verify_code);
 
-				header('location: ./verify-email.php');
+				header('location: /verify-email.php');
 			}
 
 			exit;
 		}
 	}
 
+	// Email sent to users invited as collaborators
 	function invite_email_content($email, $id, $name, $user) {
 		$name_arr			= explode("-", $name);
 		$project_name = ucwords(implode(" ", $name_arr));
@@ -114,6 +115,7 @@
 		send_email($subject, $email, $message);
 	}
 
+	// Email sent to verify user account
 	function verification_email_content($email, $code) {
 		$subject = "Welcome to AgriData! Activate Your Account";
 		$message = "
@@ -143,6 +145,7 @@
 		send_email($subject, $email, $message);
 	}
 
+	// Email sent to user to reset password
 	function password_reset_email_content($email, $code) {
 		global $db;
 
@@ -169,7 +172,7 @@
 		}
 	}
 
-	// Send email to our user
+	// Send email to user
 	function send_email($subject, $email, $message) {
 		require("./sendgrid/sendgrid-php.php");
 		$from = new SendGrid\Email("AgriData Team", "noreply@plurimustech.ng");
@@ -188,7 +191,6 @@
 
 		$query = "SELECT * FROM users WHERE id=$id";
 		$result = mysqli_query($db, $query);
-
 		$user = mysqli_fetch_assoc($result);
 		return $user;
 	}
@@ -245,12 +247,14 @@
 			}
 		}
 	}
-                                  
+	
+	// separate strings connected with underscore
   function split_string($item) {
     $item_arr = str_replace("_", ' ', $item);
     return ucwords($item_arr);
 	}
 	
+	// convert hexcode to RGB
 	function hex_to_RGB($hex) {
 		preg_match("/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/", $hex, $matches);
 		$r = hexdec($matches[1]);
@@ -431,9 +435,10 @@
 			$responses 		 = 0;
 			$status 			 = "Published";
 			$collaborators = "";
+			$mobile				 = "";
 			$present_user	 = $user['username'];
 			
-			$query = "INSERT INTO projects (project_key, project_name, project_id, no_of_responses, status, collaborators, project_owner, present_user) VALUES ('$project_key', '$project', '$project_id', '$responses', '$status', '$collaborators', '$project_owner', '$present_user') ON DUPLICATE KEY UPDATE project_name = VALUES(project_name), project_id = VALUES(project_id), project_owner = VALUES(project_owner), present_user = VALUES(present_user)";
+			$query = "INSERT INTO projects (project_key, project_name, project_id, no_of_responses, status, collaborators, mobile_devices, project_owner, present_user) VALUES ('$project_key', '$project', '$project_id', '$responses', '$status', '$collaborators', '$mobile', '$project_owner', '$present_user') ON DUPLICATE KEY UPDATE project_name = VALUES(project_name), project_id = VALUES(project_id), project_owner = VALUES(project_owner), present_user = VALUES(present_user)";
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
 			}
@@ -443,7 +448,6 @@
 	// redirect to previous locaton on login
 	function redirect_url()	{
 		if (isset($_GET['nexturl'])&&isset($_GET['id'])) {
-			// var_dump($_GET['nexturl'].'&id='.$_GET['id']);
 			$new_url = e($_GET['nexturl'].'&id='.$_GET['id']);
 			header("Location: {$new_url}");
 		} else {
@@ -644,6 +648,8 @@
 			$dob = $year."-".$month."-".$day;
 		}
 
+		$dodc = date("Y-m-d H:i:s", time());
+
 		// first check the database to make sure farmer's details have not already been submitted
 		$farmer_check_query = "SELECT * FROM register_farmer WHERE phone_primary='$phone1' LIMIT 1";
 		$result = mysqli_query($db, $farmer_check_query);
@@ -658,7 +664,7 @@
 
 		// Forms if there are no errors in the form
 		if (count($errors) === 0) {
-			$query = "INSERT INTO register_farmer (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, user) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user')";
+			$query = "INSERT INTO register_farmer (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, date_of_data_collection, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, registered_by) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$dodc', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user')";
 			// mysqli_query($db, $query);
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));

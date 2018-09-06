@@ -77,7 +77,7 @@
         $(function() {
           var form = $('form.verify-email');
           form.submit(function (e) {
-            $("button[type=submit]").addClass("disabled");
+            $("button[type=submit]").addClass("btn-loading");
           })
         })
       })

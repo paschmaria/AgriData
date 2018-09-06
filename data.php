@@ -208,7 +208,7 @@
         <div class="my-3 my-md-5">
           <div class="container">
             <div class="row">
-              <div class="col-md-3">
+              <div class="col-lg-3 col-md-4">
                 <h3 class="page-title mb-5">Data</h3>
                 <div>
                   <div class="list-group list-group-transparent mb-0">
@@ -226,7 +226,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-9">
+              <div class="col-lg-9 col-md-8">
                 <div class="card">
                   <div class="card-head"></div>
                   <div class="card-body"></div>

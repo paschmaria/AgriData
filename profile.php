@@ -232,19 +232,17 @@
                           preview.appendChild(div);
                           
                           var reader = new FileReader();
-                          reader.onload = (function(myImg) {
-                            // uploadPic(img);
+                          reader.onload = (function(myImg, file) {
                             dimmer.classList.add("active");
-                            return function(e) {
-                              myImg.src = e.target.result;
-                              uploadPic(myImg);
-                              dimmer.classList.remove("active");
-                            };
-                          })(img);
+                            uploadPic(myImg, file);
+                            dimmer.classList.remove("active");
+                            // return function(e) {
+                            //   myImg.src = e.target.result;
+                            // };
+                          })(img, file);
                           reader.readAsDataURL(file);
                         }
                         
-                        // console.log($("#profile-pic-input").val());
                         var that = preview.childNodes[0];
                         // console.log(preview.childNodes);
                         if (preview.childNodes.length === 0) {
@@ -254,32 +252,19 @@
                           createImage();
                         }
 
-                        function uploadPic(myImg) {
+                        function uploadPic(img, file) {
                           require(['jquery'], function($) {
-                            console.log("done");
-                            var picture = $("#profile-pic-input").val();
-                            $.ajax({
-                              type: "POST",
-                              url: "./save_profile_pic.php",
-                              data: picture,
-                              dataType: "json",
-                              processData: false,  // tell jQuery not to process the data
-                              contentType: false,  // tell jQuery not to set contentType
-                  
-                              success: function (data) {
-                                console.log(data['error']);
-                                if(data.error == 1) {
-                                // $('.alert-danger').removeClass('hide').addClass('show').html(data['msg']);
-                                } else {
-                                // $('.alert-success').removeClass('hide').addClass('show').html('Uploaded');
-                                console.log(data);
-                                }
-                              },
-                              error: function (data) {
-                                console.log(data);
-                                // $('.alert-danger').removeClass('hide').addClass('show').html(data);
-                              },
-                          });
+                            // console.log("done");
+                            var form = $('#profile-form');
+                            var formData = new FormData().append("profile-pic", file);
+                            // var data = formData.append("profile-pic", file);
+                            console.log(formData);
+                            $.post('save_profile_pic.php', {
+                              data: formData
+                            }, function (response, status) {
+                              // displayData(JSON.parse(response));
+                              console.log(response);
+                            })
                           })
                         }
                       }

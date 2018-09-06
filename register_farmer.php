@@ -679,7 +679,7 @@
         $(function () {
           var form = $('form.card');
           form.submit(function (e) {
-            $("button[type=submit]").addClass("disabled");
+            $("button[name=register_farmer]").addClass("btn-loading");
           })
         })
         // var sID = "1ONcoQNAxfJzf8Wia2WsBqrPZWslEQ8k9WM5Ud3-ZXFc";

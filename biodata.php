@@ -286,7 +286,7 @@
                         <td>
                           <p class="m-0">'. $tables['firstname'] .' '. $tables['lastname'] .'</p>
                           <div class="small text-muted">
-                            Registered: '. DOR($tables['date_of_registration']) .'
+                            Registered: '. DOR($tables['date_of_data_collection']) .'
                           </div>
                         </td>
                         <td>

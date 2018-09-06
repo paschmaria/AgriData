@@ -299,7 +299,7 @@
                           </div>
                           <h4 class="card-title text-center">'. $farmer['firstname'] .' '. $farmer['lastname'] .'</h4>
                           <div class="card-subtitle text-muted text-center">
-                            Registered on: '. DOR($farmer['date_of_registration']) .'
+                            Registered on: '. DOR($farmer['date_of_data_collection']) .'
                           </div>
                           <div class="mt-5 d-flex align-items-center">
                             <div class="ml-auto">

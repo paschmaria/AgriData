@@ -23,7 +23,7 @@
   function cie($val) {
     if (preg_match("/email/", $val)) {
       return 61;
-    } elseif (preg_match("/date_of_registration/", $val)) {
+    } elseif (preg_match("/date_of_data_collection/", $val)) {
       return 52;
     } elseif (preg_match("/gender/", $val)) {
       return 20;

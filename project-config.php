@@ -67,11 +67,6 @@
     $project_name = e($_GET['name']);
     $project_id = e($_GET['id']);
 
-    // if(!$user){ 
-    //   header("Location: ./login.php?location=agridata.plurimustech.ng/forms.php&name={$project_name}&id={$project_id}"); 
-    //   exit;
-    // }
-
     if ($user['user_type']==="administrator") {
       foreach ($project_name_arr as $project) {
         if ($project) {
