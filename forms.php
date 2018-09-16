@@ -27,26 +27,20 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
-    <title>Verde - Agricultural Extension and Analytics</title>
+    <title>AGRIDATA - COLLECT AND ANALYZE ANY KIND OF FIELD DATA, ANYTIME</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script charset="utf-8" src="./assets/js/pace.min.js"></script>
-    <script src="./assets/js/require.min.js"></script>
-    <script>
-      setTimeout(hideURLbar, 0);
-      function hideURLbar(){
-        window.scrollTo(0,1);
-      }
-      requirejs.config({
-        baseUrl: '.'
-      });
+    <script type="text/javascript" charset="utf-8" src="./assets/js/pace.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./assets/js/require.min.js"></script>
+    <script type="text/javascript" charset="utf-8" >
+      setTimeout(hideURLbar,0);function hideURLbar(){window.scrollTo(0,1)}requirejs.config({baseUrl:'.'});
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
     <link href="./assets/css/pace.css" rel="stylesheet" />
-    <script src="./assets/js/dashboard.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./assets/js/dashboard.js"></script>
   </head>
-  <body class="">
+  <body>
     <div class="page">
       <div class="page-main">
         <div class="header py-4">
@@ -56,37 +50,27 @@
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
-                <div class="nav-item d-none d-md-flex">
-                  <a href="#" class="btn btn-sm btn-outline-primary create-form"><i class="fe fe-plus"></i> Create new Form</a>
-                </div>
-                <div class="dropdown d-none d-md-flex">
-                  <a class="nav-link icon" data-toggle="dropdown">
-                    <i class="fe fe-bell"></i>
-                    <span class="nav-unread"></span>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>New farmer signed on - <strong>Musa Abdullahi</strong></p>
-                        <div class="small text-muted">10 minutes ago</div>
+                <?php
+                  $user = $_SESSION['user'];
+                  if ($user['user_type']==='administrator') {
+                    echo '
+                      <div class="nav-item d-none d-md-flex">
+                        <a href="#" class="btn btn-sm btn-outline-primary create-form"><i class="fe fe-plus"></i> Create new Form</a>
                       </div>
-                    </a>
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>50 messages sent to farmers in <strong>Kano State</strong></p>
-                        <div class="small text-muted">1 hour ago</div>
+                      <div class="dropdown d-none d-md-flex">
+                        <a class="nav-link icon" data-toggle="dropdown">
+                          <i class="fe fe-bell"></i>
+                          <span class="nav-unread d-none"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                          <div class="notification-menu"></div>
+                          <div class="dropdown-divider notification-divider d-none"></div>
+                          <a href="javascript:void(0)" class="dropdown-item text-center text-muted-dark notification-handler disabled">No notifications found!</a>
+                        </div>
                       </div>
-                    </a>
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>5 voice calls were not picked.</p>
-                        <div class="small text-muted">2 hours ago</div>
-                      </div>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item text-center text-muted-dark">Mark all as read</a>
-                  </div>
-                </div>
+                    ';
+                  }
+                ?>
                 <div class="dropdown">
                   <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
                     <span class="avatar avatar-blue">
@@ -125,13 +109,13 @@
                     <a class="dropdown-item profile" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
-                    <a class="dropdown-item" href="#">
+                    <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-settings"></i> Settings
                     </a>
                     <a class="dropdown-item" href="#">
                       <span class="float-right"><span class="badge badge-primary">6</span></span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
-                    </a>
+                    </a> -->
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="./forms.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
@@ -150,7 +134,7 @@
             <div class="row align-items-center">
               <div class="col-lg-3 ml-auto">
                 <form class="input-icon my-3 my-lg-0">
-                  <input type="search" class="form-control header-search" placeholder="Search Forms&hellip;" tabindex="1">
+                  <input type="search" id="formSearch" class="form-control header-search" placeholder="Search Forms&hellip;" tabindex="1">
                   <div class="input-icon-addon">
                     <i class="fe fe-search"></i>
                   </div>
@@ -196,9 +180,61 @@
         </div>
       </footer>
     </div>
-    <script>
-      require(['jquery'], function ($) {
+    <script type="text/javascript" charset="utf-8" >
+      require(['jquery', 'moment'], function ($, moment) {
         $(function() {
+          function loadNotifications(data = "") {
+            $.post("notification-config.php",
+              {data:data},
+              function (data, textStatus, jqXHR) {
+                displayNotifications(JSON.parse(data));
+              }
+            );
+          }
+          loadNotifications('showNotifications');
+          setInterval(function () {
+            loadNotifications('showNotifications');
+          }, 5000);
+          
+          let idArr = [];
+          function displayNotifications(data) {
+            if (data.length!==0) {
+              for (let i = 0; i < data.length; i++) {
+                const elem = data[i];
+                for (const key in elem) {
+                  if (elem.hasOwnProperty(key)) {
+                    const project = elem[key];
+                    if (idArr.indexOf(project.id) === -1) {
+                      $('.notification-menu').prepend(`
+                        <a href="./<?php echo $_GET['name'] === 'register_farmer'?'farmer-profile':'price-details-full' ?>.php?name=${key}&id=${project.project_id}&uid=<?php echo uniqid('${project.id}') ?>" class="dropdown-item d-flex">
+                          <div>
+                            <p class="m-0">${displayName(project.registered_by)} submitted a new response: <strong>${displayName(key)}</strong>.</p>
+                            <div class="small text-muted d-inline-flex">${moment(project.date_of_data_collection).fromNow()}</div>
+                            <div class="small text-muted d-inline-flex float-right"><i>Click to view.</i></div>
+                          </div>
+                        </a>
+                      `);
+                      idArr.push(project.id);
+                    }
+                  }
+                }
+              }
+              $('.notification-divider, .nav-unread').removeClass('d-none');
+              $('.notification-handler').removeClass('disabled').html('Clear all notifications');
+            } else if (data.length===0) {
+              $('.notification-menu').empty();
+              $('.notification-divider, .nav-unread').addClass('d-none');
+              $('.notification-handler').addClass('disabled').html('No notifications found!');
+            }
+          }
+          
+          let $this = document.querySelector('.notification-handler');
+          $this.onclick = function (e) {
+            if (!this.classList.contains('disabled')) {
+              loadNotifications('clearNotifications');
+            }
+          }
+
           $('.create-form').on('click', function (e) {
             e.preventDefault();
             alert("Sorry, this feature is unavailable at the moment! 😞");
@@ -258,14 +294,13 @@
               if (this.readyState === 4) {
                 if (this.status === 200) {
                   var projectData = JSON.parse(this.responseText);
-                  console.log(projectData);
                   projectData.map(data => {
                     row.prepend(`
                       <div class="col-md-6 col-xl-4">
                         <div class="card" data-form="${data.project_name}" data-id="${data.project_id}">
                           <div class="card-status card-status-left bg-primary"></div>
                           <div class="card-header">
-                            <h3 class="card-title">${displayName(data.project_name)}</h3>
+                            <h3 class="card-title form-card">${displayName(data.project_name)}</h3>
                           </div>
                           <div class="card-body">
                             <div class="row">
@@ -289,7 +324,7 @@
                                   <a href="./overview.php?name=${data.project_name}&id=${data.project_id}" class="" title="Analytics"><i class="fe fe-trending-up"></i></a>
                                 </li>
                                 <li class="list-inline-item">
-                                  <a href="./data.php?name=${data.project_name}&id=${data.project_id}" class="" title="View Data"><i class="fe fe-file-text"></i></a>
+                                  <a href="./reports.php?name=${data.project_name}&id=${data.project_id}" class="" title="View Data"><i class="fe fe-file-text"></i></a>
                                 </li>
                               </ul>`
                               : ""
@@ -322,7 +357,6 @@
                   if (projectData.length!==0) {
                      $(".no-form").removeClass("active");
                   }
-                  
                   $(".dimmer").removeClass("active");
                 } else {
                   console.log("Unable to retrieve data");
@@ -333,6 +367,23 @@
             xhr.send();
           }
           makeCorsRequest();
+
+          // Search for forms 
+          let filter, card;
+          $('#formSearch').keyup(function (e) { 
+            filter = this.value.toUpperCase();
+            card = $('.card');
+            for (let i = 0; i < card.length; i++) {
+              const elem = card[i];
+              if (elem) {
+                if ($(elem).find('.form-card').html().toUpperCase().indexOf(filter) > -1) {
+                  $(elem).parent().css('display', 'block');
+                } else {
+                  $(elem).parent().css('display', 'none');
+                }
+              }
+            }
+          });
         })
       })
     </script>

@@ -2,9 +2,9 @@
   include("functions.php");
 
   if (isset($_POST['response'])&&isset($_POST['projName'])&&isset($_POST['projId'])) {
-    $response = $_POST['response'];
-    $name = $_POST['projName'];
-    $id = $_POST['projId'];
+    $response = e($_POST['response']);
+    $name = e($_POST['projName']);
+    $id = e($_POST['projId']);
     $date_array = array();
     $time_array = array();
     $frequency = array();
@@ -30,27 +30,27 @@
       array_push($current_month, $i);
     }
 
-    function update_frequency($c, $t) {
-      global $frequency;
-
-      
-    }
+    // function update_frequency($c, $t) {
+    //   global $frequency;
+    // }
 
     if ($response==='day') { // if today's data was requested
       foreach ($date_array as $key => $date) { // get each date a response was collected
         if (date('Ymd')===date('Ymd',strtotime($date))) { // if any date matches today's date
-          array_push($time_array, date('g A', strtotime($date)));
+          array_push($time_array, date('gA', strtotime($date)));
         }
       }
 
       // update_frequency($current_day, $time_array);
       foreach ($current_day as $key => $d) {
         if (in_array($d, $time_array, true)) {
-          function filter($a) {
-            global $d;
-            
-            return $a==$d;
-          };
+          if (!function_exists('filter')) {
+            function filter($a) {
+              global $d;
+              
+              return $a==$d;
+            };
+          }
           $b = count(array_filter($time_array, 'filter'));
           array_push($frequency, $b);
         } else {
@@ -80,11 +80,13 @@
       // update_frequency($current_week, $time_array);
       foreach ($current_week as $key => $d) {
         if (in_array($d, $time_array, true)) {
-          function filter($a) {
-            global $d;
-            
-            return $a==$d;
-          };
+          if (!function_exists('filter')) {
+            function filter($a) {
+              global $d;
+              
+              return $a==$d;
+            };
+          }
           $b = count(array_filter($time_array, 'filter'));
           array_push($frequency, $b);
         } else {
@@ -104,11 +106,13 @@
       // update_frequency($current_month, $time_array);
       foreach ($current_month as $key => $d) {
         if (in_array($d, $time_array, true)) {
-          function filter($a) {
-            global $d;
-            
-            return $a==$d;
-          };
+          if (!function_exists('filter')) {
+            function filter($a) {
+              global $d;
+              
+              return $a==$d;
+            };
+          }
           $b = count(array_filter($time_array, 'filter'));
           array_push($frequency, $b);
         } else {
@@ -119,5 +123,4 @@
       array_push($data, $current_month, $frequency);
       echo json_encode($data);
     }
-    // var_dump($time_array);
   }

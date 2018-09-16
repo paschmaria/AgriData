@@ -44,7 +44,7 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
-    <title>Verde - Agricultural Extension and Analytics</title>
+    <title>AGRIDATA - COLLECT AND ANALYZE ANY KIND OF FIELD DATA, ANYTIME</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
     <script charset="utf-8" src="./assets/js/pace.min.js"></script>
@@ -63,7 +63,7 @@
     <link href="./assets/css/pace.css" rel="stylesheet" />
     <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
   </head>
-  <body class="">
+  <body>
     <div class="page">
       <div class="page-main">
         <div class="header py-4">
@@ -184,12 +184,12 @@
                     <div class="dropdown-menu dropdown-menu-arrow">
                       <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
                       <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
+                      <a href="./rf_analytics.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
                       <a href="./farmer-cropinfo.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-activity"></i> Crop Information</a>
                     </div>
                   </li>
                   <li class="nav-item">
-                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                    <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
                   <li class="nav-item">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>

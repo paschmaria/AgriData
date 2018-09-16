@@ -1,5 +1,7 @@
 <?php 
 	session_start();
+
+	require('Mobile-Detect/detect.php');
     
   header("Access-Control-Allow-Origin: *");
 	// connect to database
@@ -14,6 +16,11 @@
 	$errors   		= array(); 
 	$alerts    		= array();
 	$project_name = array();
+	$device_type	= Detect::deviceType();
+	$device_os		= Detect::os();
+	$device_brand = Detect::brand();
+	// $device_host_ip = Detect::ipHostname();
+	$mobileDevice = $device_type. ', ' .$device_os. ', ' .$device_brand;
 
 	array_push($project_name, "register_farmer");
 	array_push($project_name, "market_prices");
@@ -220,7 +227,7 @@
 		global $errors;
 
 		if (count($errors) > 0){
-			echo '<p class="invalid-feedback mb-0">';
+			echo '<p class="error mb-0">';
 				foreach ($errors as $error){
 					echo $error .'<br>';
 				}
@@ -341,7 +348,7 @@
 
 	// LOGIN USER
 	function login(){
-		global $db, $username, $errors;
+		global $db, $username, $errors, $mobileDevice;
 
 		// grab form values
 		$username = e($_POST['username']);
@@ -370,6 +377,7 @@
 					if ($logged_in_user['user_type'] === 'administrator') {
 
 						$_SESSION['user'] = $logged_in_user;
+						$_SESSION['user_device'] = $mobileDevice;
 						$_SESSION['success']  = "You are now logged in as Administrator";
 						assign_project($_SESSION['user']);
 						update_projects($_SESSION['user']);
@@ -425,6 +433,16 @@
 
 	function update_projects($user) {
 		global $db, $project_name;
+
+		function update_collaborators($project) {
+			global $db;
+
+			$query = "SELECT * FROM $project";
+			$results = mysqli_query($db, $query);
+
+			$rows = mysqli_num_rows($results);
+			// var_dump($rows);
+		}
 		
 		$project_name_arr = explode(', ', $user['project_name']);
 		// Insert details of each project into the database
@@ -434,8 +452,8 @@
 			$project_owner = $user['user_type']==='administrator'&&in_array($project, $project_name_arr, true) ? $user['username'] : "";
 			$responses 		 = 0;
 			$status 			 = "Published";
-			$collaborators = "";
-			$mobile				 = "";
+			$collaborators = update_collaborators($project);
+			$mobile				 = 0;
 			$present_user	 = $user['username'];
 			
 			$query = "INSERT INTO projects (project_key, project_name, project_id, no_of_responses, status, collaborators, mobile_devices, project_owner, present_user) VALUES ('$project_key', '$project', '$project_id', '$responses', '$status', '$collaborators', '$mobile', '$project_owner', '$present_user') ON DUPLICATE KEY UPDATE project_name = VALUES(project_name), project_id = VALUES(project_id), project_owner = VALUES(project_owner), present_user = VALUES(present_user)";
@@ -452,6 +470,37 @@
 			header("Location: {$new_url}");
 		} else {
 			header("Location: ./forms.php");
+		}
+	}
+
+	function update_project_devices_and_responses($project) {
+		global $db;
+
+		$username = $_SESSION['user']['username'];
+		$email = $_SESSION['user']['email'];
+		$query = "SELECT * FROM $project";
+		$results = mysqli_query($db, $query);
+		$total_responses = mysqli_num_rows($results);
+		$device_array = array();
+		$user_array = array();
+
+		while ($response = mysqli_fetch_assoc($results)) {
+			array_push($device_array, $response['device']);
+
+			if ($response['registered_by']===$username) {
+				array_push($user_array, $response['registered_by']);
+			}
+		}
+		$total_devices = count(array_unique($device_array));
+		$agent_responses = count($user_array);
+
+		if (!mysqli_query($db, "UPDATE projects SET no_of_responses='$total_responses', mobile_devices='$total_devices' WHERE project_name='$project'"))
+		{
+			var_dump(mysqli_error($db));
+		}
+		if (!mysqli_query($db, "UPDATE agents SET responses='$agent_responses' WHERE email='$email'"))
+		{
+			var_dump(mysqli_error($db));
 		}
 	}
 
@@ -649,6 +698,7 @@
 		}
 
 		$dodc = date("Y-m-d H:i:s", time());
+		$device = $_SESSION['user_device'];
 
 		// first check the database to make sure farmer's details have not already been submitted
 		$farmer_check_query = "SELECT * FROM register_farmer WHERE phone_primary='$phone1' LIMIT 1";
@@ -664,10 +714,12 @@
 
 		// Forms if there are no errors in the form
 		if (count($errors) === 0) {
-			$query = "INSERT INTO register_farmer (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, date_of_data_collection, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, registered_by) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$dodc', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user')";
+			$query = "INSERT INTO register_farmer (firstname, lastname, farmer_pic, phone_primary, phone_secondary, email, date_of_birth, date_of_data_collection, gender, education, family_size, income, state, lga, town, latitude, longitude, land_area, farm_pic, crops, produce_volume, farm_labour, registered_by, device, seen_as_notification, deleted) VALUES ('$firstname', '$lastname', '$new_farmer_pic', '$phone1', '$phone2', '$email', '$dob', '$dodc', '$gender', '$education', '$family_size', '$income', '$state', '$lga', '$town', '$latitude', '$longitude', '$land_area', '$new_farm_pic', '$crops', '$produce_volume', '$farm_labour', '$user', '$device', 0, 0)";
 			// mysqli_query($db, $query);
 			if (!mysqli_query($db, $query)) {
 				var_dump(mysqli_error($db));
+			} else {
+				update_project_devices_and_responses('register_farmer');
 			}
 			mysqli_close($db);
 		}

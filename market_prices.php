@@ -44,7 +44,7 @@
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
-    <title>Verde - Agricultural Extension and Analytics</title>
+    <title>AGRIDATA - COLLECT AND ANALYZE ANY KIND OF FIELD DATA, ANYTIME</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
     <script src="./assets/js/require.min.js"></script>
@@ -61,7 +61,7 @@
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
     <script src="./assets/js/dashboard.js"></script>
   </head>
-  <body class="">
+  <body>
     <div class="page">
       <div class="page-main">
         <div class="header py-4">
@@ -178,7 +178,7 @@
                     </div>
                   </li>
                   <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
-                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
+                    <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
                   </li>
                   <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>

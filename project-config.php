@@ -9,7 +9,7 @@
 
   function fetch_users($query, $query_string) {
     global $db;
-    // get current collaborators]
+    // get current collaborators
     $results = mysqli_query($db, $query);
     $user = mysqli_fetch_assoc($results);
     if ($user[$query_string]!=="") {
@@ -123,4 +123,3 @@
       }
     }
   }
-  // var_dump($user['project_name']);

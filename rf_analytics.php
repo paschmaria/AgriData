@@ -5,7 +5,7 @@
   $project_names = explode(', ', $user['project_name']);
   
   if(!$user){ 
-    header("Location: ./login.php?nexturl=demography.php?$_SERVER[QUERY_STRING]"); 
+    header("Location: ./login.php?nexturl=rf_analytics.php?$_SERVER[QUERY_STRING]"); 
     exit; 
   }
 
@@ -13,7 +13,7 @@
     if ($user['user_type']!=='administrator') {
       header('HTTP/1.0 403 Forbidden');
       header('Location: ./403.html');
-    } elseif (!in_array(e($_GET['id']), $project_ids, true)||!in_array(e($_GET['name']), $project_names, true)) {
+    } elseif (!in_array($_GET['id'], $project_ids, true)||!in_array($_GET['name'], $project_names, true)) {
       header('HTTP/1.0 404 Not Found');
       header('Location: ./404.html');
     }
@@ -44,24 +44,18 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
-    <title>Verde - Agricultural Extension and Analytics</title>
+    <title>AGRIDATA - COLLECT AND ANALYZE ANY KIND OF FIELD DATA, ANYTIME</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script charset="utf-8" src="./assets/js/pace.min.js"></script>
-    <script src="./assets/js/require.min.js"></script>
-    <script>
-      setTimeout(hideURLbar, 0);
-      function hideURLbar(){
-        window.scrollTo(0,1);
-      }
-      requirejs.config({
-        baseUrl: '.'
-      });
+    <script type="text/javascript" charset="utf-8" src="./assets/js/pace.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./assets/js/require.min.js"></script>
+    <script type="text/javascript" charset="utf-8" >
+      setTimeout(hideURLbar,0);function hideURLbar(){window.scrollTo(0,1)}requirejs.config({baseUrl:'.'});
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
     <link href="./assets/css/pace.css" rel="stylesheet" />
-    <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./assets/js/dashboard.js"></script>
   </head>
   <body class="" style="overflow-x: hidden;">
     <div class="page">
@@ -73,34 +67,24 @@
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
-                <div class="dropdown d-none d-md-flex">
-                  <a class="nav-link icon" data-toggle="dropdown">
-                    <i class="fe fe-bell"></i>
-                    <span class="nav-unread"></span>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>New farmer signed on - <strong>Musa Abdullahi</strong></p>
-                        <div class="small text-muted">10 minutes ago</div>
+                <?php
+                  $user = $_SESSION['user'];
+                  if ($user['user_type']==='administrator') {
+                    echo '
+                      <div class="dropdown d-none d-md-flex">
+                        <a class="nav-link icon" data-toggle="dropdown">
+                          <i class="fe fe-bell"></i>
+                          <span class="nav-unread d-none"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                          <div class="notification-menu"></div>
+                          <div class="dropdown-divider notification-divider d-none"></div>
+                          <a href="javascript:void(0)" class="dropdown-item text-center text-muted-dark notification-handler disabled">No notifications found!</a>
+                        </div>
                       </div>
-                    </a>
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>50 messages sent to farmers in <strong>Kano State</strong></p>
-                        <div class="small text-muted">1 hour ago</div>
-                      </div>
-                    </a>
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>5 voice calls were not picked.</p>
-                        <div class="small text-muted">2 hours ago</div>
-                      </div>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item text-center text-muted-dark">Mark all as read</a>
-                  </div>
-                </div>
+                    ';
+                  }
+                ?>
                 <div class="dropdown">
                   <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
                     <span class="avatar avatar-blue">
@@ -139,21 +123,18 @@
                     <a class="dropdown-item" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
-                    <a class="dropdown-item" href="#">
+                    <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-settings"></i> Settings
                     </a>
                     <a class="dropdown-item" href="#">
                       <span class="float-right"><span class="badge badge-primary">6</span></span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
-                    </a>
-                    <!-- <a class="dropdown-item" href="#">
-                      <i class="dropdown-icon fe fe-send"></i> Message
                     </a> -->
                     <div class="dropdown-divider"></div>
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="./demography.php?logout='1'">
+                    <a class="dropdown-item" href="./rf_analytics.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -169,28 +150,36 @@
           <div class="container">
             <div class="row align-items-center">
               <div class="col-lg-3 ml-auto">
-                <form class="input-icon my-3 my-lg-0">
+                <!-- <form class="input-icon my-3 my-lg-0">
                   <input type="search" class="form-control header-search" placeholder="Search&hellip;" tabindex="1">
                   <div class="input-icon-addon">
                     <i class="fe fe-search"></i>
-                  </div>
+                  </div> -->
                 </form>
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-bar-chart-2"></i> Demographics</a>
-                    </div>
+                  <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-activity"></i> Data</a>
+                    <?php if ($_GET['name'] === 'register_farmer') { ?>
+                      <div class="dropdown-menu dropdown-menu-arrow">
+                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
+                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
+                      </div>
+                    <?php } elseif ($_GET['name'] === 'market_prices') { ?>
+                      <div class="dropdown-menu dropdown-menu-arrow">
+                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
+                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
+                      </div>
+                    <?php } ?>
                   </li>
-                  <li class="nav-item">
-                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
-                  </li>
-                  <li class="nav-item">
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
+                  </li>
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="./rf_analytics.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-bar-chart-2"></i> Analytics</a>
                   </li>
                 </ul>
               </div>
@@ -200,7 +189,7 @@
         <div class="my-3 my-md-5">
           <div class="container">
             <div class="page-header">
-              <h1 class="page-title">Farmer Demographics</h1>
+              <h1 class="page-title">Analytics Dashboard</h1>
               <!-- <div style="display: flex;align-items: center;justify-content: center;align-content: center;margin-top: 0.5em;">
                 <span style="width: 100%;margin-right: 0.5em;">Data for: </span>
                 <select id="cropToggle" name="crop" class="form-control custom-select">
@@ -363,358 +352,7 @@
                 </div>
               </div>
             </div>
-            <script>
-              require(['chart', 'jquery'], function(Chart, $){
-                $(function () {
-                    function displayData(age, edu, land, house, gender) {
-                        var ctx = $('#genderChart')
-                          genderChart,
-                          male = gender.filter(x => x === "male").length,
-                          female = gender.filter(x => x === "female").length;
-                        
-                        genderChart = new Chart(ctx, {
-                          type: 'pie',
-                          data: {
-                            datasets: [{
-                              data: [female, male],
-                              backgroundColor: [
-                                tabler.colors["teal-dark"],
-                                tabler.colors["cyan-dark"]
-                              ]
-                            }],
-                            labels: [
-                              'Females',
-                              'Males'
-                            ]
-                          },
-                          options: {
-                            maintainAspectRatio: false,
-                            responsive: true
-                          }
-                        });
-                        var ctx = $('#ageChart'),
-                            ageChart,
-                            lt45 = age.filter(x => x < 45).length,
-                            lte60 = age.filter(x => x >= 45 && x <= 60).length,
-                            gt60 = age.filter(x => x > 60).length;
-                        
-                        // console.log(age);
-                        ageChart = new Chart(ctx, {
-                          type: 'polarArea',
-                          data: {
-                            labels: ['<45 years', '45 - 60 years', '>60 years'],
-                            datasets: [{
-                              label: "No of Farmers",
-                              data: [lt45, lte60, gt60],
-                              backgroundColor: [
-                                tabler.colors["orange-dark"],
-                                tabler.colors["purple-dark"],
-                                tabler.colors["azure-dark"]
-                              ]
-                            }]
-                          },
-                          options: {
-                            maintainAspectRatio: false,
-                            responsive: true
-                          }
-                        });
-                        var ctx = $('#landChart'),
-                            landChart,
-                            landObj,
-                            landObjData = [];
-
-                        function occurrence(array) {
-                          "use strict";
-                          var result = {};
-                          if (array instanceof Array) {
-                            array.forEach(function (v, i) {
-                              if (!result[v]) {
-                                  result[v] = [i];
-                              } else {
-                                  result[v].push(i);
-                              }
-                            });
-                          }
-                          return result;
-                        };
-                        
-                        landObj = occurrence(land);
-
-                        for (var k in landObj) {
-                          if (landObj.hasOwnProperty(k)) {
-                            landObjData.push({
-                              x: parseFloat(k),
-                              y: landObj[k].length,
-                              r: Math.round((landObj[k].length/land.length)*100)
-                            })
-                          }
-                        }
-                        
-                        // console.log(landObjData);
-                        landChart = new Chart(ctx, {
-                          type: 'bubble',
-                          data: {
-                            datasets: [{
-                              label: "% of Farmers per Land Area",
-                              // x represents av. farm size, y represents no of farmers, and r is the radius of the circle whose diameter represents the percentage of farmers with land within this category
-                              data: landObjData,
-                              backgroundColor: [
-                                tabler.colors["orange-lighter"],
-                                tabler.colors["purple-lighter"],
-                                tabler.colors["azure-lighter"],
-                                tabler.colors["teal-lighter"],
-                                tabler.colors["cyan-lighter"]
-                              ],
-                              borderColor: [
-                                tabler.colors["orange-dark"],
-                                tabler.colors["purple-dark"],
-                                tabler.colors["azure-dark"],
-                                tabler.colors["teal-dark"],
-                                tabler.colors["cyan-dark"]
-                              ],
-                              hoverBackgroundColor: [
-                                tabler.colors["orange"],
-                                tabler.colors["purple"],
-                                tabler.colors["azure"],
-                                tabler.colors["teal"],
-                                tabler.colors["cyan"]
-                              ],
-                              borderWidth: 1
-                            }]
-                          },
-                          options: {
-                            scales: {
-                              yAxes: [{
-                                ticks: {
-                                  beginAtZero: true
-                                },
-                                scaleLabel: {
-                                  display: true,
-                                  labelString: "Number of Farmers"
-                                }
-                              }],
-                              xAxes: [{
-                                scaleLabel: {
-                                  display: true,
-                                  labelString: "Size of Land Holdings (hectares)"
-                                }
-                              }]
-                            },
-                            maintainAspectRatio: false,
-                            responsive: true
-                          }
-                        });
-                        var ctx = $('#eduChart'),
-                            eduChart,
-                            none = edu.filter(x => x === "None").length,
-                            primary = edu.filter(x => x === "Primary").length,
-                            secondary = edu.filter(x => x === "Secondary").length,
-                            tertiary = edu.filter(x => x === "Tertiary").length,
-                            arabic = edu.filter(x => x === "Arabic").length;
-                        
-                        eduChart = new Chart(ctx, {
-                          type: 'bar',
-                          data: {
-                            labels: ['None', 'Primary', 'Secondary', 
-                          'Tertiary', 'Arabic'],
-                            datasets: [{
-                              label: "No of Farmers",
-                              data: [none, primary, secondary, tertiary, arabic],
-                              backgroundColor: [
-                                tabler.colors["orange-lighter"],
-                                tabler.colors["purple-lighter"],
-                                tabler.colors["indigo-lighter"],
-                                tabler.colors["blue-lighter"],
-                                tabler.colors["red-lighter"]
-                              ],
-                              borderColor: [
-                                tabler.colors["orange-dark"],
-                                tabler.colors["purple-dark"],
-                                tabler.colors["indigo-dark"],
-                                tabler.colors["blue-dark"],
-                                tabler.colors["red-dark"]
-                              ],
-                              hoverBackgroundColor: [
-                                tabler.colors["orange"],
-                                tabler.colors["purple"],
-                                tabler.colors["indigo"],
-                                tabler.colors["blue"],
-                                tabler.colors["red"]
-                              ],
-                              borderWidth: 1
-                            }]
-                          },
-                          options: {
-                            scales: {
-                              yAxes: [{
-                                ticks: {
-                                  beginAtZero: true
-                                },
-                                scaleLabel: {
-                                  display: true,
-                                  labelString: "Number of Farmers"
-                                }
-                              }],
-                              xAxes: [{
-                                scaleLabel: {
-                                  display: true,
-                                  labelString: "Educational Level"
-                                }
-                              }]
-                            },
-                            maintainAspectRatio: false,
-                            responsive: true
-                          }
-                        });
-                        var ctx = $('#houseChart'),
-                            houseChart,
-                            x1 = house.filter(x => x === 1).length,
-                            x2 = house.filter(x => x >= 2 && x <= 4).length,
-                            x3 = house.filter(x => x >= 5 && x <= 7).length,
-                            x4 = house.filter(x => x >= 8 && x <= 10).length,
-                            x5 = house.filter(x => x >= 10).length;
-                            
-                        houseChart
-                        var ctx = $('#houseChart'),
-                            houseChart;
-                        houseChart = new Chart(ctx, {
-                          type: 'horizontalBar',
-                          data: {
-                            labels: [">10", "8-10", "5-7", "2-4", "1"],
-                            datasets: [{
-                              label: "No of Farmers",
-                              data: [x5, x4, x3, x2, x1],
-                              backgroundColor: [
-                                tabler.colors["blue-lighter"],
-                                tabler.colors["indigo-lighter"],
-                                tabler.colors["red-lighter"],
-                                tabler.colors["green-lighter"],
-                                tabler.colors["azure-lighter"]
-                              ],
-                              borderColor: [
-                                tabler.colors["blue-dark"],
-                                tabler.colors["indigo-dark"],
-                                tabler.colors["red-dark"],
-                                tabler.colors["green-dark"],
-                                tabler.colors["azure-dark"]
-                              ],
-                              hoverBackgroundColor: [
-                                tabler.colors["blue"],
-                                tabler.colors["indigo"],
-                                tabler.colors["red"],
-                                tabler.colors["green"],
-                                tabler.colors["azure"]
-                              ],
-                              borderWidth: 1
-                            }]
-                          },
-                          options: {
-                            scales: {
-                              xAxes: [{
-                                ticks: {
-                                  beginAtZero: true
-                                },
-                                scaleLabel: {
-                                  display: true,
-                                  labelString: "Number of Farmers"
-                                }
-                              }],
-                              yAxes: [{
-                                scaleLabel: {
-                                  display: true,
-                                  labelString: "Family Size"
-                                }
-                              }]
-                            },
-                            maintainAspectRatio: false,
-                            responsive: true
-                          }
-                        });
-                    }
-                     // Create the XHR object.
-                    function createCORSRequest(method, url) {
-                      var xhr = new XMLHttpRequest();
-                      if ("withCredentials" in xhr) {
-                        // XHR for Chrome/Firefox/Opera/Safari.
-                        xhr.open(method, url, true);
-                      } else if (typeof XDomainRequest != "undefined") {
-                        // XDomainRequest for IE.
-                        xhr = new XDomainRequest();     
-                        xhr.open(method, url);
-                      } else {
-                        // CORS not supported.
-                        xhr = null;
-                      }
-                      return xhr;
-                    }
-
-                    var url = "./farmer-data.php";
-                    
-                    // Get date of birth
-                    function DOB(dob) {
-                      var today = new Date();
-                      var currentYear = today.getFullYear();
-                      var birthDate = new Date(dob);
-                      var birthYear = birthDate.getFullYear();
-                      var age = currentYear - birthYear;
-                      return age;
-                    }
-                    
-                    // Farm size - acres to hectares converter
-                    function ath(a_size) {
-                      var land = a_size.match(/\d+/)[0];
-                      var h_size = parseFloat(Math.round(0.4 * land));
-                      return h_size;
-                    }
-                    
-                    // Make CORS Request
-                    function makeCorsRequest() {
-                      var xhr = createCORSRequest('GET', url);
-                      if (!xhr) {
-                        alert('CORS not supported');
-                        return;
-                      }
-                    
-                      // Response handlers.
-                      xhr.onreadystatechange = function() {
-                        if (this.readyState === 4) {
-                          if (this.status === 200) {
-                            var farmerData = JSON.parse(this.responseText),
-                              ageArr = [],
-                              eduArr = [],
-                              landArr = [],
-                            houseArr = [],
-                            genderArr = [];
-                            
-                            console.log(farmerData);
-                            farmerData.forEach(data => {
-                              console.log(data);
-                              var age = DOB(data.date_of_birth);
-                              var edu = data.education;
-                              var land = ath(data.land_area);
-                              var house = data.family_size;
-                              var gender = data.gender;
-                              ageArr.push(age);
-                              eduArr.push(edu);
-                              landArr.push(land)
-                              houseArr.push(house);
-                              genderArr.push(gender);
-                            });
-                            $(".dimmer").removeClass("active");
-                            displayData(ageArr, eduArr, landArr, houseArr, genderArr);
-                          } else {
-                            console.log("Unable to retrieve data");
-                          }
-                        }
-                      };
-                    
-                      xhr.send();
-                    }
-                    makeCorsRequest();
-                });
-              })
-            </script>
-        </div>
+          </div>
         </div>
       </div>
       <footer class="footer">
@@ -727,5 +365,412 @@
         </div>
       </footer>
     </div>
+    <script>
+      require(['chart', 'jquery', 'moment'], function(Chart, $, moment){
+        $(function () {
+          function loadNotifications(data = "") {
+            $.post("notification-config.php",
+              {data:data},
+              function (data, textStatus, jqXHR) {
+                displayNotifications(JSON.parse(data));
+              }
+            );
+          }
+          loadNotifications('showNotifications');
+          setInterval(function () {
+            loadNotifications('showNotifications');
+          }, 5000);
+          
+          let idArr = [];
+          function displayNotifications(data) {
+            if (data.length!==0) {
+              for (let i = 0; i < data.length; i++) {
+                const elem = data[i];
+                for (const key in elem) {
+                  if (elem.hasOwnProperty(key)) {
+                    const project = elem[key];
+                    if (idArr.indexOf(project.id) === -1) {
+                      $('.notification-menu').prepend(`
+                        <a href="./<?php echo $_GET['name'] === 'register_farmer'?'farmer-profile':'price-details-full' ?>.php?name=${key}&id=${project.project_id}&uid=<?php echo uniqid('${project.id}') ?>" class="dropdown-item d-flex">
+                          <div>
+                            <p class="m-0">${displayName(project.registered_by)} submitted a new response: <strong>${displayName(key)}</strong>.</p>
+                            <div class="small text-muted d-inline-flex">${moment(project.date_of_data_collection).fromNow()}</div>
+                            <div class="small text-muted d-inline-flex float-right"><i>Click to view.</i></div>
+                          </div>
+                        </a>
+                      `);
+                      idArr.push(project.id);
+                    }
+                  }
+                }
+              }
+              $('.notification-divider, .nav-unread').removeClass('d-none');
+              $('.notification-handler').removeClass('disabled').html('Clear all notifications');
+            } else if (data.length===0) {
+              $('.notification-menu').empty();
+              $('.notification-divider, .nav-unread').addClass('d-none');
+              $('.notification-handler').addClass('disabled').html('No notifications found!');
+            }
+          }
+          
+          let $this = document.querySelector('.notification-handler');
+          $this.onclick = function (e) {
+            if (!this.classList.contains('disabled')) {
+              loadNotifications('clearNotifications');
+            }
+          }
+
+          function displayName(name) {
+            var name = name.split("_");
+            for (var i = 0; i < name.length; i++) {
+                name[i] = name[i][0].toUpperCase() + name[i].substr(1);
+            }
+            return name.join(" ");
+          }
+
+          function displayData(age, edu, land, house, gender) {
+            var ctx = $('#genderChart')
+              genderChart,
+              male = gender.filter(x => x === "male").length,
+              female = gender.filter(x => x === "female").length;
+            
+            genderChart = new Chart(ctx, {
+              type: 'pie',
+              data: {
+                datasets: [{
+                  data: [female, male],
+                  backgroundColor: [
+                    tabler.colors["teal-dark"],
+                    tabler.colors["cyan-dark"]
+                  ]
+                }],
+                labels: [
+                  'Females',
+                  'Males'
+                ]
+              },
+              options: {
+                maintainAspectRatio: false,
+                responsive: true
+              }
+            });
+            var ctx = $('#ageChart'),
+              ageChart,
+              lt45 = age.filter(x => x < 45).length,
+              lte60 = age.filter(x => x >= 45 && x <= 60).length,
+              gt60 = age.filter(x => x > 60).length;
+            
+            ageChart = new Chart(ctx, {
+              type: 'polarArea',
+              data: {
+                labels: ['<45 years', '45 - 60 years', '>60 years'],
+                datasets: [{
+                  label: "No of Farmers",
+                  data: [lt45, lte60, gt60],
+                  backgroundColor: [
+                    tabler.colors["orange-dark"],
+                    tabler.colors["purple-dark"],
+                    tabler.colors["azure-dark"]
+                  ]
+                }]
+              },
+              options: {
+                maintainAspectRatio: false,
+                responsive: true
+              }
+            });
+            var ctx = $('#landChart'),
+                landChart,
+                landObj,
+                landObjData = [];
+
+            function occurrence(array) {
+              "use strict";
+              var result = {};
+              if (array instanceof Array) {
+                array.forEach(function (v, i) {
+                  if (!result[v]) {
+                      result[v] = [i];
+                  } else {
+                      result[v].push(i);
+                  }
+                });
+              }
+              return result;
+            };
+            
+            landObj = occurrence(land);
+
+            for (var k in landObj) {
+              if (landObj.hasOwnProperty(k)) {
+                landObjData.push({
+                  x: parseFloat(k),
+                  y: landObj[k].length,
+                  r: Math.round((landObj[k].length/land.length)*100)
+                })
+              }
+            }
+            
+            landChart = new Chart(ctx, {
+              type: 'bubble',
+              data: {
+                datasets: [{
+                  label: "% of Farmers per Land Area",
+                  // x represents av. farm size, y represents no of farmers, and r is the radius of the circle whose diameter represents the percentage of farmers with land within this category
+                  data: landObjData,
+                  backgroundColor: [
+                    tabler.colors["orange-lighter"],
+                    tabler.colors["purple-lighter"],
+                    tabler.colors["azure-lighter"],
+                    tabler.colors["teal-lighter"],
+                    tabler.colors["cyan-lighter"]
+                  ],
+                  borderColor: [
+                    tabler.colors["orange-dark"],
+                    tabler.colors["purple-dark"],
+                    tabler.colors["azure-dark"],
+                    tabler.colors["teal-dark"],
+                    tabler.colors["cyan-dark"]
+                  ],
+                  hoverBackgroundColor: [
+                    tabler.colors["orange"],
+                    tabler.colors["purple"],
+                    tabler.colors["azure"],
+                    tabler.colors["teal"],
+                    tabler.colors["cyan"]
+                  ],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: true
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Number of Farmers"
+                    }
+                  }],
+                  xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Size of Land Holdings (hectares)"
+                    }
+                  }]
+                },
+                maintainAspectRatio: false,
+                responsive: true
+              }
+            });
+            var ctx = $('#eduChart'),
+                eduChart,
+                none = edu.filter(x => x === "None").length,
+                primary = edu.filter(x => x === "Primary").length,
+                secondary = edu.filter(x => x === "Secondary").length,
+                tertiary = edu.filter(x => x === "Tertiary").length,
+                arabic = edu.filter(x => x === "Arabic").length;
+            
+            eduChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+                labels: ['None', 'Primary', 'Secondary', 
+              'Tertiary', 'Arabic'],
+                datasets: [{
+                  label: "No of Farmers",
+                  data: [none, primary, secondary, tertiary, arabic],
+                  backgroundColor: [
+                    tabler.colors["orange-lighter"],
+                    tabler.colors["purple-lighter"],
+                    tabler.colors["indigo-lighter"],
+                    tabler.colors["blue-lighter"],
+                    tabler.colors["red-lighter"]
+                  ],
+                  borderColor: [
+                    tabler.colors["orange-dark"],
+                    tabler.colors["purple-dark"],
+                    tabler.colors["indigo-dark"],
+                    tabler.colors["blue-dark"],
+                    tabler.colors["red-dark"]
+                  ],
+                  hoverBackgroundColor: [
+                    tabler.colors["orange"],
+                    tabler.colors["purple"],
+                    tabler.colors["indigo"],
+                    tabler.colors["blue"],
+                    tabler.colors["red"]
+                  ],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: true
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Number of Farmers"
+                    }
+                  }],
+                  xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Educational Level"
+                    }
+                  }]
+                },
+                maintainAspectRatio: false,
+                responsive: true
+              }
+            });
+            var ctx = $('#houseChart'),
+                houseChart,
+                x1 = house.filter(x => x === 1).length,
+                x2 = house.filter(x => x >= 2 && x <= 4).length,
+                x3 = house.filter(x => x >= 5 && x <= 7).length,
+                x4 = house.filter(x => x >= 8 && x <= 10).length,
+                x5 = house.filter(x => x >= 10).length;
+                
+            houseChart
+            var ctx = $('#houseChart'),
+                houseChart;
+            houseChart = new Chart(ctx, {
+              type: 'horizontalBar',
+              data: {
+                labels: [">10", "8-10", "5-7", "2-4", "1"],
+                datasets: [{
+                  label: "No of Farmers",
+                  data: [x5, x4, x3, x2, x1],
+                  backgroundColor: [
+                    tabler.colors["blue-lighter"],
+                    tabler.colors["indigo-lighter"],
+                    tabler.colors["red-lighter"],
+                    tabler.colors["green-lighter"],
+                    tabler.colors["azure-lighter"]
+                  ],
+                  borderColor: [
+                    tabler.colors["blue-dark"],
+                    tabler.colors["indigo-dark"],
+                    tabler.colors["red-dark"],
+                    tabler.colors["green-dark"],
+                    tabler.colors["azure-dark"]
+                  ],
+                  hoverBackgroundColor: [
+                    tabler.colors["blue"],
+                    tabler.colors["indigo"],
+                    tabler.colors["red"],
+                    tabler.colors["green"],
+                    tabler.colors["azure"]
+                  ],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  xAxes: [{
+                    ticks: {
+                      beginAtZero: true
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Number of Farmers"
+                    }
+                  }],
+                  yAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: "Family Size"
+                    }
+                  }]
+                },
+                maintainAspectRatio: false,
+                responsive: true
+              }
+            });
+          }
+            // Create the XHR object.
+          function createCORSRequest(method, url) {
+            var xhr = new XMLHttpRequest();
+            if ("withCredentials" in xhr) {
+              // XHR for Chrome/Firefox/Opera/Safari.
+              xhr.open(method, url, true);
+            } else if (typeof XDomainRequest != "undefined") {
+              // XDomainRequest for IE.
+              xhr = new XDomainRequest();     
+              xhr.open(method, url);
+            } else {
+              // CORS not supported.
+              xhr = null;
+            }
+            return xhr;
+          }
+
+          var url = "./farmer-data.php";
+          
+          // Get date of birth
+          function DOB(dob) {
+            var today = new Date();
+            var currentYear = today.getFullYear();
+            var birthDate = new Date(dob);
+            var birthYear = birthDate.getFullYear();
+            var age = currentYear - birthYear;
+            return age;
+          }
+          
+          // Farm size - acres to hectares converter
+          function ath(a_size) {
+            var land = a_size.match(/\d+/)[0];
+            var h_size = parseFloat(Math.round(0.4 * land));
+            return h_size;
+          }
+          
+          // Make CORS Request
+          function makeCorsRequest() {
+            var xhr = createCORSRequest('GET', url);
+            if (!xhr) {
+              alert('CORS not supported');
+              return;
+            }
+          
+            // Response handlers.
+            xhr.onreadystatechange = function() {
+              if (this.readyState === 4) {
+                if (this.status === 200) {
+                  var farmerData = JSON.parse(this.responseText),
+                    ageArr = [],
+                    eduArr = [],
+                    landArr = [],
+                  houseArr = [],
+                  genderArr = [];
+                  
+                  farmerData.forEach(data => {
+                    var age = DOB(data.date_of_birth);
+                    var edu = data.education;
+                    var land = ath(data.land_area);
+                    var house = data.family_size;
+                    var gender = data.gender;
+                    ageArr.push(age);
+                    eduArr.push(edu);
+                    landArr.push(land)
+                    houseArr.push(house);
+                    genderArr.push(gender);
+                  });
+                  $(".dimmer").removeClass("active");
+                  displayData(ageArr, eduArr, landArr, houseArr, genderArr);
+                } else {
+                  console.log("Unable to retrieve data");
+                }
+              }
+            };
+          
+            xhr.send();
+          }
+          makeCorsRequest();
+        });
+      })
+    </script>
   </body>
 </html>

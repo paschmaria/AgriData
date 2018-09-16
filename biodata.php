@@ -12,7 +12,7 @@
     if ($user['user_type']!=='administrator') {
       header('HTTP/1.0 403 Forbidden');
       header('Location: ./403.html');
-    } elseif (!in_array(e($_GET['id']), $project_ids, true)||!in_array(e($_GET['name']), $project_names, true)) {
+    } elseif (!in_array($_GET['id'], $project_ids, true)||!in_array($_GET['name'], $project_names, true)) {
       header('HTTP/1.0 404 Not Found');
       header('Location: ./404.html');
     }
@@ -44,27 +44,20 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
-    <title>Verde - Agricultural Extension and Analytics</title>
+    <title>AGRIDATA - COLLECT AND ANALYZE ANY KIND OF FIELD DATA, ANYTIME</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script charset="utf-8" src="./assets/js/pace.min.js"></script>
-    <script src="./assets/js/require.min.js"></script>
-    <script>
-      setTimeout(hideURLbar, 0);
-      function hideURLbar(){
-        window.scrollTo(0,1);
-      }
-      requirejs.config({
-        baseUrl: '.'
-      });
+    <script type="text/javascript" charset="utf-8" src="./assets/js/pace.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./assets/js/require.min.js"></script>
+    <script type="text/javascript" charset="utf-8" >
+      setTimeout(hideURLbar,0);function hideURLbar(){window.scrollTo(0,1)}requirejs.config({baseUrl:'.'});
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
     <link href="./assets/css/pace.css" rel="stylesheet" />
-    <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./assets/js/dashboard.js"></script>
   </head>
-
-  <body class="">
+  <body>
     <div class="page">
       <div class="page-main">
         <div class="header py-4">
@@ -74,39 +67,24 @@
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
-                <div class="dropdown d-none d-md-flex">
-                  <a class="nav-link icon" data-toggle="dropdown">
-                    <i class="fe fe-bell"></i>
-                    <span class="nav-unread"></span>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a href="#" class="dropdown-item d-flex">
-                      <!-- <span class="avatar mr-3 align-self-center" style="background-image: url(demo/faces/male/41.jpg)"></span> -->
-                      <div>
-                        <p>New farmer signed on -
-                          <strong>Musa Abdullahi</strong>
-                        </p>
-                        <div class="small text-muted">10 minutes ago</div>
+                <?php
+                  $user = $_SESSION['user'];
+                  if ($user['user_type']==='administrator') {
+                    echo '
+                      <div class="dropdown d-none d-md-flex">
+                        <a class="nav-link icon" data-toggle="dropdown">
+                          <i class="fe fe-bell"></i>
+                          <span class="nav-unread d-none"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                          <div class="notification-menu"></div>
+                          <div class="dropdown-divider notification-divider d-none"></div>
+                          <a href="javascript:void(0)" class="dropdown-item text-center text-muted-dark notification-handler disabled">No notifications found!</a>
+                        </div>
                       </div>
-                    </a>
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>50 messages sent to farmers in
-                          <strong>Kano State</strong>
-                        </p>
-                        <div class="small text-muted">1 hour ago</div>
-                      </div>
-                    </a>
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>5 voice calls were not picked.</p>
-                        <div class="small text-muted">2 hours ago</div>
-                      </div>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item text-center text-muted-dark">Mark all as read</a>
-                  </div>
-                </div>
+                    ';
+                  }
+                ?>
                 <div class="dropdown">
                   <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
                     <span class="avatar avatar-blue">
@@ -145,7 +123,7 @@
                     <a class="dropdown-item" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
-                    <a class="dropdown-item" href="#">
+                    <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-settings"></i> Settings
                     </a>
                     <a class="dropdown-item" href="#">
@@ -153,9 +131,6 @@
                         <span class="badge badge-primary">6</span>
                       </span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
-                    </a>
-                    <!-- <a class="dropdown-item" href="#">
-                      <i class="dropdown-icon fe fe-send"></i> Message
                     </a> -->
                     <div class="dropdown-divider"></div>
                     <!-- <a class="dropdown-item" href="#">
@@ -177,28 +152,30 @@
           <div class="container">
             <div class="row align-items-center">
               <div class="col-lg-3 ml-auto">
-                <form class="input-icon my-3 my-lg-0">
-                  <input type="search" class="form-control header-search" placeholder="Search&hellip;" tabindex="1">
-                  <div class="input-icon-addon">
-                    <i class="fe fe-search"></i>
-                  </div>
-                </form>
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Bio-data</a>
-                      <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
-                    </div>
+                  <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-activity"></i> Data</a>
+                    <?php if ($_GET['name'] === 'register_farmer') { ?>
+                      <div class="dropdown-menu dropdown-menu-arrow">
+                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Responses</a>
+                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
+                      </div>
+                    <?php } elseif ($_GET['name'] === 'market_prices') { ?>
+                      <div class="dropdown-menu dropdown-menu-arrow">
+                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Responses</a>
+                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
+                      </div>
+                    <?php } ?>
                   </li>
-                  <li class="nav-item">
-                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
-                  </li>
-                  <li class="nav-item">
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
+                  </li>
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="./rf_analytics.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-bar-chart-2"></i> Analytics</a>
                   </li>
                 </ul>
               </div>
@@ -280,13 +257,13 @@
                     $tr .= '
                       <tr>
                         <td class="text-center">
-                          <div class="avatar d-block" style="background-image: url(/assets/images/farmers_pictures/'. $tables['farmer_pic'] .')">
+                          <div class="avatar d-block" style="background-image: url(assets/images/farmers_pictures/'. $tables['farmer_pic'] .')">
                           </div>
                         </td>
                         <td>
                           <p class="m-0">'. $tables['firstname'] .' '. $tables['lastname'] .'</p>
                           <div class="small text-muted">
-                            Registered: '. DOR($tables['date_of_data_collection']) .'
+                            Response Collected: '. DOR($tables['date_of_data_collection']) .'
                           </div>
                         </td>
                         <td>
@@ -408,32 +385,6 @@
                 ';
               }
             ?>
-            <script>
-              require(['jquery'], function ($) {
-                $(function() {
-                  // Search for names 
-                  var input, filter, table, tr, td, i;
-                  input = document.getElementById("nameSearch");
-                  input.onkeyup = function() {
-                    filter = this.value.toUpperCase();
-                    table = document.getElementById("bioTable");
-                    tr = table.getElementsByTagName("tr");
-
-                    // Loop through all table rows, and hide those who don't match the search query
-                    for (i = 0; i < tr.length; i++) {
-                      td = tr[i].getElementsByTagName("td")[1];
-                      if (td) {
-                        if (td.firstElementChild.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                          tr[i].style.display = "";
-                        } else {
-                          tr[i].style.display = "none";
-                        }
-                      } 
-                    }
-                  }
-                })
-              })
-            </script>
           </div>
         </div>
       </div>
@@ -448,5 +399,91 @@
         </div>
       </footer>
     </div>
+    <script>
+      require(['jquery', 'moment'], function ($, moment) {
+        $(function() {
+          function loadNotifications(data = "") {
+            $.post("notification-config.php",
+              {data:data},
+              function (data, textStatus, jqXHR) {
+                displayNotifications(JSON.parse(data));
+              }
+            );
+          }
+          loadNotifications('showNotifications');
+          setInterval(function () {
+            loadNotifications('showNotifications');
+          }, 5000);
+          
+          let idArr = [];
+          function displayNotifications(data) {
+            if (data.length!==0) {
+              for (let i = 0; i < data.length; i++) {
+                const elem = data[i];
+                for (const key in elem) {
+                  if (elem.hasOwnProperty(key)) {
+                    const project = elem[key];
+                    if (idArr.indexOf(project.id) === -1) {
+                      $('.notification-menu').prepend(`
+                        <a href="./<?php echo $_GET['name'] === 'register_farmer'?'farmer-profile':'price-details-full' ?>.php?name=${key}&id=${project.project_id}&uid=<?php echo uniqid('${project.id}') ?>" class="dropdown-item d-flex">
+                          <div>
+                            <p class="m-0">${displayName(project.registered_by)} submitted a new response: <strong>${displayName(key)}</strong>.</p>
+                            <div class="small text-muted d-inline-flex">${moment(project.date_of_data_collection).fromNow()}</div>
+                            <div class="small text-muted d-inline-flex float-right"><i>Click to view.</i></div>
+                          </div>
+                        </a>
+                      `);
+                      idArr.push(project.id);
+                    }
+                  }
+                }
+              }
+              $('.notification-divider, .nav-unread').removeClass('d-none');
+              $('.notification-handler').removeClass('disabled').html('Clear all notifications');
+            } else if (data.length===0) {
+              $('.notification-menu').empty();
+              $('.notification-divider, .nav-unread').addClass('d-none');
+              $('.notification-handler').addClass('disabled').html('No notifications found!');
+            }
+          }
+          
+          let $this = document.querySelector('.notification-handler');
+          $this.onclick = function (e) {
+            if (!this.classList.contains('disabled')) {
+              loadNotifications('clearNotifications');
+            }
+          }
+
+          function displayName(name) {
+            var name = name.split("_");
+            for (var i = 0; i < name.length; i++) {
+                name[i] = name[i][0].toUpperCase() + name[i].substr(1);
+            }
+            return name.join(" ");
+          }
+
+          // Search for names 
+          var input, filter, table, tr, td, i;
+          input = document.getElementById("nameSearch");
+          input.onkeyup = function() {
+            filter = this.value.toUpperCase();
+            table = document.getElementById("bioTable");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+              td = tr[i].getElementsByTagName("td")[1];
+              if (td) {
+                if (td.firstElementChild.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                  tr[i].style.display = "";
+                } else {
+                  tr[i].style.display = "none";
+                }
+              } 
+            }
+          }
+        })
+      })
+    </script>
   </body>
 </html>

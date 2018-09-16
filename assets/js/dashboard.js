@@ -17,7 +17,7 @@ require.config({
     'tablesorter': './assets/js/vendors/jquery.tablesorter.min',
     'circle-progress': './assets/js/vendors/circle-progress.min',
     'chart': './assets/js/vendors/chart.bundle.min',
-    'cloudinary': './assets/js/vendors/widget.cloudinary.min'
+    'moment': './assets/js/vendors/moment.min'
   }
 });
 window.tabler = {

@@ -14,7 +14,7 @@
     if ($user['user_type']!=='administrator') {
       header('HTTP/1.0 403 Forbidden');
       header('Location: ./403.html');
-    } elseif (!in_array(e($_GET['id']), $project_ids, true)||!in_array(e($_GET['name']), $project_names, true)) {
+    } elseif (!in_array($_GET['id'], $project_ids, true)||!in_array($_GET['name'], $project_names, true)) {
       header('HTTP/1.0 404 Not Found');
       header('Location: ./404.html');
     }
@@ -45,26 +45,20 @@
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
-    <title>Verde - Agricultural Extension and Analytics</title>
+    <title>AGRIDATA - COLLECT AND ANALYZE ANY KIND OF FIELD DATA, ANYTIME</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
-    <script charset="utf-8" src="./assets/js/pace.min.js"></script>
-    <script src="./assets/js/require.min.js"></script>
-    <script>
-      setTimeout(hideURLbar, 0);
-      function hideURLbar(){
-        window.scrollTo(0,1);
-      }
-      requirejs.config({
-        baseUrl: '.'
-      });
+    <script type="text/javascript" charset="utf-8" src="./assets/js/pace.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./assets/js/require.min.js"></script>
+    <script type="text/javascript" charset="utf-8" >
+      setTimeout(hideURLbar,0);function hideURLbar(){window.scrollTo(0,1)}requirejs.config({baseUrl:'.'});
     </script>
     <!-- Dashboard Core -->
     <link href="./assets/css/dashboard.css" rel="stylesheet" />
     <link href="./assets/css/pace.css" rel="stylesheet" />
-    <script src="./assets/js/dashboard.js"></script>
+    <script type="text/javascript" charset="utf-8" src="./assets/js/dashboard.js"></script>
   </head>
-  <body class="">
+  <body>
     <div class="page">
       <div class="page-main">
         <div class="header py-4">
@@ -74,34 +68,24 @@
                 <img src="./assets/images/logo.png" class="header-brand-img" alt="[VERDE]">
               </a>
               <div class="d-flex order-lg-2 ml-auto">
-                <div class="dropdown d-none d-md-flex">
-                  <a class="nav-link icon" data-toggle="dropdown">
-                    <i class="fe fe-bell"></i>
-                    <span class="nav-unread"></span>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>New farmer signed on - <strong>Musa Abdullahi</strong></p>
-                        <div class="small text-muted">10 minutes ago</div>
+                <?php
+                  $user = $_SESSION['user'];
+                  if ($user['user_type']==='administrator') {
+                    echo '
+                      <div class="dropdown d-none d-md-flex">
+                        <a class="nav-link icon" data-toggle="dropdown">
+                          <i class="fe fe-bell"></i>
+                          <span class="nav-unread d-none"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                          <div class="notification-menu"></div>
+                          <div class="dropdown-divider notification-divider d-none"></div>
+                          <a href="javascript:void(0)" class="dropdown-item text-center text-muted-dark notification-handler disabled">No notifications found!</a>
+                        </div>
                       </div>
-                    </a>
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>50 messages sent to farmers in <strong>Kano State</strong></p>
-                        <div class="small text-muted">1 hour ago</div>
-                      </div>
-                    </a>
-                    <a href="#" class="dropdown-item d-flex">
-                      <div>
-                        <p>5 voice calls were not picked.</p>
-                        <div class="small text-muted">2 hours ago</div>
-                      </div>
-                    </a>
-                    <div class="dropdown-divider"></div>
-                    <a href="#" class="dropdown-item text-center text-muted-dark">Mark all as read</a>
-                  </div>
-                </div>
+                    ';
+                  }
+                ?>
                 <div class="dropdown">
                   <a href="#" class="nav-link pr-0 leading-none" data-toggle="dropdown">
                     <span class="avatar avatar-blue">
@@ -140,13 +124,13 @@
                     <a class="dropdown-item" href="./profile.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>">
                       <i class="dropdown-icon fe fe-user"></i> Profile
                     </a>
-                    <a class="dropdown-item" href="#">
+                    <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-settings"></i> Settings
                     </a>
                     <a class="dropdown-item" href="#">
                       <span class="float-right"><span class="badge badge-primary">6</span></span>
                       <i class="dropdown-icon fe fe-mail"></i> Inbox
-                    </a>
+                    </a> -->
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="./collaborate.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Log out
@@ -165,7 +149,7 @@
             <div class="row align-items-center">
               <div class="col-lg-3 ml-auto">
                 <form class="input-icon my-3 my-lg-0">
-                  <input type="search" class="form-control header-search" placeholder="Search using email or phone number&hellip;" tabindex="1">
+                  <input type="search" id="collaboratorSearch" class="form-control header-search" placeholder="Search using email or phone number&hellip;" tabindex="1">
                   <div class="input-icon-addon">
                     <i class="fe fe-search"></i>
                   </div>
@@ -173,26 +157,27 @@
               </div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item dropdown">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-trending-up"></i> Analytics</a>
+                  <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-activity"></i> Data</a>
                     <?php if ($_GET['name'] === 'register_farmer') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
                         <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
-                        <a href="./demography.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
+                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
+                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
                       </div>
                     <?php } elseif ($_GET['name'] === 'market_prices') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
                         <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Price Tables</a>
+                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
+                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
                       </div>
                     <?php } ?>
                   </li>
-                  <li class="nav-item">
-                    <a href="./data.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-file-text"></i> Data</a>
-                  </li>
-                  <li class="nav-item">
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link active"><i class="fe fe-users"></i> Collaborate</a>
+                  </li>
+                  <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
+                    <a href="./rf_analytics.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-bar-chart-2"></i> Analytics</a>
                   </li>
                 </ul>
               </div>
@@ -205,9 +190,9 @@
             <div class="card">
               <div class="card-header">
                 <div class="card-title d-inline-flex flex-sm-row flex-column">
-                  <select class="form-control custom-select m-2 mw-sm" style="width: 60%;">
-                    <option value="1">Accepted Invitation</option>
-                    <option value="2">Pending Invitation</option>
+                  <select id="choose-collaborator-type" class="form-control custom-select m-2 mw-sm" style="width: 60%;">
+                    <option data-value="accepted">Accepted Invitation</option>
+                    <option data-value="pending">Pending Invitation</option>
                   </select>
                   <form method="POST" action="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="invite-form">
                     <div class="input-group m-2">
@@ -223,67 +208,26 @@
                 </div>
               </div>
               <div class="table-responsive">
-                <table class="table card-table table-vcenter text-nowrap">
-                  <thead>
-                    <tr>
-                      <th class="w-1">S/N</th>
-                      <th>Full Name</th>
-                      <th>Phone Number</th>
-                      <th>Email Address</th>
-                      <th>Sent Invite</th>
-                      <th>Accepted Invite</th>
-                      <th>Signed Up</th>
-                      <th>Response(s)</th>
-                      <th>Delete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php
-                      if (isset($_GET['name'])&&isset($_GET['id'])) {
-                        $user = $_SESSION['user'];
-                        $project_ids = explode(', ', $user['project_id']);
-                        $project_names = explode(', ', $user['project_name']);
-                        $project_name = e($_GET['name']);
-                        $project_id = e($_GET['id']);
-
-                        if (in_array($project_id, $project_ids, true)&&in_array($project_name, $project_names, true)) {
-                          $query = "SELECT * FROM agents WHERE project_name='$project_name' AND project_id='$project_id'";
-                          $results = mysqli_query($db, $query);
-                          $count = 1;
-
-                          function stringify_date($mysqldate) {
-                            $date = date("F j, Y, g:i a", strtotime($mysqldate));
-                            return $date;
-                          }
-
-                          while ($agents = mysqli_fetch_assoc($results)) {
-                            echo '<tr>
-                              <td><span class="text-muted">'. $count++ .'</span></td>
-                              <td>'. $agents['fullname'] .'</td>
-                              <td>'. $agents['phone'] .'</td>
-                              <td>'. $agents['email'] .'</td>
-                              <td>'. stringify_date($agents['sent_invite']) .'</td>
-                              <td>'. stringify_date($agents['accepted_invite']) .'</td>
-                              <td>'. stringify_date($agents['signed_up']) .'</td>
-                              <td class="text-center">'. $agents['responses'] .'</td>
-                              <td class="w-1 text-center">
-                                <a href="" class="icon">
-                                  <i class="fe fe-trash-2"></i>
-                                </a>
-                              </td>
-                            </tr>';
-                          }
-                        } else {
-                          echo '
-                            <tr>
-                              <td class="display-4 text-center p-8" colspan="9"><strong>No Data Found!</strong></td>
-                            </tr>
-                          ';
-                        }
-                      }
-                    ?>
-                  </tbody>
-                </table>
+                <div class="dimmer active">
+                  <div class="loader"></div>
+                  <div class="dimmer-content">
+                    <table id="collabTable" class="table card-table table-vcenter text-nowrap">
+                      <thead>
+                        <tr>
+                          <th class="w-1">S/N</th>
+                          <th>Full Name</th>
+                          <th>Phone Number</th>
+                          <th class="text-center">Email Address</th>
+                          <th class="text-center">Sent Invite</th>
+                          <th class="text-center">Accepted Invite</th>
+                          <th class="text-center">Signed Up</th>
+                          <th>Response(s)</th>
+                        </tr>
+                      </thead>
+                      <tbody class="results"></tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -300,27 +244,166 @@
       </footer>
     </div>
     <script>
-      require(['jquery'], function ($) {
+      require(['jquery', 'moment'], function ($, moment) {
         $(function () {
-          // $('form.invite-form').submit(function(e) {
-          //   $("button[type=submit]").addClass("disabled");
-          //   var formData = $('input[name=email_invite]').val();
-          //   $.ajax({
-          //     type      :'POST',
-          //     url       :'invite-user.php',
-          //     data      :formData,
-          //     contentType: "application/json;charset=UTF-8"
-          //   }).done(function(data) {
-          //     console.log(data);
-          //     $('input[name=email_invite]').val('');
-          //     $("button[type=submit]").removeClass("disabled");
-          //   }).fail(function (error) {
-          //     console.log(error);
-          //     $('input[name=email_invite]').val('');
-          //     $("button[type=submit]").removeClass("disabled");
-          //   })
-          //   e.preventDefault();
-          // })
+          function loadNotifications(data = "") {
+            $.post("notification-config.php",
+              {data:data},
+              function (data, textStatus, jqXHR) {
+                displayNotifications(JSON.parse(data));
+              }
+            );
+          }
+          loadNotifications('showNotifications');
+          setInterval(function () {
+            loadNotifications('showNotifications');
+          }, 5000);
+          
+          let idArr = [];
+          function displayNotifications(data) {
+            if (data.length!==0) {
+              for (let i = 0; i < data.length; i++) {
+                const elem = data[i];
+                for (const key in elem) {
+                  if (elem.hasOwnProperty(key)) {
+                    const project = elem[key];
+                    if (idArr.indexOf(project.id) === -1) {
+                      $('.notification-menu').prepend(`
+                        <a href="./<?php echo $_GET['name'] === 'register_farmer'?'farmer-profile':'price-details-full' ?>.php?name=${key}&id=${project.project_id}&uid=<?php echo uniqid('${project.id}') ?>" class="dropdown-item d-flex">
+                          <div>
+                            <p class="m-0">${displayName(project.registered_by)} submitted a new response: <strong>${displayName(key)}</strong>.</p>
+                            <div class="small text-muted d-inline-flex">${moment(project.date_of_data_collection).fromNow()}</div>
+                            <div class="small text-muted d-inline-flex float-right"><i>Click to view.</i></div>
+                          </div>
+                        </a>
+                      `);
+                      idArr.push(project.id);
+                    }
+                  }
+                }
+              }
+              $('.notification-divider, .nav-unread').removeClass('d-none');
+              $('.notification-handler').removeClass('disabled').html('Clear all notifications');
+            } else if (data.length===0) {
+              $('.notification-menu').empty();
+              $('.notification-divider, .nav-unread').addClass('d-none');
+              $('.notification-handler').addClass('disabled').html('No notifications found!');
+            }
+          }
+          
+          let $this = document.querySelector('.notification-handler');
+          $this.onclick = function (e) {
+            if (!this.classList.contains('disabled')) {
+              loadNotifications('clearNotifications');
+            }
+          }
+
+          function displayName(name) {
+            var name = name.split("_");
+            for (var i = 0; i < name.length; i++) {
+                name[i] = name[i][0].toUpperCase() + name[i].substr(1);
+            }
+            return name.join(" ");
+          }
+
+          let url = 'collaborate-data.php',
+          results = $('.results'),
+          dimmer = $('.dimmer'),
+          selectCollaborator = $('#choose-collaborator-type');
+          const urlParams = new URLSearchParams(window.location.search);
+          const name = urlParams.get('name');
+          const id = urlParams.get('id');
+
+          function fetchData(url, value) {
+            return $.post(url, {
+              data: value,
+              projName: name,
+              projId: id
+            });
+          }
+
+          fetchData(url, 'accepted')
+          .done(function (res, status) {
+            displayData(JSON.parse(res));
+          })
+          .fail(function (err) {
+            console.error(err);
+          });
+          
+          selectCollaborator.on('change', function (e) {
+            dimmer.addClass('active'); 
+            let data = $(this).children(':selected').data('value');
+            fetchData(url, data)
+            .done(function (res, status) {
+              displayData(JSON.parse(res));
+            })
+            .fail(function (err) {
+              console.error(err);
+            });
+          });
+
+          function a(b) {
+            if (b===''||b===' '||b==='January 1st 2000, 12:00:00am') {
+              return 'N/A';
+            } else {
+              return b;
+            }
+          }
+
+          function displayData(responses) {
+            console.log(responses);
+            if (responses.length!==0) {
+              results.empty();
+              let count = 1;
+              responses.map(data => {
+                results.append(`
+                  <tr>
+                    <td>
+                      <span class="text-muted">${count++}</span>
+                    </td>
+                    <td>${a(data.fullname)}</td>
+                    <td>${a(data.phone)}</td>
+                    <td>${a(data.email)}</td>
+                    <td>${a(moment(data.sent_invite).format('MMMM Do YYYY, h:mm:ssa'))}</td>
+                    <td>${a(moment(data.accepted_invite).format('MMMM Do YYYY, h:mm:ssa'))}</td>
+                    <td>${a(moment(data.signed_up).format('MMMM Do YYYY, h:mm:ssa'))}</td>
+                    <td class="text-center">${a(data.responses)}</td>
+                  </tr>
+                `)
+              })
+              dimmer.removeClass('active');
+            } else {
+              results.empty().append(`
+                <tr>
+                  <td class="display-4 text-center p-8" colspan="9"><strong>No Data Found!</strong></td>
+                </tr>
+              `);
+              dimmer.removeClass('active');
+            }
+          }
+
+          // Search for email/phone number 
+          var input, filter, table, tr, td1, td2, i;
+          input = document.getElementById("collaboratorSearch");
+          input.onkeyup = function() {
+            filter = this.value.toUpperCase();
+            table = document.getElementById("collabTable");
+            tr = table.getElementsByTagName("tr");
+
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+              td1 = tr[i].getElementsByTagName("td")[2];
+              td2 = tr[i].getElementsByTagName("td")[3];
+              
+              if (td1&&td1.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else if (td2&&td2.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+              }
+            }
+          }
         })
       })
     </script>

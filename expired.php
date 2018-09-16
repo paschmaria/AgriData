@@ -23,7 +23,7 @@
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="manifest" href="./site.webmanifest">
     <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#5bbad5">
-    <title>Verde - Agricultural Extension and Analytics</title>
+    <title>AGRIDATA - COLLECT AND ANALYZE ANY KIND OF FIELD DATA, ANYTIME</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
     <script src="./assets/js/require.min.js"></script>
@@ -43,7 +43,7 @@
     <link href="./assets/css/pace.css" rel="stylesheet" />
     <script charset="utf-8" async src="./assets/js/dashboard.js"></script>
   </head>
-  <body class="">
+  <body>
     <div class="page">
       <div class="page-single">
         <div class="container">
