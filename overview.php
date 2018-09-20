@@ -71,7 +71,7 @@
                   $user = $_SESSION['user'];
                   if ($user['user_type']==='administrator') {
                     echo '
-                      <div class="dropdown d-none d-md-flex">
+                      <div class="dropdown d-flex">
                         <a class="nav-link icon" data-toggle="dropdown">
                           <i class="fe fe-bell"></i>
                           <span class="nav-unread d-none"></span>
@@ -165,19 +165,11 @@
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-activity"></i> Data</a>
-                    <?php if ($_GET['name'] === 'register_farmer') { ?>
-                      <div class="dropdown-menu dropdown-menu-arrow">
-                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
-                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
-                      </div>
-                    <?php } elseif ($_GET['name'] === 'market_prices') { ?>
-                      <div class="dropdown-menu dropdown-menu-arrow">
-                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
-                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
-                      </div>
-                    <?php } ?>
+                    <div class="dropdown-menu dropdown-menu-arrow">
+                      <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-box"></i> Overview</a>
+                      <a href="./responses.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
+                      <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
+                    </div>
                   </li>
                   <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>

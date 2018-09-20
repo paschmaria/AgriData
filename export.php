@@ -149,31 +149,16 @@
         <div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
           <div class="container">
             <div class="row align-items-center">
-              <div class="col-lg-3 ml-auto">
-                <!-- <form class="input-icon my-3 my-lg-0">
-                  <input type="search" class="form-control header-search" placeholder="Search&hellip;" tabindex="1">
-                  <div class="input-icon-addon">
-                    <i class="fe fe-search"></i>
-                  </div>
-                </form> -->
-              </div>
+              <div class="col-lg-3 ml-auto"></div>
               <div class="col-lg order-lg-first">
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-activity"></i> Data</a>
-                    <?php if ($_GET['name'] === 'register_farmer') { ?>
-                      <div class="dropdown-menu dropdown-menu-arrow">
-                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
-                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-share"></i> Export Data</a>
-                      </div>
-                    <?php } elseif ($_GET['name'] === 'market_prices') { ?>
-                      <div class="dropdown-menu dropdown-menu-arrow">
-                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
-                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-share"></i> Export Data</a>
-                      </div>
-                    <?php } ?>
+                    <div class="dropdown-menu dropdown-menu-arrow">
+                      <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                      <a href="./responses.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
+                      <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-share"></i> Export Data</a>
+                    </div>
                   </li>
                   <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
@@ -210,8 +195,8 @@
                     <h3 class="card-title">Generate Spreadsheet</h3>
                   </div>
                   <div class="card-body">
-                    <button type="button" class="btn btn-primary btn-block" data-file="xls" id="xls">Export Data as XLS</button>
-                    <button type="button" class="btn btn-secondary btn-block" data-file="csv" id="csv">Export Data as CSV</button>
+                    <a href="./export-xls.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="btn btn-primary btn-block" data-file="xls" id="xls">Export Data as XLS</a>
+                    <a href="./export-csv.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="btn btn-secondary btn-block" data-file="csv" id="csv">Export Data as CSV</a>
                   </div>
                 </div>
               </div>
@@ -291,30 +276,6 @@
             }
             return name.join(" ");
           }
-
-          let XLS = $('#xls'),
-              CSV = $('#csv');
-
-          function generateFile(type) {
-            $(type).on('click', function () {
-              let fileType = $(type).data('file');
-              let urlParams = new URLSearchParams(window.location.search);
-              let name = urlParams.get('name');
-              let id = urlParams.get('id');
-
-              $.post('spreadsheet-config.php', {
-                data: fileType,
-                projName: name,
-                projId: id
-              }, function (response, status) {
-                console.log(status);
-                // self.location.href = '/php/dataexport/1/';
-              })
-            });
-          }
-
-          generateFile(XLS);
-          generateFile(CSV);
         })
       })
     </script>

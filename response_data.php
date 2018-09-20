@@ -19,7 +19,7 @@
     $results = mysqli_query($db, $query);
 
     while ($dates = mysqli_fetch_row($results)) {
-      foreach ($dates as $key => $date) {
+      foreach ($dates as $date) {
         $date_array[] = $date;
       }
     }
@@ -35,14 +35,14 @@
     // }
 
     if ($response==='day') { // if today's data was requested
-      foreach ($date_array as $key => $date) { // get each date a response was collected
+      foreach ($date_array as $date) { // get each date a response was collected
         if (date('Ymd')===date('Ymd',strtotime($date))) { // if any date matches today's date
           array_push($time_array, date('gA', strtotime($date)));
         }
       }
 
       // update_frequency($current_day, $time_array);
-      foreach ($current_day as $key => $d) {
+      foreach ($current_day as $d) {
         if (in_array($d, $time_array, true)) {
           if (!function_exists('filter')) {
             function filter($a) {
@@ -61,7 +61,7 @@
       array_push($data, $current_day, $frequency);
       echo json_encode($data);
     } elseif ($response==='week') {
-      foreach ($date_array as $key => $date) {
+      foreach ($date_array as $date) {
         // find the year (ISO-8601 year number) and the current week of today's date
         $year = date('o');
         $week = date('W');
@@ -78,7 +78,7 @@
       }
 
       // update_frequency($current_week, $time_array);
-      foreach ($current_week as $key => $d) {
+      foreach ($current_week as $d) {
         if (in_array($d, $time_array, true)) {
           if (!function_exists('filter')) {
             function filter($a) {
@@ -97,14 +97,14 @@
       array_push($data, $current_week, $frequency);
       echo json_encode($data);
     } elseif ($response==='month') {
-      foreach ($date_array as $key => $date) {
+      foreach ($date_array as $date) {
         if (date('Ym')===date('Ym',strtotime($date))) {
           array_push($time_array, (int)date('j',strtotime($date)));
         }
       }
 
       // update_frequency($current_month, $time_array);
-      foreach ($current_month as $key => $d) {
+      foreach ($current_month as $d) {
         if (in_array($d, $time_array, true)) {
           if (!function_exists('filter')) {
             function filter($a) {

@@ -72,7 +72,7 @@
                   $user = $_SESSION['user'];
                   if ($user['user_type']==='administrator') {
                     echo '
-                      <div class="dropdown d-none d-md-flex">
+                      <div class="dropdown d-flex">
                         <a class="nav-link icon" data-toggle="dropdown">
                           <i class="fe fe-bell"></i>
                           <span class="nav-unread d-none"></span>
@@ -155,7 +155,7 @@
                     <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fe fe-activity"></i> Data</a>
                     <div class="dropdown-menu dropdown-menu-arrow">
                       <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                      <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
+                      <a href="./responses.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Responses</a>
                       <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
                     </div>
                   </li>
@@ -174,7 +174,6 @@
           <div class="container">
             <div class="row">
               <div class="col-12">
-                <!-- <div class="alert alert-danger" role="alert"></div> -->
                 <form action="./register_farmer.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" method="POST" class="card" id="farmerForm" enctype="multipart/form-data">
                   <div class="card-header">
                     <h3 class="card-title">Register New Farmer</h3>

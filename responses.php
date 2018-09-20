@@ -4,7 +4,7 @@
   $project_ids = explode(', ', $user['project_id']);
   $project_names = explode(', ', $user['project_name']);
   if(!$user){ 
-    header("Location: ./login.php?nexturl=biodata.php?$_SERVER[QUERY_STRING]");
+    header("Location: ./login.php?nexturl=responses.php?$_SERVER[QUERY_STRING]");
     exit; 
   }
 
@@ -71,7 +71,7 @@
                   $user = $_SESSION['user'];
                   if ($user['user_type']==='administrator') {
                     echo '
-                      <div class="dropdown d-none d-md-flex">
+                      <div class="dropdown d-flex">
                         <a class="nav-link icon" data-toggle="dropdown">
                           <i class="fe fe-bell"></i>
                           <span class="nav-unread d-none"></span>
@@ -136,7 +136,7 @@
                     <!-- <a class="dropdown-item" href="#">
                       <i class="dropdown-icon fe fe-help-circle"></i> Need help?
                     </a> -->
-                    <a class="dropdown-item" href="./biodata.php?logout='1'">
+                    <a class="dropdown-item" href="./responses.php?logout='1'">
                       <i class="dropdown-icon fe fe-log-out"></i> Sign out
                     </a>
                   </div>
@@ -157,19 +157,11 @@
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-activity"></i> Data</a>
-                    <?php if ($_GET['name'] === 'register_farmer') { ?>
-                      <div class="dropdown-menu dropdown-menu-arrow">
-                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Responses</a>
-                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
-                      </div>
-                    <?php } elseif ($_GET['name'] === 'market_prices') { ?>
-                      <div class="dropdown-menu dropdown-menu-arrow">
-                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Responses</a>
-                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
-                      </div>
-                    <?php } ?>
+                    <div class="dropdown-menu dropdown-menu-arrow">
+                      <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                      <a href="./responses.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Responses</a>
+                      <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
+                    </div>
                   </li>
                   <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
@@ -185,10 +177,12 @@
         <div class="my-3 my-md-5">
           <div class="container">
             <div class="page-header" style="flex-direction: row;">
-              <h1 class="page-title">Farmers' Biodata</h1>
+              <h1 class="page-title">Responses</h1>
               <div class="page-subtitle">
                 <?php
-                  $query = "SELECT * FROM register_farmer";
+                  $project_name = e($_GET['name']);
+                  $project_id = e($_GET['id']);
+                  $query = "SELECT * FROM $project_name";
                   $results = mysqli_query($db, $query);
                   $rows = mysqli_num_rows($results);
                   $page_num = 0;
@@ -196,24 +190,20 @@
                   if (isset($_GET['pagenum'])&&is_numeric($_GET['pagenum'])) {
                     $page_num = (int)$_GET['pagenum'];
                   }  
-                  
-                  echo '
-                    <p class="m-0">
-                      '. (($page_num*10)+1) .' - '. ((($page_num*10)+10)>$rows?$rows:(($page_num*10)+10)) .' of '. $rows .' farmers
-                    </p>
-                  ';
                 ?>
+                  
+                <p class="m-0">
+                  <?php
+                    echo ($rows!==0?($page_num*10)+1:$rows) .' - '. ((($page_num*10)+10)>$rows?$rows:(($page_num*10)+10)) .' of '. $rows .' responses'
+                  ?>
+                </p>
               </div>
               <div class="page-options d-flex">
-                <!-- <select class="form-control custom-select w-auto">
-                  <option value="asc">Newest</option>
-                  <option value="desc">Oldest</option>
-                </select> -->
                 <div class="input-icon ml-2">
                   <span class="input-icon-addon">
                     <i class="fe fe-search"></i>
                   </span>
-                  <input type="text" id="nameSearch" class="form-control w-10" placeholder="Search farmers by name...">
+                  <input type="text" id="nameSearch" class="form-control w-10" placeholder="Search responses by collaborator...">
                 </div>
               </div>
             </div>
@@ -222,12 +212,9 @@
                 $user = $_SESSION['user'];
                 $project_ids = explode(', ', $user['project_id']);
                 $project_names = explode(', ', $user['project_name']);
-                $project_name = e($_GET['name']);
-                $project_id = e($_GET['id']);
-                $page_num = 0;
 
                 $query = "SELECT * FROM $project_name";
-                $results = mysqli_query($db, $query);
+                $results = mysqli_query($db, $query) or die("Sql error : " . mysqli_error($db));
                 $rows = mysqli_num_rows($results);
                 $rows_per_page = 10;
                 $pages = (int)ceil($rows/$rows_per_page);
@@ -236,13 +223,24 @@
                   global $pages,$project_name,$project_id;
                   $list_item = '';
                   for ($i=1; $i <= $pages; $i++) { 
-                    $list_item .= '<li class="page-item"><a class="page-link" href="./biodata.php?name='. $project_name .'&id='. $project_id . ($i===1 ? '' : ('&pagenum='. ($i-1))) .'">'. $i .'</a></li><br />';
+                    if ($i<=2) {
+                      $list_item .= '<li class="page-item"><a class="page-link" href="./responses.php?name='. $project_name .'&id='. $project_id . ($i===1 ? '' : ('&pagenum='. ($i-1))) .'">'. $i .'</a></li>';
+                    } elseif ($i===3&&$pages>3) {
+                      $list_item .= '<li class="page-item disabled"><a class="page-link">...</a></li>';
+                    } elseif ($i===$pages) {
+                      $list_item .= '<li class="page-item"><a class="page-link" href="./responses.php?name='. $project_name .'&id='. $project_id . ($i===1 ? '' : ('&pagenum='. ($i-1))) .'">'. $i .'</a></li>';
+                    }
                   }
                   return $list_item;
                 }
 
-                if (isset($_GET['pagenum'])&&is_numeric($_GET['pagenum'])) {
-                  $page_num = (int)$_GET['pagenum'];
+                function get_collaborator_name($n) {
+                  global $db;
+
+                  $results = mysqli_query($db, "SELECT firstname, lastname FROM users WHERE username='$n' LIMIT 1");
+                  while ($names = mysqli_fetch_array($results)) {
+                    return $names['firstname'] .' '. $names['lastname'];
+                  }
                 }
 
                 $limit = $page_num*$rows_per_page .', '. $rows_per_page;
@@ -250,51 +248,22 @@
                 $new_query = "SELECT * FROM $project_name LIMIT $limit";
                 $table_results = mysqli_query($db, $new_query);
                 function display_table_data() {
-                  global $table_results;
+                  global $table_results, $project_name;
                   $tr = '';
 
                   while ($tables = mysqli_fetch_assoc($table_results)) {
                     $tr .= '
                       <tr>
-                        <td class="text-center">
-                          <div class="avatar d-block" style="background-image: url(assets/images/farmers_pictures/'. $tables['farmer_pic'] .')">
-                          </div>
-                        </td>
-                        <td>
-                          <p class="m-0">'. $tables['firstname'] .' '. $tables['lastname'] .'</p>
-                          <div class="small text-muted">
-                            Response Collected: '. DOR($tables['date_of_data_collection']) .'
-                          </div>
-                        </td>
-                        <td>
-                          <div>'. $tables['state'] .'</div>
-                        </td>
-                        <td>
-                          <div>'. $tables['lga'] .'</div>
-                        </td>
-                        <td>
-                          <div>'. $tables['town'] .'</div>
-                        </td>
-                        <td>
-                          <div class="text-center">
-                            <strong>'. ath($tables['land_area']) .'</strong>
-                          </div>
-                        </td>
-                        <td>
-                          <div>'.
-                            $tables['phone_primary'].sph($tables['phone_secondary'])
-                          .'</div>
-                        </td>
-                        <td class="text-center">
-                          <div class="mx-auto chart-circle chart-circle-xs" data-value="'. DOB($tables['date_of_birth'])/100 .'" data-thickness="3" data-color="blue"><canvas width="40" height="40"></canvas>
-                            <div class="chart-circle-value">'. DOB($tables['date_of_birth']) .'</div>
-                          </div>
-                        </td>
+                        <td class="text-center">'. $tables['id'] .'</td>
+                        <td>'. date("F j, Y", strtotime($tables['date_of_data_collection'])) .'</td>
+                        <td>'. date("g:i a", strtotime($tables['date_of_data_collection'])) .'</td>
+                        <td>'. get_collaborator_name($tables['registered_by']) .'</td>
+                        <td>'. split_string($project_name) .'</td>
                         <td class="text-center">
                           <div class="item-action dropdown">
                             <a href="javascript:void(0)" data-toggle="dropdown" class="icon"><i class="fe fe-more-vertical"></i></a>
                             <div class="dropdown-menu dropdown-menu-right">
-                              <a href="./farmer-profile.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b&uid='. uniqid($tables['id']) .'" id="navigator" class="dropdown-item"><i class="dropdown-icon fe fe-eye"></i> View Full Profile </a>
+                              <a href="./farmer-profile.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b&uid='. uniqid($tables['id']) .'" id="navigator" class="dropdown-item"><i class="dropdown-icon fe fe-eye"></i> View Response Details </a>
                             </div>
                           </div>
                         </td>
@@ -303,88 +272,46 @@
                   }
                   return $tr;
                 }
-
-                // Get date of registration
-                function DOR($d) {
-                  $date = date("F j, Y, g:i a", strtotime($d));
-                  return $date;
-                }
-
-                // Get date of birth
-                function DOB($dob) {
-                  //explode the date to get month, day and year
-                  $birthDate = explode("-", $dob);
-                  //get age from date or birthdate
-                  $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md")
-                    ? ((date("Y") - $birthDate[0]) - 1)
-                    : (date("Y") - $birthDate[0]));
-                  return $age;
-                }
-
-                // Display secondary phone number
-                function sph($num) {
-                  if ($num !== "") {
-                    return ', '. $num;
-                  } else {
-                    return '';
-                  }
-                }
-
-                // Farm size - acres to hectares converter
-                function ath($a_size) {
-                  preg_match_all('/\d+/', $a_size, $matches);
-                  $land = (int)implode('', $matches[0]);
-                  $h_size = round(0.4 * $land);
-                  return $h_size;
-                }
-
-                echo '
-                  <div class="card">
-                    <div class="table-responsive">
-                      <table id="bioTable" class="table table-hover table-outline table-vcenter text-nowrap card-table">
-                        <thead>
-                          <tr>
-                            <th class="text-center w-1">
-                              <i class="fe fe-image"></i>
-                            </th>
-                            <th>Farmer Name</th>
-                            <th>State</th>
-                            <th>LGA</th>
-                            <th>Town/Village</th>
-                            <th class="text-center">Land Size (ha)</th>
-                            <th>Phone Number(s)</th>
-                            <th class="text-center">Age</th>
-                            <th class="text-center">
-                              <i class="icon-settings"></i>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody class="results">'.
-                          display_table_data()
-                        .'</tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                      <li class="page-item'. ($page_num===0?' disabled':null) .'">
-                        <a class="page-link" href="./biodata.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b'. ($page_num<=1 ? '' : ('&pagenum='. ($page_num-1))) .'" aria-label="Previous">
-                          <span aria-hidden="true">&laquo;</span>
-                          <span class="sr-only">Previous</span>
-                        </a>
-                      </li>'.
-                        create_pagination()
-                      .'<li class="page-item'. ($page_num===($pages-1)?' disabled':null) .'">
-                        <a class="page-link" href="./biodata.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b&pagenum='. ($page_num+1) .'" aria-label="Next">
-                          <span aria-hidden="true">&raquo;</span>
-                          <span class="sr-only">Next</span>
-                        </a>
-                      </li>
-                    </ul>
-                  </nav>
-                ';
-              }
-            ?>
+              ?>
+              <div class="card">
+                <div class="table-responsive">
+                  <table id="responseTable" class="table table-hover table-outline table-vcenter text-nowrap card-table">
+                    <thead>
+                      <tr>
+                        <th class="text-center w-1">
+                          S/N
+                        </th>
+                        <th>Date of Collection</th>
+                        <th>Time of Collection</th>
+                        <th>Collaborator's Name</th>
+                        <th>Project Name</th>
+                        <th class="text-center">
+                          <i class="icon-settings"></i>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="results"><?php echo display_table_data() ?></tbody>
+                  </table>
+                </div>
+              </div>
+              <nav aria-label="Page navigation">
+                <ul class="pagination">
+                  <li class="page-item<?php echo $page_num===0?' disabled':null ?>">
+                    <a class="page-link" href="./responses.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b<?php echo $page_num<=1 ? '' : ('&pagenum='. ($page_num-1)) ?>" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                      <span class="sr-only">Previous</span>
+                    </a>
+                  </li>
+                  <?php echo create_pagination() ?>
+                  <li class="page-item<?php echo $page_num===($pages-1)||$rows===0?' disabled':null ?>">
+                    <a class="page-link" href="./responses.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b&pagenum=<?php echo $page_num+1 ?>" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                      <span class="sr-only">Next</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+          <?php } ?>
           </div>
         </div>
       </div>
@@ -467,14 +394,14 @@
           input = document.getElementById("nameSearch");
           input.onkeyup = function() {
             filter = this.value.toUpperCase();
-            table = document.getElementById("bioTable");
+            table = document.getElementById("responseTable");
             tr = table.getElementsByTagName("tr");
 
             // Loop through all table rows, and hide those who don't match the search query
             for (i = 0; i < tr.length; i++) {
-              td = tr[i].getElementsByTagName("td")[1];
+              td = tr[i].getElementsByTagName("td")[3];
               if (td) {
-                if (td.firstElementChild.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
                   tr[i].style.display = "";
                 } else {
                   tr[i].style.display = "none";

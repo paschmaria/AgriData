@@ -6,7 +6,7 @@
   $project_names = explode(', ', $user['project_name']);
   
   if(!$user){ 
-    header("Location: ./login.php?nexturl=biodata.php?name=$_GET[name]&id=$_GET[id]"); 
+    header("Location: ./login.php?nexturl=responses.php?name=$_GET[name]&id=$_GET[id]"); 
     exit; 
   }
 
@@ -29,10 +29,10 @@
     $results = mysqli_query($db,$query);
     
     if ($results===false) {
-      header("Location: ./biodata.php?name=$_GET[name]&id=$_GET[id]");
+      header("Location: ./responses.php?name=$_GET[name]&id=$_GET[id]");
     }
   } else {
-    header("Location: ./biodata.php?name=$_GET[name]&id=$_GET[id]");
+    header("Location: ./responses.php?name=$_GET[name]&id=$_GET[id]");
   }
 ?>
 
@@ -84,7 +84,7 @@
                   $user = $_SESSION['user'];
                   if ($user['user_type']==='administrator') {
                     echo '
-                      <div class="dropdown d-none d-md-flex">
+                      <div class="dropdown d-flex">
                         <a class="nav-link icon" data-toggle="dropdown">
                           <i class="fe fe-bell"></i>
                           <span class="nav-unread d-none"></span>
@@ -165,19 +165,11 @@
                 <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
                   <li class="nav-item dropdown" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="javascript:void(0)" class="nav-link active" data-toggle="dropdown"><i class="fe fe-activity"></i> Data</a>
-                    <?php if ($_GET['name'] === 'register_farmer') { ?>
-                      <div class="dropdown-menu dropdown-menu-arrow">
-                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Responses</a>
-                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
-                      </div>
-                    <?php } elseif ($_GET['name'] === 'market_prices') { ?>
-                      <div class="dropdown-menu dropdown-menu-arrow">
-                        <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./price-tables.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Responses</a>
-                        <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
-                      </div>
-                    <?php } ?>
+                    <div class="dropdown-menu dropdown-menu-arrow">
+                      <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-box"></i> Overview</a>
+                      <a href="./responses.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-file-text"></i> Responses</a>
+                      <a href="./reports.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-share"></i> Export Data</a>
+                    </div>
                   </li>
                   <li class="nav-item" style="<?php if ($_SESSION['user']['user_type']!=='administrator') { ?>visibility: hidden;<?php } ?>">
                     <a href="./collaborate.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="nav-link"><i class="fe fe-users"></i> Collaborate</a>
@@ -302,14 +294,14 @@
                           <form id="bad-response-form">
                             <div class="form-group">
                               <label class="form-label">Select bad field(s) (Comma separated list)<span class="form-required">*</span></label>
-                              <input type="text" class="form-control" name="farmer_crops" id="input-tags" autocomplete="off" placeholder="e.g. Town/Village" required>
+                              <input type="text" class="form-control" name="flagged_fields" id="input-tags" autocomplete="off" placeholder="e.g. Town/Village" required>
                             </div>
                             <div class="form-group">
                               <label class="form-label">Provide suggestions (if any)</label>
-                              <textarea class="form-control" rows="5"></textarea>
+                              <textarea class="form-control" rows="5" name="suggestions"></textarea>
                             </div>
                             <div class="form-footer">
-                              <button class="btn btn-primary btn-block">Send as mail</button>
+                              <button type="submit" class="btn btn-primary btn-block">Send to agent</button>
                             </div>
                           </form>
                           <script>
@@ -525,6 +517,27 @@
             }
             return name.join(" ");
           }
+
+          let a = $('a.nav-link.icon'),
+              b = 5,
+              child;
+          a.click(function (e) {
+            child = $(this).next();
+            e.preventDefault();
+            if (window.innerWidth<=425) {
+              child.width((window.innerWidth-2));
+              let position = child.position();
+              position.left = b
+              console.log();
+            }
+          });
+
+          $('#bad-response-form').submit(function (e) { 
+            e.preventDefault();
+            let data = $(this).serializeArray();
+            loadNotifications(JSON.stringify(data));
+            // console.log(JSON.stringify(data));
+          });
         })
       })
     </script>

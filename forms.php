@@ -57,7 +57,7 @@
                       <div class="nav-item d-none d-md-flex">
                         <a href="#" class="btn btn-sm btn-outline-primary create-form"><i class="fe fe-plus"></i> Create new Form</a>
                       </div>
-                      <div class="dropdown d-none d-md-flex">
+                      <div class="dropdown d-flex">
                         <a class="nav-link icon" data-toggle="dropdown">
                           <i class="fe fe-bell"></i>
                           <span class="nav-unread d-none"></span>

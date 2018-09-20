@@ -1,11 +1,14 @@
 <?php 
-	session_start();
-
-	require('Mobile-Detect/detect.php');
+	if (!isset($_SESSION)) {
+		session_start();
+	}
     
   header("Access-Control-Allow-Origin: *");
+
+	require('Mobile-Detect/detect.php');
 	// connect to database
-	$db = mysqli_connect('localhost', 'root', 'SperaenDeo1', 'agridata');
+	$database = 'agridata';
+	$db = mysqli_connect('localhost', 'root', 'SperaenDeo1', $database);
 	if (mysqli_connect_errno()) {
 		echo "Failed to connect to MySQL: " . mysqli_connect_error();
 	}

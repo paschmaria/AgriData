@@ -192,7 +192,7 @@
                     <?php if ($_GET['name'] === 'register_farmer') { ?>
                       <div class="dropdown-menu dropdown-menu-arrow">
                         <a href="./overview.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item active"><i class="fe fe-box"></i> Overview</a>
-                        <a href="./biodata.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
+                        <a href="./responses.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-file-text"></i> Bio-data</a>
                         <a href="./rf_analytics.php<?php echo isset($_GET['id']) ? '?name='.e($_GET['name']).'&id='.e($_GET['id']) : null ?>" class="dropdown-item"><i class="fe fe-bar-chart-2"></i> Demographics</a>
                       </div>
                     <?php } elseif ($_GET['name'] === 'market_prices') { ?>
@@ -338,14 +338,14 @@
                   <nav aria-label="Page navigation">
                     <ul class="pagination">
                       <li class="page-item'. ($page_num===0?' disabled':null) .'">
-                        <a class="page-link" href="./biodata.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b'. ($page_num<=1 ? '' : ('&pagenum='. ($page_num-1))) .'" aria-label="Previous">
+                        <a class="page-link" href="./responses.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b'. ($page_num<=1 ? '' : ('&pagenum='. ($page_num-1))) .'" aria-label="Previous">
                           <span aria-hidden="true">&laquo;</span>
                           <span class="sr-only">Previous</span>
                         </a>
                       </li>'.
                         create_pagination()
                       .'<li class="page-item'. ($page_num===($pages-1)||$pages===0?' disabled':null) .'">
-                        <a class="page-link" href="./biodata.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b&pagenum='. ($page_num+1) .'" aria-label="Next">
+                        <a class="page-link" href="./responses.php?name=register_farmer&id=c4ca4238a0b923820dcc509a6f75849b&pagenum='. ($page_num+1) .'" aria-label="Next">
                           <span aria-hidden="true">&raquo;</span>
                           <span class="sr-only">Next</span>
                         </a>

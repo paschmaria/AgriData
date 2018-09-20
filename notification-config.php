@@ -77,6 +77,8 @@
       }
     }
     $data_array[] = '';
+  } else {
+    $data_array[] = $data;
   }
 
   echo json_encode($data_array);
